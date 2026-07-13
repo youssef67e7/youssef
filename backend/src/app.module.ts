@@ -46,7 +46,7 @@ import { HealthModule } from './modules/health/health.module';
             }),
           ),
         }),
-        ...(process.env.NODE_ENV !== 'production'
+        ...(process.env.NODE_ENV === 'development'
           ? [
               new winston.transports.File({
                 filename: 'logs/error.log',
