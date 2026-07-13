@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/providers/auth_provider.dart';
-import '../../../../shared/widgets/custom_avatar.dart';
-import '../providers/profile_provider.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/providers/auth_provider.dart';
+import 'package:pharmaworld/shared/widgets/custom_avatar.dart';
+import 'package:pharmaworld/features/profile/presentation/providers/profile_provider.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});

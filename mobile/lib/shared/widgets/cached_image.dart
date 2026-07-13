@@ -3,14 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CachedImage extends StatelessWidget {
-  final String imageUrl;
-  final double? width;
-  final double? height;
-  final BoxFit fit;
-  final BorderRadius? borderRadius;
-  final Color? placeholderColor;
-  final Widget? placeholder;
-  final Widget? errorWidget;
 
   const CachedImage({
     super.key,
@@ -23,12 +15,20 @@ class CachedImage extends StatelessWidget {
     this.placeholder,
     this.errorWidget,
   });
+  final String imageUrl;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final BorderRadius? borderRadius;
+  final Color? placeholderColor;
+  final Widget? placeholder;
+  final Widget? errorWidget;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Widget image = ClipRRect(
+    final Widget image = ClipRRect(
       borderRadius: borderRadius ?? BorderRadius.zero,
       child: CachedNetworkImage(
         imageUrl: imageUrl,

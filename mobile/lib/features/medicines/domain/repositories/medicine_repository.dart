@@ -1,5 +1,5 @@
-import '../../data/datasources/medicine_remote_datasource.dart';
-import '../../data/models/medicine_models.dart';
+import 'package:pharmaworld/features/medicines/data/datasources/medicine_remote_datasource.dart';
+import 'package:pharmaworld/features/medicines/data/models/medicine_models.dart';
 
 abstract class MedicineRepository {
   Future<List<MedicineListModel>> getMedicines({
@@ -17,10 +17,10 @@ abstract class MedicineRepository {
 }
 
 class MedicineRepositoryImpl implements MedicineRepository {
-  final MedicineRemoteDataSource _remoteDataSource;
 
   MedicineRepositoryImpl({required MedicineRemoteDataSource remoteDataSource})
       : _remoteDataSource = remoteDataSource;
+  final MedicineRemoteDataSource _remoteDataSource;
 
   @override
   Future<List<MedicineListModel>> getMedicines({

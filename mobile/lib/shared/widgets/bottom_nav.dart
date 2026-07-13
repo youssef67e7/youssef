@@ -3,20 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/constants/app_icons.dart';
-import '../../core/router/route_names.dart';
-import '../../features/cart/presentation/providers/cart_provider.dart';
-import 'custom_badge.dart';
+import 'package:pharmaworld/core/constants/app_icons.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/features/cart/presentation/providers/cart_provider.dart';
+import 'package:pharmaworld/shared/widgets/custom_badge.dart';
 
 class BottomNav extends ConsumerWidget {
-  final int currentIndex;
-  final Widget child;
 
   const BottomNav({
     super.key,
     required this.currentIndex,
     required this.child,
   });
+  final int currentIndex;
+  final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,14 +46,14 @@ class BottomNav extends ConsumerWidget {
           }
         },
         destinations: [
-          NavigationDestination(
-            icon: const Icon(AppIcons.home),
-            selectedIcon: const Icon(AppIcons.homeFilled),
+          const NavigationDestination(
+            icon: Icon(AppIcons.home),
+            selectedIcon: Icon(AppIcons.homeFilled),
             label: 'Home',
           ),
-          NavigationDestination(
-            icon: const Icon(AppIcons.category),
-            selectedIcon: const Icon(AppIcons.categoryFilled),
+          const NavigationDestination(
+            icon: Icon(AppIcons.category),
+            selectedIcon: Icon(AppIcons.categoryFilled),
             label: 'Categories',
           ),
           NavigationDestination(
@@ -69,9 +69,9 @@ class BottomNav extends ConsumerWidget {
             ),
             label: 'Cart',
           ),
-          NavigationDestination(
-            icon: const Icon(AppIcons.profile),
-            selectedIcon: const Icon(AppIcons.profileFilled),
+          const NavigationDestination(
+            icon: Icon(AppIcons.profile),
+            selectedIcon: Icon(AppIcons.profileFilled),
             label: 'Profile',
           ),
         ],

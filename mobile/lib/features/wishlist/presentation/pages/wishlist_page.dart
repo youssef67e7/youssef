@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/medicine_card.dart';
-import '../../../../shared/widgets/empty_state.dart';
+import 'package:pharmaworld/shared/widgets/medicine_card.dart';
+import 'package:pharmaworld/shared/widgets/empty_state.dart';
 
 class WishlistPage extends ConsumerStatefulWidget {
   const WishlistPage({super.key});

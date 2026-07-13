@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../providers/auth_provider.dart' as feature_auth;
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/features/auth/presentation/providers/auth_provider.dart' as feature_auth;
 
 class OtpVerificationPage extends ConsumerStatefulWidget {
   const OtpVerificationPage({super.key});

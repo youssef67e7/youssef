@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../../core/utils/formatters.dart';
+import 'package:pharmaworld/core/constants/app_colors.dart';
+import 'package:pharmaworld/core/utils/formatters.dart';
 
 class PriceTag extends StatelessWidget {
-  final double price;
-  final double? originalPrice;
-  final double? fontSize;
-  final bool showDiscount;
-  final bool isLarge;
 
   const PriceTag({
     super.key,
@@ -19,6 +14,11 @@ class PriceTag extends StatelessWidget {
     this.showDiscount = true,
     this.isLarge = false,
   });
+  final double price;
+  final double? originalPrice;
+  final double? fontSize;
+  final bool showDiscount;
+  final bool isLarge;
 
   @override
   Widget build(BuildContext context) {

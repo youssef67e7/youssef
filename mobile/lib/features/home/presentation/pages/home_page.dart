@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/widgets/banner_carousel.dart';
-import '../../../../shared/widgets/category_card.dart';
-import '../../../../shared/widgets/medicine_card.dart';
-import '../../../../shared/widgets/search_bar.dart';
-import '../providers/home_provider.dart';
+import 'package:pharmaworld/core/constants/app_strings.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/widgets/banner_carousel.dart';
+import 'package:pharmaworld/shared/widgets/category_card.dart';
+import 'package:pharmaworld/shared/widgets/medicine_card.dart';
+import 'package:pharmaworld/shared/widgets/search_bar.dart';
+import 'package:pharmaworld/features/home/presentation/providers/home_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});

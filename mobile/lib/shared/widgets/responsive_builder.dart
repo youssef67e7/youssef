@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
 
 class ResponsiveBuilder extends StatelessWidget {
-  final Widget mobile;
-  final Widget? tablet;
-  final Widget? desktop;
 
   const ResponsiveBuilder({
     super.key,
@@ -14,6 +11,9 @@ class ResponsiveBuilder extends StatelessWidget {
     this.tablet,
     this.desktop,
   });
+  final Widget mobile;
+  final Widget? tablet;
+  final Widget? desktop;
 
   static bool isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < 600;
@@ -51,14 +51,6 @@ class ResponsiveBuilder extends StatelessWidget {
 enum ScreenSize { mobile, tablet, desktop }
 
 class ResponsiveGrid extends StatelessWidget {
-  final int mobileColumns;
-  final int? tabletColumns;
-  final int? desktopColumns;
-  final double spacing;
-  final double runSpacing;
-  final List<Widget> children;
-  final bool shrinkWrap;
-  final ScrollPhysics? physics;
 
   const ResponsiveGrid({
     super.key,
@@ -71,6 +63,14 @@ class ResponsiveGrid extends StatelessWidget {
     this.shrinkWrap = false,
     this.physics,
   });
+  final int mobileColumns;
+  final int? tabletColumns;
+  final int? desktopColumns;
+  final double spacing;
+  final double runSpacing;
+  final List<Widget> children;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
 
   @override
   Widget build(BuildContext context) {

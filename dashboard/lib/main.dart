@@ -11,13 +11,13 @@ void main() async {
   try {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyDummyKeyForDevelopment",
-        authDomain: "pharmaworld-dev.firebaseapp.com",
-        projectId: "pharmaworld-dev",
-        storageBucket: "pharmaworld-dev.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abc123def456",
-        measurementId: "G-XXXXXXXXXX",
+        apiKey: 'AIzaSyDummyKeyForDevelopment',
+        authDomain: 'pharmaworld-dev.firebaseapp.com',
+        projectId: 'pharmaworld-dev',
+        storageBucket: 'pharmaworld-dev.appspot.com',
+        messagingSenderId: '123456789',
+        appId: '1:123456789:web:abc123def456',
+        measurementId: 'G-XXXXXXXXXX',
       ),
     );
   } catch (e) {

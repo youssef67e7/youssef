@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OrderTrackingPage extends ConsumerWidget {
-  final String orderId;
   const OrderTrackingPage({super.key, required this.orderId});
+  final String orderId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

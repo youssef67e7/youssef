@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../constants/api_constants.dart';
-import '../../constants/storage_keys.dart';
-import 'api_exception.dart';
+import 'package:pharmaworld/constants/api_constants.dart';
+import 'package:pharmaworld/constants/storage_keys.dart';
+import 'package:pharmaworld/core/network/api_exception.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   return DioClient().dio;
@@ -19,9 +19,6 @@ final dioClientProvider = Provider<DioClient>((ref) {
 });
 
 class DioClient {
-  late final Dio dio;
-  String? _accessToken;
-  String? _refreshToken;
 
   DioClient() {
     dio = Dio(
@@ -38,6 +35,9 @@ class DioClient {
 
     _setupInterceptors();
   }
+  late final Dio dio;
+  String? _accessToken;
+  String? _refreshToken;
 
   void _setupInterceptors() {
     dio.interceptors.addAll([
@@ -45,16 +45,10 @@ class DioClient {
       PrettyDioLogger(
         requestHeader: true,
         requestBody: true,
-        responseBody: true,
-        responseHeader: false,
-        error: true,
-        compact: true,
-        maxWidth: 90,
       ),
       RetryInterceptor(
         dio: dio,
         logPrint: print,
-        retries: 3,
         retryDelays: const [
           Duration(seconds: 1),
           Duration(seconds: 2),
@@ -260,9 +254,9 @@ class DioClient {
 }
 
 class _AuthInterceptor extends Interceptor {
-  final DioClient _dioClient;
 
   _AuthInterceptor(this._dioClient);
+  final DioClient _dioClient;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {

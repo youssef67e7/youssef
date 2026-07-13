@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/dio_client.dart';
-import '../../../../core/services/firebase_auth_service.dart';
-import '../../../../shared/providers/auth_provider.dart';
-import '../../data/datasources/auth_remote_datasource.dart';
-import '../../data/repositories/auth_repository_impl.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../../domain/usecases/login_usecase.dart';
-import '../../domain/usecases/register_usecase.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/core/services/firebase_auth_service.dart';
+import 'package:pharmaworld/shared/providers/auth_provider.dart';
+import 'package:pharmaworld/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:pharmaworld/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:pharmaworld/features/auth/domain/repositories/auth_repository.dart';
+import 'package:pharmaworld/features/auth/domain/usecases/login_usecase.dart';
+import 'package:pharmaworld/features/auth/domain/usecases/register_usecase.dart';
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSourceImpl(dioClient: ref.watch(dioClientProvider));
@@ -62,9 +62,6 @@ final resetPasswordProvider =
 });
 
 class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
-  final LoginUseCase _loginUseCase;
-  final AuthStateNotifier _authStateNotifier;
-  final FirebaseAuthService _firebaseAuthService;
 
   LoginNotifier({
     required LoginUseCase loginUseCase,
@@ -74,6 +71,9 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
         _authStateNotifier = authStateNotifier,
         _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
+  final LoginUseCase _loginUseCase;
+  final AuthStateNotifier _authStateNotifier;
+  final FirebaseAuthService _firebaseAuthService;
 
   Future<void> login({
     required String email,
@@ -260,8 +260,6 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
 }
 
 class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
-  final RegisterUseCase _registerUseCase;
-  final FirebaseAuthService _firebaseAuthService;
 
   RegisterNotifier({
     required RegisterUseCase registerUseCase,
@@ -269,6 +267,8 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
   })  : _registerUseCase = registerUseCase,
         _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
+  final RegisterUseCase _registerUseCase;
+  final FirebaseAuthService _firebaseAuthService;
 
   Future<void> register({
     required String name,
@@ -320,8 +320,6 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
 }
 
 class ForgotPasswordNotifier extends StateNotifier<AsyncValue<bool?>> {
-  final AuthRepository _authRepository;
-  final FirebaseAuthService _firebaseAuthService;
 
   ForgotPasswordNotifier({
     required AuthRepository authRepository,
@@ -329,6 +327,8 @@ class ForgotPasswordNotifier extends StateNotifier<AsyncValue<bool?>> {
   })  : _authRepository = authRepository,
         _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
+  final AuthRepository _authRepository;
+  final FirebaseAuthService _firebaseAuthService;
 
   Future<void> forgotPassword({required String email}) async {
     state = const AsyncValue.loading();
@@ -343,11 +343,11 @@ class ForgotPasswordNotifier extends StateNotifier<AsyncValue<bool?>> {
 }
 
 class ResetPasswordNotifier extends StateNotifier<AsyncValue<bool?>> {
-  final AuthRepository _authRepository;
 
   ResetPasswordNotifier({required AuthRepository authRepository})
       : _authRepository = authRepository,
         super(const AsyncValue.data(null));
+  final AuthRepository _authRepository;
 
   Future<void> resetPassword({
     required String token,

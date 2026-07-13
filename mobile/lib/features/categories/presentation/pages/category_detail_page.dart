@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/medicine_card.dart';
+import 'package:pharmaworld/shared/widgets/medicine_card.dart';
 
 class CategoryDetailPage extends ConsumerWidget {
-  final String categoryId;
   const CategoryDetailPage({super.key, required this.categoryId});
+  final String categoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

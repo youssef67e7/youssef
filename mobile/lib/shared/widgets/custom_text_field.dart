@@ -2,36 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
 
 class CustomTextField extends StatefulWidget {
-  final TextEditingController? controller;
-  final String? labelText;
-  final String? hintText;
-  final String? helperText;
-  final String? errorText;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-  final IconData? prefixIconData;
-  final IconData? suffixIconData;
-  final bool obscureText;
-  final bool readOnly;
-  final bool enabled;
-  final bool autofocus;
-  final int maxLines;
-  final int? maxLength;
-  final TextInputType keyboardType;
-  final TextInputAction textInputAction;
-  final ValueChanged<String>? onChanged;
-  final VoidCallback? onEditingComplete;
-  final ValueChanged<String>? onSubmitted;
-  final FormFieldValidator<String>? validator;
-  final List<TextInputFormatter>? inputFormatters;
-  final FocusNode? focusNode;
-  final EdgeInsetsGeometry? contentPadding;
-  final Color? fillColor;
-  final double? borderRadius;
-  final bool filled;
 
   const CustomTextField({
     super.key,
@@ -63,6 +36,33 @@ class CustomTextField extends StatefulWidget {
     this.borderRadius,
     this.filled = true,
   });
+  final TextEditingController? controller;
+  final String? labelText;
+  final String? hintText;
+  final String? helperText;
+  final String? errorText;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final IconData? prefixIconData;
+  final IconData? suffixIconData;
+  final bool obscureText;
+  final bool readOnly;
+  final bool enabled;
+  final bool autofocus;
+  final int maxLines;
+  final int? maxLength;
+  final TextInputType keyboardType;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onEditingComplete;
+  final ValueChanged<String>? onSubmitted;
+  final FormFieldValidator<String>? validator;
+  final List<TextInputFormatter>? inputFormatters;
+  final FocusNode? focusNode;
+  final EdgeInsetsGeometry? contentPadding;
+  final Color? fillColor;
+  final double? borderRadius;
+  final bool filled;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();

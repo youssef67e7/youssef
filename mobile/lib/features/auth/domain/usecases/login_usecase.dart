@@ -1,10 +1,10 @@
-import '../../data/models/auth_models.dart';
-import '../repositories/auth_repository.dart';
+import 'package:pharmaworld/features/auth/data/models/auth_models.dart';
+import 'package:pharmaworld/features/auth/domain/repositories/auth_repository.dart';
 
 class LoginUseCase {
-  final AuthRepository _repository;
 
   LoginUseCase(this._repository);
+  final AuthRepository _repository;
 
   Future<AuthResponseModel?> call(LoginParams params) async {
     return await _repository.login(params.email, params.password);
@@ -24,8 +24,8 @@ class LoginUseCase {
 }
 
 class LoginParams {
-  final String email;
-  final String password;
 
   const LoginParams({required this.email, required this.password});
+  final String email;
+  final String password;
 }

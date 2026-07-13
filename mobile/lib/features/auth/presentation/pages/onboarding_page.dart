@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/widgets/custom_button.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -17,29 +17,29 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   int _currentPage = 0;
 
   final List<OnboardingData> _pages = [
-    OnboardingData(
+    const OnboardingData(
       title: 'Welcome to PharmaWorld',
       subtitle: 'Your trusted online pharmacy for all your healthcare needs',
       icon: Icons.local_pharmacy,
-      color: const Color(0xFF00897B),
+      color: Color(0xFF00897B),
     ),
-    OnboardingData(
+    const OnboardingData(
       title: 'Browse & Order Medicines',
       subtitle: 'Search thousands of medicines and health products easily',
       icon: Icons.search,
-      color: const Color(0xFF1E88E5),
+      color: Color(0xFF1E88E5),
     ),
-    OnboardingData(
+    const OnboardingData(
       title: 'Fast Delivery',
       subtitle: 'Get your medicines delivered to your doorstep quickly',
       icon: Icons.local_shipping,
-      color: const Color(0xFFFF6F00),
+      color: Color(0xFFFF6F00),
     ),
-    OnboardingData(
+    const OnboardingData(
       title: 'Track Your Orders',
       subtitle: 'Real-time tracking for all your orders',
       icon: Icons.gps_fixed,
-      color: const Color(0xFF43A047),
+      color: Color(0xFF43A047),
     ),
   ];
 
@@ -168,10 +168,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 }
 
 class OnboardingData {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
 
   const OnboardingData({
     required this.title,
@@ -179,4 +175,8 @@ class OnboardingData {
     required this.icon,
     required this.color,
   });
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
 }

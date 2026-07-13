@@ -131,7 +131,6 @@ class _SupportPageState extends ConsumerState<SupportPage> {
                 children: [
                   _buildChatBubble(
                     'Hello! How can we help you today?',
-                    isMe: false,
                   ),
                 ],
               ),

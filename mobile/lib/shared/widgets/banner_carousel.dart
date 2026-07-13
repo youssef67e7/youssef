@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BannerCarousel extends StatefulWidget {
-  final List<BannerItem> banners;
-  final double height;
-  final Duration autoPlayDuration;
-  final ValueChanged<int>? onTap;
 
   const BannerCarousel({
     super.key,
@@ -14,6 +10,10 @@ class BannerCarousel extends StatefulWidget {
     this.autoPlayDuration = const Duration(seconds: 4),
     this.onTap,
   });
+  final List<BannerItem> banners;
+  final double height;
+  final Duration autoPlayDuration;
+  final ValueChanged<int>? onTap;
 
   @override
   State<BannerCarousel> createState() => _BannerCarouselState();
@@ -155,11 +155,6 @@ class _BannerCarouselState extends State<BannerCarousel> {
 }
 
 class BannerItem {
-  final String title;
-  final String? subtitle;
-  final String? imageUrl;
-  final Color? color;
-  final IconData? icon;
 
   const BannerItem({
     required this.title,
@@ -168,4 +163,9 @@ class BannerItem {
     this.color,
     this.icon,
   });
+  final String title;
+  final String? subtitle;
+  final String? imageUrl;
+  final Color? color;
+  final IconData? icon;
 }

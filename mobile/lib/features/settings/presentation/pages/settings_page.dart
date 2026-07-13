@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/providers/locale_provider.dart';
-import '../../../../shared/providers/theme_provider.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/providers/locale_provider.dart';
+import 'package:pharmaworld/shared/providers/theme_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});

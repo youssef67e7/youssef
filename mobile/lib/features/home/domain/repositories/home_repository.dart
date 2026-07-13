@@ -1,5 +1,5 @@
-import '../../data/datasources/home_remote_datasource.dart';
-import '../../data/models/home_models.dart';
+import 'package:pharmaworld/features/home/data/datasources/home_remote_datasource.dart';
+import 'package:pharmaworld/features/home/data/models/home_models.dart';
 
 abstract class HomeRepository {
   Future<HomeData> getHomeData();
@@ -10,10 +10,10 @@ abstract class HomeRepository {
 }
 
 class HomeRepositoryImpl implements HomeRepository {
-  final HomeRemoteDataSource _remoteDataSource;
 
   HomeRepositoryImpl({required HomeRemoteDataSource remoteDataSource})
       : _remoteDataSource = remoteDataSource;
+  final HomeRemoteDataSource _remoteDataSource;
 
   @override
   Future<HomeData> getHomeData() async {

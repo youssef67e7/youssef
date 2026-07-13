@@ -1,21 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/models/cart_models.dart';
+import 'package:pharmaworld/features/cart/data/models/cart_models.dart';
 
 final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
   return CartNotifier();
 });
 
 class CartState {
-  final List<CartItemModel> items;
-  final String? couponCode;
-  final double? couponDiscount;
 
   const CartState({
     this.items = const [],
     this.couponCode,
     this.couponDiscount,
   });
+  final List<CartItemModel> items;
+  final String? couponCode;
+  final double? couponDiscount;
 
   double get subtotal =>
       items.fold(0, (sum, item) => sum + item.price * item.quantity);
@@ -89,7 +89,6 @@ class CartNotifier extends StateNotifier<CartState> {
 
   void removeCoupon() {
     state = state.copyWith(
-      couponCode: null,
       couponDiscount: null,
     );
   }

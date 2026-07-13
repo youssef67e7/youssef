@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/order_status_chip.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
+import 'package:pharmaworld/shared/widgets/order_status_chip.dart';
 
 class OrderDetailPage extends ConsumerWidget {
-  final String orderId;
   const OrderDetailPage({super.key, required this.orderId});
+  final String orderId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

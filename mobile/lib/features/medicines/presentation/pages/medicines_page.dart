@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/medicine_card.dart';
-import '../../../../shared/widgets/search_bar.dart';
+import 'package:pharmaworld/shared/widgets/medicine_card.dart';
+import 'package:pharmaworld/shared/widgets/search_bar.dart';
 
 class MedicinesPage extends ConsumerStatefulWidget {
   const MedicinesPage({super.key});
@@ -179,7 +179,6 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                   children: ['Pain Relief', 'Vitamins', 'Antibiotics', 'Skincare']
                       .map((cat) => FilterChip(
                             label: Text(cat),
-                            selected: false,
                             onSelected: (_) {},
                           ))
                       .toList(),
@@ -188,7 +187,6 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                 Text('Price Range', style: Theme.of(context).textTheme.titleMedium),
                 RangeSlider(
                   values: const RangeValues(0, 500),
-                  min: 0,
                   max: 500,
                   divisions: 10,
                   labels: const RangeLabels('E£0', 'E£500'),

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/constants/storage_keys.dart';
+import 'package:pharmaworld/core/constants/storage_keys.dart';
 
 final authStateProvider =
     StateNotifierProvider<AuthStateNotifier, AsyncValue<bool>>((ref) {
@@ -11,13 +11,6 @@ final authStateProvider =
 final currentUserProvider = StateProvider<UserData?>((ref) => null);
 
 class UserData {
-  final String id;
-  final String name;
-  final String email;
-  final String? phone;
-  final String? avatar;
-  final String? city;
-  final DateTime? createdAt;
 
   const UserData({
     required this.id,
@@ -28,6 +21,13 @@ class UserData {
     this.city,
     this.createdAt,
   });
+  final String id;
+  final String name;
+  final String email;
+  final String? phone;
+  final String? avatar;
+  final String? city;
+  final DateTime? createdAt;
 
   UserData copyWith({
     String? id,

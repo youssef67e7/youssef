@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
 
 class CustomCard extends StatelessWidget {
-  final Widget child;
-  final VoidCallback? onTap;
-  final EdgeInsetsGeometry? padding;
-  final EdgeInsetsGeometry? margin;
-  final double? elevation;
-  final Color? color;
-  final BorderRadius? borderRadius;
-  final Border? border;
-  final bool showShadow;
 
   const CustomCard({
     super.key,
@@ -26,6 +17,15 @@ class CustomCard extends StatelessWidget {
     this.border,
     this.showShadow = true,
   });
+  final Widget child;
+  final VoidCallback? onTap;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final double? elevation;
+  final Color? color;
+  final BorderRadius? borderRadius;
+  final Border? border;
+  final bool showShadow;
 
   @override
   Widget build(BuildContext context) {

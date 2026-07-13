@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/utils/snackbar_helper.dart';
-import 'custom_button.dart';
+import 'package:pharmaworld/core/utils/snackbar_helper.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
 
 class AppErrorWidget extends StatelessWidget {
-  final String? message;
-  final String? title;
-  final VoidCallback? onRetry;
-  final bool showRetryButton;
-  final IconData? icon;
 
   const AppErrorWidget({
     super.key,
@@ -19,6 +14,11 @@ class AppErrorWidget extends StatelessWidget {
     this.showRetryButton = true,
     this.icon,
   });
+  final String? message;
+  final String? title;
+  final VoidCallback? onRetry;
+  final bool showRetryButton;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {

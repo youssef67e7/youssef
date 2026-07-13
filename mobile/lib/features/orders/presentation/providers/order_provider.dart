@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/dio_client.dart';
-import '../../data/datasources/order_remote_datasource.dart';
-import '../../data/models/order_models.dart';
-import '../../domain/repositories/order_repository.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/orders/data/datasources/order_remote_datasource.dart';
+import 'package:pharmaworld/features/orders/data/models/order_models.dart';
+import 'package:pharmaworld/features/orders/domain/repositories/order_repository.dart';
 
 final orderRemoteDataSourceProvider = Provider<OrderRemoteDataSource>((ref) {
   return OrderRemoteDataSourceImpl(dioClient: ref.watch(dioClientProvider));

@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/dio_client.dart';
-import '../../data/datasources/medicine_remote_datasource.dart';
-import '../../data/models/medicine_models.dart';
-import '../../domain/repositories/medicine_repository.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/medicines/data/datasources/medicine_remote_datasource.dart';
+import 'package:pharmaworld/features/medicines/data/models/medicine_models.dart';
+import 'package:pharmaworld/features/medicines/domain/repositories/medicine_repository.dart';
 
 final medicineRemoteDataSourceProvider = Provider<MedicineRemoteDataSource>((ref) {
   return MedicineRemoteDataSourceImpl(dioClient: ref.watch(dioClientProvider));
@@ -45,15 +45,15 @@ final searchResultsProvider =
 });
 
 class MedicinesListNotifier extends StateNotifier<AsyncValue<List<MedicineListModel>>> {
-  final MedicineRepository _repository;
-  int _currentPage = 1;
-  bool _hasMore = true;
 
   MedicinesListNotifier({required MedicineRepository repository})
       : _repository = repository,
         super(const AsyncValue.loading()) {
     loadMedicines();
   }
+  final MedicineRepository _repository;
+  int _currentPage = 1;
+  bool _hasMore = true;
 
   Future<void> loadMedicines({
     String? query,
@@ -65,7 +65,6 @@ class MedicinesListNotifier extends StateNotifier<AsyncValue<List<MedicineListMo
     state = const AsyncValue.loading();
     try {
       final medicines = await _repository.getMedicines(
-        page: 1,
         query: query,
         category: category,
         sortBy: sortBy,

@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_sizes.dart';
-import '../../core/utils/debouncer.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/utils/debouncer.dart';
 
 class CustomSearchBar extends StatefulWidget {
-  final String? hintText;
-  final ValueChanged<String>? onChanged;
-  final ValueChanged<String>? onSubmitted;
-  final VoidCallback? onTap;
-  final VoidCallback? onFilterPressed;
-  final TextEditingController? controller;
-  final bool readOnly;
-  final bool autofocus;
-  final Widget? prefix;
-  final Widget? suffix;
 
   const CustomSearchBar({
     super.key,
@@ -29,6 +19,16 @@ class CustomSearchBar extends StatefulWidget {
     this.prefix,
     this.suffix,
   });
+  final String? hintText;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onTap;
+  final VoidCallback? onFilterPressed;
+  final TextEditingController? controller;
+  final bool readOnly;
+  final bool autofocus;
+  final Widget? prefix;
+  final Widget? suffix;
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();

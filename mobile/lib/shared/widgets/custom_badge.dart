@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomBadge extends StatelessWidget {
-  final Widget child;
-  final String? count;
-  final bool showBadge;
-  final Color? badgeColor;
-  final Color? textColor;
-  final double? minWidth;
-  final EdgeInsetsGeometry? padding;
 
   const CustomBadge({
     super.key,
@@ -20,6 +13,13 @@ class CustomBadge extends StatelessWidget {
     this.minWidth,
     this.padding,
   });
+  final Widget child;
+  final String? count;
+  final bool showBadge;
+  final Color? badgeColor;
+  final Color? textColor;
+  final double? minWidth;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {

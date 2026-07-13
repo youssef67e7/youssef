@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
 
 class FilterBottomSheet extends StatelessWidget {
-  final Map<String, List<String>> filters;
-  final Map<String, dynamic> selectedFilters;
-  final ValueChanged<Map<String, dynamic>> onApply;
-  final VoidCallback? onReset;
 
   const FilterBottomSheet({
     super.key,
@@ -16,6 +12,10 @@ class FilterBottomSheet extends StatelessWidget {
     required this.onApply,
     this.onReset,
   });
+  final Map<String, List<String>> filters;
+  final Map<String, dynamic> selectedFilters;
+  final ValueChanged<Map<String, dynamic>> onApply;
+  final VoidCallback? onReset;
 
   @override
   Widget build(BuildContext context) {

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/category_card.dart';
-import '../../../../shared/widgets/search_bar.dart';
+import 'package:pharmaworld/shared/widgets/category_card.dart';
+import 'package:pharmaworld/shared/widgets/search_bar.dart';
 
 class CategoriesPage extends ConsumerWidget {
   const CategoriesPage({super.key});

@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../shared/widgets/star_rating.dart';
+import 'package:pharmaworld/shared/widgets/star_rating.dart';
 
 class MedicineDetailPage extends ConsumerWidget {
-  final String medicineId;
   const MedicineDetailPage({super.key, required this.medicineId});
+  final String medicineId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,9 +79,9 @@ class MedicineDetailPage extends ConsumerWidget {
                     ],
                   ),
                   SizedBox(height: 8.h),
-                  Row(
+                  const Row(
                     children: [
-                      StarRating(rating: 4.5, size: 16),
+                      StarRating(rating: 4.5),
                       SizedBox(width: 8.w),
                       Text(
                         '4.5 (120 reviews)',

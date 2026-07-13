@@ -111,7 +111,7 @@ export class UploadService {
       throw new BadRequestException('No files provided');
     }
 
-    const results = [];
+    const results: any[] = [];
     for (const file of files) {
       const result = await this.uploadImage(file, folder);
       results.push(result.data);

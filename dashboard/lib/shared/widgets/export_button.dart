@@ -62,7 +62,7 @@ class ExportButton extends StatelessWidget {
       String extension;
 
       if (format == 'csv') {
-        List<List<dynamic>> rows = [];
+        final List<List<dynamic>> rows = [];
         if (headers != null) {
           rows.add(headers);
         }

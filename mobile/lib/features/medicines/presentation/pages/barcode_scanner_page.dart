@@ -18,7 +18,6 @@ class _BarcodeScannerPageState extends ConsumerState<BarcodeScannerPage> {
   void initState() {
     super.initState();
     _cameraController = MobileScannerController(
-      detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
     );
   }

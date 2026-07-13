@@ -105,7 +105,7 @@ class ReferralPage extends ConsumerWidget {
                   ),
                   title: Text('Friend ${index + 1}'),
                   subtitle: Text('Joined ${index + 1} week${index > 0 ? 's' : ''} ago'),
-                  trailing: Text(
+                  trailing: const Text(
                     '+E£50',
                     style: TextStyle(
                       color: Colors.green,

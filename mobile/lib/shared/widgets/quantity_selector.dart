@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class QuantitySelector extends StatelessWidget {
-  final int quantity;
-  final int minQuantity;
-  final int maxQuantity;
-  final ValueChanged<int> onChanged;
-  final double? size;
 
   const QuantitySelector({
     super.key,
@@ -16,6 +11,11 @@ class QuantitySelector extends StatelessWidget {
     required this.onChanged,
     this.size,
   });
+  final int quantity;
+  final int minQuantity;
+  final int maxQuantity;
+  final ValueChanged<int> onChanged;
+  final double? size;
 
   @override
   Widget build(BuildContext context) {

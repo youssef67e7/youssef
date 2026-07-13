@@ -1,10 +1,10 @@
-import '../../data/models/auth_models.dart';
-import '../repositories/auth_repository.dart';
+import 'package:pharmaworld/features/auth/data/models/auth_models.dart';
+import 'package:pharmaworld/features/auth/domain/repositories/auth_repository.dart';
 
 class RegisterUseCase {
-  final AuthRepository _repository;
 
   RegisterUseCase(this._repository);
+  final AuthRepository _repository;
 
   Future<AuthResponseModel?> call(RegisterParams params) async {
     return await _repository.register(
@@ -20,11 +20,6 @@ class RegisterUseCase {
 }
 
 class RegisterParams {
-  final String name;
-  final String email;
-  final String phone;
-  final String password;
-  final String passwordConfirmation;
 
   const RegisterParams({
     required this.name,
@@ -33,4 +28,9 @@ class RegisterParams {
     required this.password,
     required this.passwordConfirmation,
   });
+  final String name;
+  final String email;
+  final String phone;
+  final String password;
+  final String passwordConfirmation;
 }

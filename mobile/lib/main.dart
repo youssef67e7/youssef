@@ -8,9 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'app.dart';
-import 'core/di/injection.dart';
-import 'firebase_options.dart';
+import 'package:pharmaworld/app.dart';
+import 'package:pharmaworld/core/di/injection.dart';
+import 'package:pharmaworld/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/utils/helpers.dart';
+import 'package:pharmaworld/core/utils/helpers.dart';
 
 class OrderStatusChip extends StatelessWidget {
-  final String status;
-  final bool showIcon;
-  final bool isCompact;
 
   const OrderStatusChip({
     super.key,
@@ -14,6 +11,9 @@ class OrderStatusChip extends StatelessWidget {
     this.showIcon = true,
     this.isCompact = false,
   });
+  final String status;
+  final bool showIcon;
+  final bool isCompact;
 
   @override
   Widget build(BuildContext context) {

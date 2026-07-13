@@ -29,7 +29,7 @@ export class OrdersService {
       throw new BadRequestException('Cart is empty');
     }
 
-    const orderItems = [];
+    const orderItems: any[] = [];
     let subtotal = 0;
 
     for (const cartItem of cart.items) {
@@ -61,7 +61,7 @@ export class OrdersService {
     }
 
     let discount = 0;
-    let couponId = null;
+    let couponId: any = null;
 
     if (dto.couponCode) {
       const coupon = await this.couponModel.findOne({

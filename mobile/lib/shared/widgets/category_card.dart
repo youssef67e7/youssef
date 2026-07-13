@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CategoryCard extends StatelessWidget {
-  final String name;
-  final String? imageUrl;
-  final Color? color;
-  final VoidCallback? onTap;
 
   const CategoryCard({
     super.key,
@@ -15,6 +11,10 @@ class CategoryCard extends StatelessWidget {
     this.color,
     this.onTap,
   });
+  final String name;
+  final String? imageUrl;
+  final Color? color;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

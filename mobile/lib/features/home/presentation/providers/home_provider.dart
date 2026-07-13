@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/dio_client.dart';
-import '../../data/datasources/home_remote_datasource.dart';
-import '../../data/models/home_models.dart';
-import '../../domain/repositories/home_repository.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/home/data/datasources/home_remote_datasource.dart';
+import 'package:pharmaworld/features/home/data/models/home_models.dart';
+import 'package:pharmaworld/features/home/domain/repositories/home_repository.dart';
 
 final homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>((ref) {
   return HomeRemoteDataSourceImpl(dioClient: ref.watch(dioClientProvider));

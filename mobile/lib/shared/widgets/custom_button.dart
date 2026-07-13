@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/constants/app_colors.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
 
 enum ButtonVariant { primary, secondary, outline, text, danger }
 
 class CustomButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final ButtonVariant variant;
-  final bool isLoading;
-  final bool isExpanded;
-  final IconData? icon;
-  final double? width;
-  final double? height;
-  final EdgeInsetsGeometry? padding;
-  final Color? color;
-  final Color? textColor;
-  final double? borderRadius;
-  final bool isDisabled;
 
   const CustomButton({
     super.key,
@@ -37,6 +24,19 @@ class CustomButton extends StatelessWidget {
     this.borderRadius,
     this.isDisabled = false,
   });
+  final String text;
+  final VoidCallback? onPressed;
+  final ButtonVariant variant;
+  final bool isLoading;
+  final bool isExpanded;
+  final IconData? icon;
+  final double? width;
+  final double? height;
+  final EdgeInsetsGeometry? padding;
+  final Color? color;
+  final Color? textColor;
+  final double? borderRadius;
+  final bool isDisabled;
 
   @override
   Widget build(BuildContext context) {

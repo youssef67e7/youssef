@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProfileState {
+
+  ProfileState({this.name, this.email, this.phone, this.avatar, this.city});
   final String? name;
   final String? email;
   final String? phone;
   final String? avatar;
   final String? city;
-
-  ProfileState({this.name, this.email, this.phone, this.avatar, this.city});
 
   ProfileState copyWith({
     String? name,

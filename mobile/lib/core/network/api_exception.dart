@@ -1,10 +1,6 @@
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
-  final int? statusCode;
-  final String message;
-  final String? details;
-  final dynamic data;
 
   ApiException({
     this.statusCode,
@@ -54,6 +50,10 @@ class ApiException implements Exception {
         );
     }
   }
+  final int? statusCode;
+  final String message;
+  final String? details;
+  final dynamic data;
 
   static ApiException _handleBadResponse(DioException dioError) {
     final statusCode = dioError.response?.statusCode;

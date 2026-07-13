@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class Debouncer {
-  final Duration delay;
-  Timer? _timer;
 
   Debouncer({this.delay = const Duration(milliseconds: 500)});
+  final Duration delay;
+  Timer? _timer;
 
   void run(VoidCallback action) {
     _timer?.cancel();
@@ -26,14 +26,14 @@ class Debouncer {
 }
 
 class DebouncerWidget<T> {
-  final Duration delay;
-  final void Function(T value) onValueChanged;
-  Timer? _timer;
 
   DebouncerWidget({
     this.delay = const Duration(milliseconds: 500),
     required this.onValueChanged,
   });
+  final Duration delay;
+  final void Function(T value) onValueChanged;
+  Timer? _timer;
 
   void run(T value) {
     _timer?.cancel();

@@ -1,6 +1,6 @@
-import '../../../../core/constants/api_constants.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/medicine_models.dart';
+import 'package:pharmaworld/core/constants/api_constants.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/medicines/data/models/medicine_models.dart';
 
 abstract class MedicineRemoteDataSource {
   Future<List<MedicineListModel>> getMedicines({
@@ -18,10 +18,10 @@ abstract class MedicineRemoteDataSource {
 }
 
 class MedicineRemoteDataSourceImpl implements MedicineRemoteDataSource {
-  final DioClient _dioClient;
 
   MedicineRemoteDataSourceImpl({required DioClient dioClient})
       : _dioClient = dioClient;
+  final DioClient _dioClient;
 
   @override
   Future<List<MedicineListModel>> getMedicines({

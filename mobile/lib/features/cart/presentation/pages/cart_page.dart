@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/quantity_selector.dart';
-import '../../../../shared/widgets/empty_state.dart';
-import '../providers/cart_provider.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
+import 'package:pharmaworld/shared/widgets/quantity_selector.dart';
+import 'package:pharmaworld/shared/widgets/empty_state.dart';
+import 'package:pharmaworld/features/cart/presentation/providers/cart_provider.dart';
 
 class CartPage extends ConsumerStatefulWidget {
   const CartPage({super.key});
@@ -94,7 +94,6 @@ class _CartPageState extends ConsumerState<CartPage> {
                               SizedBox(height: 8.h),
                               QuantitySelector(
                                 quantity: item.quantity,
-                                minQuantity: 1,
                                 maxQuantity: 10,
                                 onChanged: (qty) {
                                   ref.read(cartProvider.notifier).updateQuantity(item.id, qty);

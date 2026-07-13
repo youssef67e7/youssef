@@ -1,6 +1,6 @@
-import '../../../../core/constants/api_constants.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/order_models.dart';
+import 'package:pharmaworld/core/constants/api_constants.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/orders/data/models/order_models.dart';
 
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrders({String? status, int page = 1});
@@ -11,10 +11,10 @@ abstract class OrderRemoteDataSource {
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
-  final DioClient _dioClient;
 
   OrderRemoteDataSourceImpl({required DioClient dioClient})
       : _dioClient = dioClient;
+  final DioClient _dioClient;
 
   @override
   Future<List<OrderModel>> getOrders({String? status, int page = 1}) async {

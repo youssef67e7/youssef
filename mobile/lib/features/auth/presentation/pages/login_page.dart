@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/router/route_names.dart';
-import '../../../../core/utils/validators.dart';
-import '../../../../shared/providers/auth_provider.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
-import '../providers/auth_provider.dart' as feature_auth;
+import 'package:pharmaworld/core/constants/app_strings.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/core/utils/validators.dart';
+import 'package:pharmaworld/shared/providers/auth_provider.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
+import 'package:pharmaworld/shared/widgets/custom_text_field.dart';
+import 'package:pharmaworld/features/auth/presentation/providers/auth_provider.dart' as feature_auth;
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -133,7 +133,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     TextButton(
                       onPressed: () =>
                           context.push(RouteNames.forgotPassword),
-                      child: Text(AppStrings.forgotPassword),
+                      child: const Text(AppStrings.forgotPassword),
                     ),
                   ],
                 ),

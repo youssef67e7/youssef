@@ -1,5 +1,5 @@
-import '../../data/datasources/order_remote_datasource.dart';
-import '../../data/models/order_models.dart';
+import 'package:pharmaworld/features/orders/data/datasources/order_remote_datasource.dart';
+import 'package:pharmaworld/features/orders/data/models/order_models.dart';
 
 abstract class OrderRepository {
   Future<List<OrderModel>> getOrders({String? status, int page = 1});
@@ -10,10 +10,10 @@ abstract class OrderRepository {
 }
 
 class OrderRepositoryImpl implements OrderRepository {
-  final OrderRemoteDataSource _remoteDataSource;
 
   OrderRepositoryImpl({required OrderRemoteDataSource remoteDataSource})
       : _remoteDataSource = remoteDataSource;
+  final OrderRemoteDataSource _remoteDataSource;
 
   @override
   Future<List<OrderModel>> getOrders({String? status, int page = 1}) async {

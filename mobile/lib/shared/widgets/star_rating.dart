@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
 
 class StarRating extends StatelessWidget {
-  final double rating;
-  final int maxRating;
-  final double size;
-  final Color activeColor;
-  final Color inactiveColor;
-  final bool allowHalfRating;
 
   const StarRating({
     super.key,
@@ -20,6 +14,12 @@ class StarRating extends StatelessWidget {
     this.inactiveColor,
     this.allowHalfRating = true,
   });
+  final double rating;
+  final int maxRating;
+  final double size;
+  final Color activeColor;
+  final Color inactiveColor;
+  final bool allowHalfRating;
 
   @override
   Widget build(BuildContext context) {

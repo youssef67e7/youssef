@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/star_rating.dart';
+import 'package:pharmaworld/shared/widgets/star_rating.dart';
 
 class ReviewsPage extends ConsumerStatefulWidget {
   const ReviewsPage({super.key});
@@ -36,7 +36,7 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        StarRating(rating: 4.5, size: 16),
+                        const StarRating(rating: 4.5),
                         SizedBox(height: 4.h),
                         Text(
                           '120 reviews',
@@ -166,7 +166,7 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
               children: [
                 Text('Write a Review', style: Theme.of(context).textTheme.titleLarge),
                 SizedBox(height: 16.h),
-                Text('Your Rating'),
+                const Text('Your Rating'),
                 SizedBox(height: 8.h),
                 Row(
                   children: List.generate(5, (index) {

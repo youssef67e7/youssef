@@ -14,9 +14,9 @@ final firebaseUserProvider = StreamProvider<User?>((ref) {
 });
 
 class FirebaseAuthService {
-  final FirebaseAuth _auth;
 
   FirebaseAuthService(this._auth);
+  final FirebaseAuth _auth;
 
   User? get currentUser => _auth.currentUser;
 

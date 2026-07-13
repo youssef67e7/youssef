@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
-import '../providers/profile_provider.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
+import 'package:pharmaworld/shared/widgets/custom_text_field.dart';
+import 'package:pharmaworld/features/profile/presentation/providers/profile_provider.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key});

@@ -2,26 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_sizes.dart';
-import '../../core/utils/formatters.dart';
-import 'custom_badge.dart';
-import 'star_rating.dart';
+import 'package:pharmaworld/core/constants/app_colors.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
+import 'package:pharmaworld/core/utils/formatters.dart';
+import 'package:pharmaworld/shared/widgets/custom_badge.dart';
+import 'package:pharmaworld/shared/widgets/star_rating.dart';
 
 class MedicineCard extends StatelessWidget {
-  final String id;
-  final String name;
-  final String imageUrl;
-  final double price;
-  final double? originalPrice;
-  final double? rating;
-  final int? reviewCount;
-  final bool isInStock;
-  final bool isWishlisted;
-  final VoidCallback? onTap;
-  final VoidCallback? onAddToCart;
-  final VoidCallback? onToggleWishlist;
-  final bool showDiscount;
 
   const MedicineCard({
     super.key,
@@ -39,6 +26,19 @@ class MedicineCard extends StatelessWidget {
     this.onToggleWishlist,
     this.showDiscount = true,
   });
+  final String id;
+  final String name;
+  final String imageUrl;
+  final double price;
+  final double? originalPrice;
+  final double? rating;
+  final int? reviewCount;
+  final bool isInStock;
+  final bool isWishlisted;
+  final VoidCallback? onTap;
+  final VoidCallback? onAddToCart;
+  final VoidCallback? onToggleWishlist;
+  final bool showDiscount;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,6 @@ class MedicineCard extends StatelessWidget {
                     child: CustomBadge(
                       count: '-$discount%',
                       badgeColor: AppColors.discountColor,
-                      showBadge: true,
                       child: const SizedBox.shrink(),
                     ),
                   ),

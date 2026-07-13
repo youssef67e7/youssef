@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/providers/auth_provider.dart';
-import '../providers/auth_provider.dart' as feature_auth;
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/providers/auth_provider.dart';
+import 'package:pharmaworld/features/auth/presentation/providers/auth_provider.dart' as feature_auth;
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -95,7 +95,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
                 ),
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'PharmaWorld',
                 style: TextStyle(
                   fontSize: 32,

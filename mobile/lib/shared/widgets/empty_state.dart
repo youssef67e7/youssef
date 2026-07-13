@@ -2,16 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../core/constants/app_sizes.dart';
-import 'custom_button.dart';
+import 'package:pharmaworld/core/constants/app_sizes.dart';
+import 'package:pharmaworld/shared/widgets/custom_button.dart';
 
 class EmptyState extends StatelessWidget {
-  final String? title;
-  final String? subtitle;
-  final String? buttonText;
-  final VoidCallback? onButtonPressed;
-  final EmptyStateType type;
-  final Widget? customIcon;
 
   const EmptyState({
     super.key,
@@ -22,6 +16,12 @@ class EmptyState extends StatelessWidget {
     this.type = EmptyStateType.noData,
     this.customIcon,
   });
+  final String? title;
+  final String? subtitle;
+  final String? buttonText;
+  final VoidCallback? onButtonPressed;
+  final EmptyStateType type;
+  final Widget? customIcon;
 
   @override
   Widget build(BuildContext context) {

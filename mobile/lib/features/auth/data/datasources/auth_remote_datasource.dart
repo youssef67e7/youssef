@@ -1,6 +1,6 @@
-import '../../../../core/constants/api_constants.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/auth_models.dart';
+import 'package:pharmaworld/core/constants/api_constants.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/auth/data/models/auth_models.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login(String email, String password);
@@ -18,10 +18,10 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final DioClient _dioClient;
 
   AuthRemoteDataSourceImpl({required DioClient dioClient})
       : _dioClient = dioClient;
+  final DioClient _dioClient;
 
   @override
   Future<AuthResponseModel> login(String email, String password) async {

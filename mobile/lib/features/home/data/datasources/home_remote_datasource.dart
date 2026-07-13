@@ -1,6 +1,6 @@
-import '../../../../core/constants/api_constants.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/home_models.dart';
+import 'package:pharmaworld/core/constants/api_constants.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/home/data/models/home_models.dart';
 
 abstract class HomeRemoteDataSource {
   Future<HomeData> getHomeData();
@@ -11,10 +11,10 @@ abstract class HomeRemoteDataSource {
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
-  final DioClient _dioClient;
 
   HomeRemoteDataSourceImpl({required DioClient dioClient})
       : _dioClient = dioClient;
+  final DioClient _dioClient;
 
   @override
   Future<HomeData> getHomeData() async {

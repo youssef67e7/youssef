@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../shared/widgets/order_status_chip.dart';
-import '../../../../shared/widgets/empty_state.dart';
-import '../providers/order_provider.dart';
+import 'package:pharmaworld/core/router/route_names.dart';
+import 'package:pharmaworld/shared/widgets/order_status_chip.dart';
+import 'package:pharmaworld/shared/widgets/empty_state.dart';
+import 'package:pharmaworld/features/orders/presentation/providers/order_provider.dart';
 
 class OrdersPage extends ConsumerStatefulWidget {
   const OrdersPage({super.key});
@@ -146,7 +146,7 @@ class _OrdersPageState extends ConsumerState<OrdersPage>
           children: [
             const Icon(Icons.error_outline, size: 48),
             const SizedBox(height: 16),
-            Text('Failed to load orders'),
+            const Text('Failed to load orders'),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => ref.invalidate(ordersProvider(status)),

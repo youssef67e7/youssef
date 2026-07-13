@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../shared/widgets/empty_state.dart';
+import 'package:pharmaworld/shared/widgets/empty_state.dart';
 
 class CouponsPage extends ConsumerStatefulWidget {
   const CouponsPage({super.key});
@@ -157,7 +157,6 @@ class _CouponsPageState extends ConsumerState<CouponsPage>
   Widget _buildMyCoupons() {
     return const Center(
       child: EmptyState(
-        type: EmptyStateType.noData,
         title: 'No coupons yet',
         subtitle: 'Your claimed coupons will appear here',
       ),

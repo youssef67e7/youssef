@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ConfirmationDialog extends StatelessWidget {
-  final String title;
-  final String message;
-  final String confirmText;
-  final String cancelText;
-  final VoidCallback onConfirm;
-  final VoidCallback? onCancel;
-  final bool isDestructive;
 
   const ConfirmationDialog({
     super.key,
@@ -20,6 +13,13 @@ class ConfirmationDialog extends StatelessWidget {
     this.onCancel,
     this.isDestructive = false,
   });
+  final String title;
+  final String message;
+  final String confirmText;
+  final String cancelText;
+  final VoidCallback onConfirm;
+  final VoidCallback? onCancel;
+  final bool isDestructive;
 
   static Future<bool> show({
     required BuildContext context,

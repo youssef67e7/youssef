@@ -1,17 +1,17 @@
-import '../../../../core/network/dio_client.dart';
-import '../datasources/auth_remote_datasource.dart';
-import '../models/auth_models.dart';
-import '../../domain/repositories/auth_repository.dart';
+import 'package:pharmaworld/core/network/dio_client.dart';
+import 'package:pharmaworld/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:pharmaworld/features/auth/data/models/auth_models.dart';
+import 'package:pharmaworld/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource _remoteDataSource;
-  final DioClient _dioClient;
 
   AuthRepositoryImpl({
     required AuthRemoteDataSource remoteDataSource,
     required DioClient dioClient,
   })  : _remoteDataSource = remoteDataSource,
         _dioClient = dioClient;
+  final AuthRemoteDataSource _remoteDataSource;
+  final DioClient _dioClient;
 
   @override
   Future<AuthResponseModel> login(String email, String password) async {

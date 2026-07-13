@@ -101,7 +101,6 @@ class SnackbarHelper {
       context,
       message: message,
       title: title,
-      type: SnackBarType.info,
     );
   }
 

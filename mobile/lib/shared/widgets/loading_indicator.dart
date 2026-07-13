@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/constants/app_colors.dart';
+import 'package:pharmaworld/core/constants/app_colors.dart';
 
 class LoadingIndicator extends StatelessWidget {
-  final double? size;
-  final double? strokeWidth;
-  final Color? color;
-  final LoadingType type;
 
   const LoadingIndicator({
     super.key,
@@ -16,6 +12,10 @@ class LoadingIndicator extends StatelessWidget {
     this.color,
     this.type = LoadingType.circular,
   });
+  final double? size;
+  final double? strokeWidth;
+  final Color? color;
+  final LoadingType type;
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +63,6 @@ class LoadingIndicator extends StatelessWidget {
 enum LoadingType { circular, linear, dots }
 
 class ShimmerLoading extends StatelessWidget {
-  final double width;
-  final double height;
-  final double borderRadius;
 
   const ShimmerLoading({
     super.key,
@@ -73,6 +70,9 @@ class ShimmerLoading extends StatelessWidget {
     required this.height,
     this.borderRadius = 8,
   });
+  final double width;
+  final double height;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -91,17 +91,17 @@ class ShimmerLoading extends StatelessWidget {
       padding: EdgeInsets.all(16.r),
       child: Row(
         children: [
-          ShimmerLoading(width: 50, height: 50, borderRadius: 25),
+          const ShimmerLoading(width: 50, height: 50, borderRadius: 25),
           SizedBox(width: 16.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ShimmerLoading(width: double.infinity, height: 14),
+                const ShimmerLoading(width: double.infinity, height: 14),
                 SizedBox(height: 8.h),
-                ShimmerLoading(width: 200, height: 12),
+                const ShimmerLoading(width: 200, height: 12),
                 SizedBox(height: 8.h),
-                ShimmerLoading(width: 150, height: 12),
+                const ShimmerLoading(width: 150, height: 12),
               ],
             ),
           ),
@@ -116,17 +116,16 @@ class ShimmerLoading extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ShimmerLoading(
+          const ShimmerLoading(
             width: double.infinity,
             height: 120,
-            borderRadius: 8,
           ),
           SizedBox(height: 8.h),
-          ShimmerLoading(width: double.infinity, height: 14),
+          const ShimmerLoading(width: double.infinity, height: 14),
           SizedBox(height: 8.h),
-          ShimmerLoading(width: 100, height: 12),
+          const ShimmerLoading(width: 100, height: 12),
           SizedBox(height: 8.h),
-          ShimmerLoading(width: 80, height: 14),
+          const ShimmerLoading(width: 80, height: 14),
         ],
       ),
     );
