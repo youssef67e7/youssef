@@ -32,6 +32,20 @@ copyRecursive(
   path.join(publicDir, 'admin')
 );
 
+// Dashboard Web
+console.log('- Dashboard Web');
+copyRecursive(
+  path.join(root, 'dashboard-web', 'dist'),
+  path.join(publicDir, 'dashboard')
+);
+
+// Super Admin Web
+console.log('- Super Admin Web');
+copyRecursive(
+  path.join(root, 'super-admin-web', 'dist'),
+  path.join(publicDir, 'super-admin')
+);
+
 // Landing Page
 console.log('- Landing Page');
 copyRecursive(

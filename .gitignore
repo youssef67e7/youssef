@@ -16,8 +16,10 @@ build/
 # Environment
 .env
 .env.local
-.env.production
+.env.development
 *.env
+!.env.production
+backend/.env.production
 
 # Build
 dist/
@@ -42,3 +44,8 @@ firebase-debug.log
 *.mocks.dart
 
 .vercel
+
+# Vercel build outputs (regenerated during build)
+public/admin/
+public/dashboard/
+public/super-admin/

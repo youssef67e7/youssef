@@ -5,12 +5,18 @@
   "description": "PharmaWorld - Enterprise Pharmacy Management System",
   "scripts": {
     "build:admin": "cd admin-web && npm install && npm run build",
+    "build:dashboard": "cd dashboard-web && npm install && npm run build",
+    "build:super-admin": "cd super-admin-web && npm install && npm run build",
     "build:backend": "cd backend && npm install && npm run build",
-    "build:admin+backend": "npm run build:admin && npm run build:backend",
+    "build:all-web": "npm run build:admin && npm run build:dashboard && npm run build:super-admin",
+    "build:all": "npm run build:all-web && npm run build:backend",
     "build:copies": "node scripts/copy-builds.js",
-    "build": "npm run build:admin+backend && node scripts/copy-builds.js",
+    "build": "npm run build:all && node scripts/copy-builds.js",
+    "dev:admin": "cd admin-web && npm run dev",
+    "dev:dashboard": "cd dashboard-web && npm run dev",
+    "dev:super-admin": "cd super-admin-web && npm run dev",
     "deploy:landing": "cd landing-page && vercel --prod",
     "deploy:landing:preview": "cd landing-page && vercel",
-    "install:all": "npm install && cd admin-web && npm install && cd ../backend && npm install"
+    "install:all": "npm install && cd admin-web && npm install && cd ../dashboard-web && npm install && cd ../super-admin-web && npm install && cd ../backend && npm install"
   }
 }
