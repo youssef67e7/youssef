@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/network/dio_client.dart';
-import '../../../shared/providers/auth_provider.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../shared/providers/auth_provider.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -76,16 +76,16 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
       final result = await _loginUseCase(
         LoginParams(email: email, password: password),
       );
-      if (result != null) {
+      if (result != null && result.data != null) {
         await _authStateNotifier.login(
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
+          accessToken: result.data!.accessToken ?? '',
+          refreshToken: result.data!.refreshToken ?? '',
           user: UserData(
-            id: result.user?.id ?? '',
-            name: result.user?.name ?? '',
-            email: result.user?.email ?? '',
-            phone: result.user?.phone,
-            avatar: result.user?.avatar,
+            id: result.data!.user?.id ?? '',
+            name: result.data!.user?.name ?? '',
+            email: result.data!.user?.email ?? '',
+            phone: result.data!.user?.phone,
+            avatar: result.data!.user?.avatar,
           ),
         );
       }
@@ -99,16 +99,16 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
     state = const AsyncValue.loading();
     try {
       final result = await _loginUseCase.signInWithGoogle();
-      if (result != null) {
+      if (result != null && result.data != null) {
         await _authStateNotifier.login(
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
+          accessToken: result.data!.accessToken ?? '',
+          refreshToken: result.data!.refreshToken ?? '',
           user: UserData(
-            id: result.user?.id ?? '',
-            name: result.user?.name ?? '',
-            email: result.user?.email ?? '',
-            phone: result.user?.phone,
-            avatar: result.user?.avatar,
+            id: result.data!.user?.id ?? '',
+            name: result.data!.user?.name ?? '',
+            email: result.data!.user?.email ?? '',
+            phone: result.data!.user?.phone,
+            avatar: result.data!.user?.avatar,
           ),
         );
       }
@@ -122,14 +122,14 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
     state = const AsyncValue.loading();
     try {
       final result = await _loginUseCase.verifyOtp(otp: otp);
-      if (result != null) {
+      if (result != null && result.data != null) {
         await _authStateNotifier.login(
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
+          accessToken: result.data!.accessToken ?? '',
+          refreshToken: result.data!.refreshToken ?? '',
           user: UserData(
-            id: result.user?.id ?? '',
-            name: result.user?.name ?? '',
-            email: result.user?.email ?? '',
+            id: result.data!.user?.id ?? '',
+            name: result.data!.user?.name ?? '',
+            email: result.data!.user?.email ?? '',
           ),
         );
       }

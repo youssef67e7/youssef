@@ -6,89 +6,10 @@ import 'package:pharmaworld_dashboard/shared/widgets/chart_card.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/models/order_model.dart';
 import 'package:pharmaworld_dashboard/core/constants/app_colors.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final dashboardStatsProvider = FutureProvider<DashboardStats>((ref) async {
-  return DashboardStats(
-    totalRevenue: 125430.50,
-    revenueChange: 12.5,
-    totalOrders: 3842,
-    ordersChange: 8.3,
-    totalCustomers: 1250,
-    customersChange: 15.2,
-    totalMedicines: 520,
-    medicinesChange: 3.1,
-    pendingOrders: 45,
-    onlineDrivers: 12,
-    pendingReturns: 8,
-    activeCoupons: 5,
-    lowStockItems: 15,
-    expiringItems: 7,
-  );
-});
-
-final revenueChartProvider = FutureProvider<List<ChartData>>((ref) async {
-  return List.generate(
-    7,
-    (i) => ChartData(
-      label: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
-      value: [12500, 15800, 11200, 18900, 16500, 22000, 19500][i].toDouble(),
-    ),
-  );
-});
-
-final ordersChartProvider = FutureProvider<List<ChartData>>((ref) async {
-  return List.generate(
-    7,
-    (i) => ChartData(
-      label: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
-      value: [45, 62, 38, 78, 55, 90, 72][i].toDouble(),
-    ),
-  );
-});
-
-final topMedicinesProvider = FutureProvider<List<ChartData>>((ref) async {
-  return [
-    ChartData(label: 'Paracetamol', value: 245),
-    ChartData(label: 'Ibuprofen', value: 198),
-    ChartData(label: 'Amoxicillin', value: 165),
-    ChartData(label: 'Vitamin C', value: 142),
-    ChartData(label: 'Cetirizine', value: 128),
-    ChartData(label: 'Omeprazole', value: 115),
-    ChartData(label: 'Metformin', value: 98),
-    ChartData(label: 'Losartan', value: 85),
-  ];
-});
-
-final recentOrdersProvider = FutureProvider<List<Order>>((ref) async {
-  return List.generate(
-    8,
-    (i) => Order(
-      id: 'ORD-${1000 + i}',
-      orderNumber: '#${1000 + i}',
-      customerId: 'C${i + 1}',
-      customerName: ['Ahmed Ali', 'Sara Mohammed', 'Omar Hassan', 'Fatima Khan', 'Ali Ibrahim', 'Nora Salem', 'Khalid Omar', 'Mona Ali'][i],
-      totalAmount: [245.00, 180.50, 320.00, 150.75, 420.00, 95.50, 275.00, 190.25][i],
-      status: ['pending', 'confirmed', 'delivered', 'preparing', 'out_for_delivery', 'delivered', 'cancelled', 'pending'][i],
-      paymentMethod: 'cash_on_delivery',
-      subtotal: 0,
-      createdAt: DateTime.now().subtract(Duration(hours: i * 2)),
-      updatedAt: DateTime.now().subtract(Duration(hours: i)),
-    ),
-  );
-});
-
-final orderStatusProvider = FutureProvider<List<ChartData>>((ref) async {
-  return [
-    ChartData(label: 'Pending', value: 45),
-    ChartData(label: 'Confirmed', value: 32),
-    ChartData(label: 'Preparing', value: 18),
-    ChartData(label: 'Out for Delivery', value: 25),
-    ChartData(label: 'Delivered', value: 120),
-    ChartData(label: 'Cancelled', value: 12),
-  ];
-});
+import 'package:pharmaworld_dashboard/features/dashboard/providers/dashboard_provider.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -587,13 +508,13 @@ class DashboardPage extends ConsumerWidget {
                 children: [
                   Expanded(flex: 3, child: _buildRecentOrdersTable(context, ref)),
                   const SizedBox(width: 16),
-                  Expanded(flex: 1, child: _buildInventoryAlerts(context)),
+                  Expanded(flex: 1, child: _buildInventoryAlerts(context, ref)),
                 ],
               )
             else ...[
               _buildRecentOrdersTable(context, ref),
               const SizedBox(height: 16),
-              _buildInventoryAlerts(context),
+              _buildInventoryAlerts(context, ref),
             ],
           ],
         );
@@ -673,8 +594,9 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildInventoryAlerts(BuildContext context) {
+  Widget _buildInventoryAlerts(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final alertsAsync = ref.watch(inventoryAlertsProvider);
 
     return Card(
       child: Padding(
@@ -691,44 +613,57 @@ class DashboardPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildAlertItem(
-              context,
-              icon: Icons.warning_amber_rounded,
-              title: 'Low Stock Items',
-              count: 15,
-              color: Colors.orange,
-            ),
-            const Divider(),
-            _buildAlertItem(
-              context,
-              icon: Icons.schedule,
-              title: 'Expiring Soon',
-              count: 7,
-              color: Colors.red,
-            ),
-            const Divider(),
-            _buildAlertItem(
-              context,
-              icon: Icons.shopping_cart,
-              title: 'Pending Orders',
-              count: 45,
-              color: Colors.blue,
-            ),
-            const Divider(),
-            _buildAlertItem(
-              context,
-              icon: Icons.local_offer,
-              title: 'Active Coupons',
-              count: 5,
-              color: Colors.green,
-            ),
-            const Divider(),
-            _buildAlertItem(
-              context,
-              icon: Icons.delivery_dining,
-              title: 'Online Drivers',
-              count: 12,
-              color: Colors.purple,
+            alertsAsync.when(
+              data: (alerts) => Column(
+                children: [
+                  _buildAlertItem(
+                    context,
+                    icon: Icons.warning_amber_rounded,
+                    title: 'Low Stock Items',
+                    count: alerts['lowStockItems'] ?? 0,
+                    color: Colors.orange,
+                  ),
+                  const Divider(),
+                  _buildAlertItem(
+                    context,
+                    icon: Icons.schedule,
+                    title: 'Expiring Soon',
+                    count: alerts['expiringItems'] ?? 0,
+                    color: Colors.red,
+                  ),
+                  const Divider(),
+                  _buildAlertItem(
+                    context,
+                    icon: Icons.shopping_cart,
+                    title: 'Pending Orders',
+                    count: alerts['pendingOrders'] ?? 0,
+                    color: Colors.blue,
+                  ),
+                  const Divider(),
+                  _buildAlertItem(
+                    context,
+                    icon: Icons.local_offer,
+                    title: 'Active Coupons',
+                    count: alerts['activeCoupons'] ?? 0,
+                    color: Colors.green,
+                  ),
+                  const Divider(),
+                  _buildAlertItem(
+                    context,
+                    icon: Icons.delivery_dining,
+                    title: 'Online Drivers',
+                    count: alerts['onlineDrivers'] ?? 0,
+                    color: Colors.purple,
+                  ),
+                ],
+              ),
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ],
         ),

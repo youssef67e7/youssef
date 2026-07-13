@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../shared/providers/locale_provider.dart';
-import '../../../shared/providers/theme_provider.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../shared/providers/locale_provider.dart';
+import '../../../../shared/providers/theme_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -49,19 +51,19 @@ class SettingsPage extends ConsumerWidget {
             context,
             icon: Icons.info_outline,
             title: 'About',
-            onTap: () => _showAboutDialog(context),
+            onTap: () => context.push(RouteNames.about),
           ),
           _buildInfoTile(
             context,
             icon: Icons.description_outlined,
             title: 'Privacy Policy',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.privacyPolicy),
           ),
           _buildInfoTile(
             context,
             icon: Icons.description_outlined,
             title: 'Terms of Service',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.termsOfService),
           ),
           _buildInfoTile(
             context,
@@ -160,24 +162,6 @@ class SettingsPage extends ConsumerWidget {
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
-    );
-  }
-
-  void _showAboutDialog(BuildContext context) {
-    showAboutDialog(
-      context: context,
-      applicationName: 'PharmaWorld',
-      applicationVersion: '1.0.0',
-      applicationIcon: Icon(
-        Icons.local_pharmacy,
-        size: 48,
-        color: Theme.of(context).colorScheme.primary,
-      ),
-      children: [
-        const Text(
-          'PharmaWorld is your trusted online pharmacy providing quality medicines and healthcare products at your doorstep.',
-        ),
-      ],
     );
   }
 }

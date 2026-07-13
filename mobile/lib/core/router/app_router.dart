@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/addresses/presentation/pages/add_address_page.dart';
+import '../../features/addresses/presentation/pages/addresses_page.dart';
+import '../../features/addresses/presentation/pages/edit_address_page.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/onboarding_page.dart';
@@ -15,19 +18,35 @@ import '../../features/cart/presentation/pages/cart_page.dart';
 import '../../features/categories/presentation/pages/categories_page.dart';
 import '../../features/categories/presentation/pages/category_detail_page.dart';
 import '../../features/checkout/presentation/pages/checkout_page.dart';
+import '../../features/coupons/presentation/pages/coupons_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/loyalty/presentation/pages/loyalty_page.dart';
 import '../../features/medicines/presentation/pages/barcode_scanner_page.dart';
 import '../../features/medicines/presentation/pages/medicine_detail_page.dart';
 import '../../features/medicines/presentation/pages/medicines_page.dart';
 import '../../features/medicines/presentation/pages/search_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/orders/presentation/pages/order_detail_page.dart';
 import '../../features/orders/presentation/pages/order_tracking_page.dart';
 import '../../features/orders/presentation/pages/orders_page.dart';
 import '../../features/profile/presentation/pages/change_password_page.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/referral/presentation/pages/referral_page.dart';
+import '../../features/reviews/presentation/pages/edit_review_page.dart';
+import '../../features/reviews/presentation/pages/my_reviews_page.dart';
+import '../../features/reviews/presentation/pages/reviews_page.dart';
+import '../../features/reviews/presentation/pages/write_review_page.dart';
+import '../../features/settings/presentation/pages/settings_about_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
+import '../../features/settings/presentation/pages/settings_privacy_page.dart';
+import '../../features/settings/presentation/pages/settings_terms_page.dart';
+import '../../features/support/presentation/pages/support_page.dart';
+import '../../features/support/presentation/pages/ticket_detail_page.dart';
+import '../../features/wallet/presentation/pages/wallet_page.dart';
 import '../../features/wishlist/presentation/pages/wishlist_page.dart';
 import '../../shared/providers/auth_provider.dart';
+import '../../shared/widgets/bottom_nav.dart';
 import 'route_names.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -128,17 +147,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MedicinesPage(),
       ),
       GoRoute(
-        path: '/medicines/search',
+        path: RouteNames.medicineSearch,
         builder: (context, state) => const SearchPage(),
       ),
       GoRoute(
-        path: '/medicines/:id',
+        path: RouteNames.medicineDetail,
         builder: (context, state) => MedicineDetailPage(
           medicineId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
         path: RouteNames.barcodeScanner,
+        builder: (context, state) => const BarcodeScannerPage(),
+      ),
+      GoRoute(
+        path: RouteNames.medicineByBarcode,
         builder: (context, state) => const BarcodeScannerPage(),
       ),
       GoRoute(
@@ -150,13 +173,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const OrdersPage(),
       ),
       GoRoute(
-        path: '/orders/:id',
+        path: RouteNames.orderDetail,
         builder: (context, state) => OrderDetailPage(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
-        path: '/orders/:id/tracking',
+        path: RouteNames.orderTracking,
         builder: (context, state) => OrderTrackingPage(
           orderId: state.pathParameters['id']!,
         ),
@@ -172,6 +195,94 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.changePassword,
         builder: (context, state) => const ChangePasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.addresses,
+        builder: (context, state) => const AddressesPage(),
+      ),
+      GoRoute(
+        path: RouteNames.addAddress,
+        builder: (context, state) => const AddAddressPage(),
+      ),
+      GoRoute(
+        path: RouteNames.editAddress,
+        builder: (context, state) => EditAddressPage(
+          addressId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.notifications,
+        builder: (context, state) => const NotificationsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.wallet,
+        builder: (context, state) => const WalletPage(),
+      ),
+      GoRoute(
+        path: RouteNames.coupons,
+        builder: (context, state) => const CouponsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.myCoupons,
+        builder: (context, state) => const CouponsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.reviews,
+        builder: (context, state) => const ReviewsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.writeReview,
+        builder: (context, state) => WriteReviewPage(
+          medicineId: state.pathParameters['medicineId']!,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.editReview,
+        builder: (context, state) => EditReviewPage(
+          reviewId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.myReviews,
+        builder: (context, state) => const MyReviewsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.loyalty,
+        builder: (context, state) => const LoyaltyPage(),
+      ),
+      GoRoute(
+        path: RouteNames.referral,
+        builder: (context, state) => const ReferralPage(),
+      ),
+      GoRoute(
+        path: RouteNames.support,
+        builder: (context, state) => const SupportPage(),
+      ),
+      GoRoute(
+        path: RouteNames.createTicket,
+        builder: (context, state) => const SupportPage(),
+      ),
+      GoRoute(
+        path: RouteNames.ticketDetail,
+        builder: (context, state) => TicketDetailPage(
+          ticketId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.settings,
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.about,
+        builder: (context, state) => const SettingsAboutPage(),
+      ),
+      GoRoute(
+        path: RouteNames.privacyPolicy,
+        builder: (context, state) => const SettingsPrivacyPage(),
+      ),
+      GoRoute(
+        path: RouteNames.termsOfService,
+        builder: (context, state) => const SettingsTermsPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
@@ -208,6 +319,20 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return child;
+    final location = GoRouterState.of(context).matchedLocation;
+
+    int currentIndex = 0;
+    if (location.startsWith(RouteNames.categories)) {
+      currentIndex = 1;
+    } else if (location.startsWith(RouteNames.cart)) {
+      currentIndex = 2;
+    } else if (location.startsWith(RouteNames.profile)) {
+      currentIndex = 3;
+    }
+
+    return BottomNav(
+      currentIndex: currentIndex,
+      child: child,
+    );
   }
 }

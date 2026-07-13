@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../core/constants/app_strings.dart';
-import '../../../core/router/route_names.dart';
-import '../../../shared/providers/auth_provider.dart';
-import '../../../shared/widgets/banner_carousel.dart';
-import '../../../shared/widgets/category_card.dart';
-import '../../../shared/widgets/medicine_card.dart';
-import '../../../shared/widgets/search_bar.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../shared/widgets/banner_carousel.dart';
+import '../../../../shared/widgets/category_card.dart';
+import '../../../../shared/widgets/medicine_card.dart';
+import '../../../../shared/widgets/search_bar.dart';
+import '../providers/home_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -22,6 +22,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final homeData = ref.watch(homeDataProvider);
+    final banners = ref.watch(bannersProvider);
+    final categories = ref.watch(categoriesProvider);
+    final featuredMedicines = ref.watch(featuredMedicinesProvider);
+    final specialOffers = ref.watch(specialOffersProvider);
 
     return Scaffold(
       body: CustomScrollView(
@@ -45,7 +50,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {},
+                onPressed: () => context.push(RouteNames.notifications),
               ),
             ],
           ),
@@ -54,34 +59,30 @@ class _HomePageState extends ConsumerState<HomePage> {
               padding: EdgeInsets.all(16.r),
               child: CustomSearchBar(
                 hintText: AppStrings.searchMedicines,
-                onTap: () => context.push('/medicines/search'),
+                onTap: () => context.push(RouteNames.medicineSearch),
                 readOnly: true,
               ),
             ),
           ),
           SliverToBoxAdapter(
-            child: BannerCarousel(
-              banners: const [
-                BannerItem(
-                  title: 'Up to 30% Off',
-                  subtitle: 'On all medicines this week',
-                  icon: Icons.local_offer,
-                  color: Color(0xFF00897B),
-                ),
-                BannerItem(
-                  title: 'Free Delivery',
-                  subtitle: 'On orders over E£200',
-                  icon: Icons.local_shipping,
-                  color: Color(0xFF1E88E5),
-                ),
-                BannerItem(
-                  title: 'Health Check',
-                  subtitle: 'Book your health checkup today',
-                  icon: Icons.health_and_safety,
-                  color: Color(0xFFE53935),
-                ),
-              ],
-              onTap: (index) {},
+            child: banners.when(
+              data: (bannerList) => BannerCarousel(
+                banners: bannerList
+                    .map((b) => BannerItem(
+                          title: b.title ?? '',
+                          subtitle: b.subtitle,
+                          imageUrl: b.imageUrl,
+                          color: theme.colorScheme.primary,
+                          icon: Icons.local_offer,
+                        ))
+                    .toList(),
+                onTap: (index) {},
+              ),
+              loading: () => const SizedBox(
+                height: 180,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => const SizedBox.shrink(),
             ),
           ),
           SliverToBoxAdapter(
@@ -95,24 +96,33 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 110.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                itemCount: _categories.length,
-                separatorBuilder: (_, __) => SizedBox(width: 12.w),
-                itemBuilder: (context, index) {
-                  final cat = _categories[index];
-                  return SizedBox(
-                    width: 90.w,
-                    child: CategoryCard(
-                      name: cat['name']!,
-                      onTap: () {},
-                    ),
-                  );
-                },
+            child: categories.when(
+              data: (categoryList) => SizedBox(
+                height: 110.h,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  itemCount: categoryList.length,
+                  separatorBuilder: (_, __) => SizedBox(width: 12.w),
+                  itemBuilder: (context, index) {
+                    final cat = categoryList[index];
+                    return SizedBox(
+                      width: 90.w,
+                      child: CategoryCard(
+                        name: cat.name ?? '',
+                        onTap: () => context.push(
+                          RouteNames.categoryDetailPath(cat.id ?? ''),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
+              loading: () => SizedBox(
+                height: 110.h,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => const SizedBox.shrink(),
             ),
           ),
           SliverToBoxAdapter(
@@ -125,34 +135,43 @@ class _HomePageState extends ConsumerState<HomePage> {
               onViewAll: () {},
             ),
           ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.7,
-                crossAxisSpacing: 12.w,
-                mainAxisSpacing: 12.h,
+          featuredMedicines.when(
+            data: (medicineList) => SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 12.w,
+                  mainAxisSpacing: 12.h,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final med = medicineList[index];
+                    return MedicineCard(
+                      id: med.id ?? '$index',
+                      name: med.name ?? '',
+                      imageUrl: med.imageUrl ?? '',
+                      price: med.price ?? 0,
+                      originalPrice: med.originalPrice,
+                      rating: med.rating,
+                      reviewCount: med.reviewCount,
+                      onTap: () => context.push(
+                        RouteNames.medicineDetailPath(med.id ?? ''),
+                      ),
+                      onAddToCart: () {},
+                      onToggleWishlist: () {},
+                    );
+                  },
+                  childCount: medicineList.length,
+                ),
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return MedicineCard(
-                    id: '$index',
-                    name: _medicines[index]['name']!,
-                    imageUrl: _medicines[index]['image']!,
-                    price: double.parse(_medicines[index]['price']!),
-                    originalPrice: _medicines[index]['originalPrice'] != null
-                        ? double.parse(_medicines[index]['originalPrice']!)
-                        : null,
-                    rating: 4.0 + (index % 3) * 0.3,
-                    reviewCount: 10 + index * 5,
-                    onTap: () {},
-                    onAddToCart: () {},
-                    onToggleWishlist: () {},
-                  );
-                },
-                childCount: _medicines.length,
-              ),
+            ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => const SliverToBoxAdapter(
+              child: Center(child: Text('Failed to load medicines')),
             ),
           ),
           SliverToBoxAdapter(
@@ -165,30 +184,43 @@ class _HomePageState extends ConsumerState<HomePage> {
               onViewAll: () {},
             ),
           ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.7,
-                crossAxisSpacing: 12.w,
-                mainAxisSpacing: 12.h,
+          specialOffers.when(
+            data: (offerList) => SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 12.w,
+                  mainAxisSpacing: 12.h,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final offer = offerList[index];
+                    return MedicineCard(
+                      id: 'offer_${offer.id ?? index}',
+                      name: offer.name ?? '',
+                      imageUrl: offer.imageUrl ?? '',
+                      price: offer.price ?? 0,
+                      originalPrice: offer.originalPrice,
+                      rating: offer.rating,
+                      reviewCount: offer.reviewCount,
+                      onTap: () => context.push(
+                        RouteNames.medicineDetailPath(offer.id ?? ''),
+                      ),
+                      onAddToCart: () {},
+                      onToggleWishlist: () {},
+                    );
+                  },
+                  childCount: offerList.length,
+                ),
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return MedicineCard(
-                    id: 'offer_$index',
-                    name: _offers[index]['name']!,
-                    imageUrl: _offers[index]['image']!,
-                    price: double.parse(_offers[index]['price']!),
-                    originalPrice: double.parse(_offers[index]['originalPrice']!),
-                    onTap: () {},
-                    onAddToCart: () {},
-                    onToggleWishlist: () {},
-                  );
-                },
-                childCount: _offers.length,
-              ),
+            ),
+            loading: const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => const SliverToBoxAdapter(
+              child: Center(child: Text('Failed to load offers')),
             ),
           ),
           SliverToBoxAdapter(
@@ -224,35 +256,4 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
-
-  static final List<Map<String, String>> _categories = [
-    {'name': 'Pain Relief', 'icon': '💊'},
-    {'name': 'Vitamins', 'icon': '🧪'},
-    {'name': 'Antibiotics', 'icon': '💉'},
-    {'name': 'Skincare', 'icon': '🧴'},
-    {'name': 'Heart', 'icon': '❤️'},
-    {'name': 'Diabetes', 'icon': '🩸'},
-  ];
-
-  static final List<Map<String, String>> _medicines = [
-    {'name': 'Panadol Extra', 'price': '45.00', 'image': 'https://via.placeholder.com/200'},
-    {'name': 'Augmentin 1g', 'price': '120.00', 'image': 'https://via.placeholder.com/200'},
-    {'name': 'Ventolin Inhaler', 'price': '85.00', 'image': 'https://via.placeholder.com/200'},
-    {'name': 'Voltaren Gel', 'price': '65.00', 'image': 'https://via.placeholder.com/200'},
-  ];
-
-  static final List<Map<String, String>> _offers = [
-    {
-      'name': 'Centrum Multivitamin',
-      'price': '150.00',
-      'originalPrice': '200.00',
-      'image': 'https://via.placeholder.com/200'
-    },
-    {
-      'name': 'Omega-3 Fish Oil',
-      'price': '180.00',
-      'originalPrice': '250.00',
-      'image': 'https://via.placeholder.com/200'
-    },
-  ];
 }

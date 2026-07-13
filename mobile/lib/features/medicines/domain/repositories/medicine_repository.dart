@@ -1,5 +1,5 @@
-import '../datasources/medicine_remote_datasource.dart';
-import '../models/medicine_models.dart';
+import '../../data/datasources/medicine_remote_datasource.dart';
+import '../../data/models/medicine_models.dart';
 
 abstract class MedicineRepository {
   Future<List<MedicineListModel>> getMedicines({

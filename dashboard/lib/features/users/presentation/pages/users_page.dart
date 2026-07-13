@@ -3,25 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/user_model.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final adminUsersProvider = FutureProvider<List<User>>((ref) async {
-  return List.generate(
-    8,
-    (i) => User(
-      id: 'USR-${i + 1}',
-      name: ['Admin Ahmed', 'Pharmacist Sara', 'Manager Omar', 'Admin Fatima',
-          'Pharmacist Ali', 'Viewer Nora', 'Editor Khalid', 'Pharmacist Mona'][i],
-      email: ['ahmed@pharmaworld.com', 'sara@pharmaworld.com', 'omar@pharmaworld.com',
-          'fatima@pharmaworld.com', 'ali@pharmaworld.com', 'nora@pharmaworld.com',
-          'khalid@pharmaworld.com', 'mona@pharmaworld.com'][i],
-      role: ['admin', 'pharmacist', 'manager', 'admin', 'pharmacist', 'viewer', 'editor', 'pharmacist'][i],
-      isActive: i != 5,
-      createdAt: DateTime.now().subtract(Duration(days: 365 - i * 40)),
-      lastLogin: DateTime.now().subtract(Duration(hours: i * 3)),
-    ),
-  );
-});
+import 'package:pharmaworld_dashboard/features/users/providers/users_provider.dart';
 
 class UsersPage extends ConsumerWidget {
   const UsersPage({super.key});
@@ -142,7 +126,28 @@ class UsersPage extends ConsumerWidget {
                                         style: TextStyle(color: user.isActive ? Colors.red : Colors.green)),
                                   ),
                                 ],
-                                onSelected: (v) {},
+                                onSelected: (value) async {
+                                  try {
+                                    final api = ref.read(apiServiceProvider);
+                                    if (value == 'toggle') {
+                                      await api.updateUser(user.id, {'isActive': !user.isActive});
+                                      ref.read(adminUsersProvider.notifier).invalidate();
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(
+                                            user.isActive ? 'User deactivated' : 'User activated',
+                                          )),
+                                        );
+                                      }
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                             ),
                           ]),
@@ -252,11 +257,28 @@ class UsersPage extends ConsumerWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User created successfully')),
-              );
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.createUser({
+                  'name': 'New User',
+                  'email': 'new@pharmaworld.com',
+                  'role': 'viewer',
+                });
+                ref.read(adminUsersProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('User created successfully')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
             },
             child: const Text('Create User'),
           ),

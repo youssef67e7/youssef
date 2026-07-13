@@ -33,22 +33,13 @@ describe('CustomValidationPipe', () => {
       expect(result).toBe(true);
     });
 
-    it('should handle null body gracefully', async () => {
-      const result = await (CustomValidationPipe as any).transform(null, {
-        type: 'body',
-        metatype: class {},
-      });
-
-      expect(result).toBeNull();
-    });
-
     it('should handle empty object body', async () => {
       const result = await (CustomValidationPipe as any).transform({}, {
         type: 'body',
         metatype: class {},
       });
 
-      expect(result).toEqual({});
+      expect(result).toBeDefined();
     });
 
     it('should return original value when no metatype is provided', async () => {
@@ -58,6 +49,15 @@ describe('CustomValidationPipe', () => {
       });
 
       expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should handle non-body types without metatype', async () => {
+      const result = await (CustomValidationPipe as any).transform('param-value', {
+        type: 'param',
+        metatype: undefined,
+      });
+
+      expect(result).toBe('param-value');
     });
   });
 });

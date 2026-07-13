@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../shared/widgets/star_rating.dart';
+import '../../../../shared/widgets/star_rating.dart';
 
 class MedicineDetailPage extends ConsumerWidget {
   final String medicineId;

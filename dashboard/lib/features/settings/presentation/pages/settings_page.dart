@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/shared/providers/theme_provider.dart';
 import 'package:pharmaworld_dashboard/shared/providers/locale_provider.dart';
+import 'package:pharmaworld_dashboard/features/settings/providers/settings_provider.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -57,9 +59,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
             controller: _tabController,
             children: [
               _buildGeneralSettings(context, ref),
-              _buildPaymentSettings(context),
-              _buildDeliverySettings(context),
-              _buildFeatureFlags(context),
+              _buildPaymentSettings(context, ref),
+              _buildDeliverySettings(context, ref),
+              _buildFeatureFlags(context, ref),
               _buildMaintenanceMode(context, ref),
             ],
           ),
@@ -187,10 +189,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Settings saved successfully')),
-                      );
+                    onPressed: () async {
+                      try {
+                        final api = ref.read(apiServiceProvider);
+                        await api.updateSettings({
+                          'storeName': 'PharmaWorld',
+                          'storeAddress': 'Riyadh, Saudi Arabia',
+                        });
+                        ref.read(settingsProvider.notifier).invalidate();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Settings saved successfully')),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
                     },
                     child: const Text('Save Settings'),
                   ),
@@ -203,7 +221,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
     );
   }
 
-  Widget _buildPaymentSettings(BuildContext context) {
+  Widget _buildPaymentSettings(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Card(
         child: Padding(
@@ -243,10 +261,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Payment settings saved')),
-                      );
+                    onPressed: () async {
+                      try {
+                        final api = ref.read(apiServiceProvider);
+                        await api.updateSettings({'taxRate': 15, 'platformFee': 10});
+                        ref.read(settingsProvider.notifier).invalidate();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Payment settings saved')),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
                     },
                     child: const Text('Save Payment Settings'),
                   ),
@@ -267,7 +298,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
     );
   }
 
-  Widget _buildDeliverySettings(BuildContext context) {
+  Widget _buildDeliverySettings(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Card(
         child: Padding(
@@ -322,10 +353,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Delivery settings saved')),
-                      );
+                    onPressed: () async {
+                      try {
+                        final api = ref.read(apiServiceProvider);
+                        await api.updateSettings({'deliveryRadius': 25, 'freeDeliveryThreshold': 100});
+                        ref.read(settingsProvider.notifier).invalidate();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Delivery settings saved')),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
                     },
                     child: const Text('Save Delivery Settings'),
                   ),
@@ -338,19 +382,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
     );
   }
 
-  Widget _buildFeatureFlags(BuildContext context) {
-    final flags = {
-      'enable_chat': true,
-      'enable_ratings': true,
-      'enable_notifications': true,
-      'enable_promotions': true,
-      'enable_referral': false,
-      'enable_loyalty_points': false,
-      'enable_prescription_upload': true,
-      'enable_live_tracking': true,
-      'multi_currency': false,
-      'enable_arabic': true,
-    };
+  Widget _buildFeatureFlags(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(settingsProvider);
+    final flags = settingsAsync.when(
+      data: (s) => s.featureFlags,
+      loading: () => <String, bool>{},
+      error: (_, __) => <String, bool>{},
+    );
 
     return SingleChildScrollView(
       child: Card(
@@ -375,7 +413,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                     title: Text(entry.key.replaceAll('_', ' ').toUpperCase()),
                     subtitle: Text('Feature: ${entry.key}'),
                     value: entry.value,
-                    onChanged: (v) {},
+                    onChanged: (v) async {
+                      try {
+                        final api = ref.read(apiServiceProvider);
+                        await api.toggleFeatureFlag(entry.key, v);
+                        ref.read(settingsProvider.notifier).invalidate();
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
+                    },
                   ),
                 ),
               ],
@@ -431,7 +481,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                   title: const Text('Enable Maintenance Mode'),
                   subtitle: const Text('All users will see the maintenance page'),
                   value: false,
-                  onChanged: (v) {},
+                  onChanged: (v) async {
+                    try {
+                      final api = ref.read(apiServiceProvider);
+                      await api.toggleMaintenanceMode(v);
+                      ref.read(settingsProvider.notifier).invalidate();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(v ? 'Maintenance mode enabled' : 'Maintenance mode disabled')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
+                    }
+                  },
                 ),
                 const SizedBox(height: 24),
                 const TextFormField(
@@ -445,10 +512,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Maintenance settings saved')),
-                      );
+                    onPressed: () async {
+                      try {
+                        final api = ref.read(apiServiceProvider);
+                        await api.updateSettings({'maintenanceMode': true});
+                        ref.read(settingsProvider.notifier).invalidate();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Maintenance settings saved')),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
                     },
                     child: const Text('Save'),
                   ),

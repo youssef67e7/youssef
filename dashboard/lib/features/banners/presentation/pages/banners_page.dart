@@ -3,24 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
-
-final bannersProvider = FutureProvider<List<BannerModel>>((ref) async {
-  return List.generate(
-    6,
-    (i) => BannerModel(
-      id: 'BNR-${i + 1}',
-      title: ['Summer Collection', 'Health Checkup', 'New Arrivals', 'Free Delivery',
-          'VIP Membership', 'Referral Bonus'][i],
-      link: '/promotions/${i + 1}',
-      sortOrder: i,
-      isActive: i != 4,
-      isScheduled: i >= 4,
-      startDate: i >= 4 ? DateTime.now().add(Duration(days: i * 5)) : null,
-      endDate: i >= 4 ? DateTime.now().add(Duration(days: i * 5 + 14)) : null,
-      createdAt: DateTime.now().subtract(Duration(days: 30 - i * 5)),
-    ),
-  );
-});
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
+import 'package:pharmaworld_dashboard/features/banners/providers/banners_provider.dart';
 
 class BannersPage extends ConsumerWidget {
   const BannersPage({super.key});
@@ -39,7 +23,19 @@ class BannersPage extends ConsumerWidget {
             subtitle: 'Manage homepage banners',
             actions: [
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  try {
+                    final api = ref.read(apiServiceProvider);
+                    await api.createBanner({'title': 'New Banner'});
+                    ref.read(bannersProvider.notifier).invalidate();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: $e')),
+                      );
+                    }
+                  }
+                },
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add Banner'),
               ),
@@ -108,7 +104,24 @@ class BannersPage extends ConsumerWidget {
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade400),
-                                        onPressed: () {},
+                                        onPressed: () async {
+                                          try {
+                                            final api = ref.read(apiServiceProvider);
+                                            await api.deleteBanner(banner.id);
+                                            ref.read(bannersProvider.notifier).invalidate();
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text('Banner deleted')),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text('Error: $e')),
+                                              );
+                                            }
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),

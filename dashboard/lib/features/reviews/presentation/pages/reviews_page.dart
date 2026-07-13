@@ -3,38 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final reviewsProvider = FutureProvider<List<Review>>((ref) async {
-  return List.generate(
-    15,
-    (i) => Review(
-      id: 'REV-${i + 1}',
-      customerId: 'C${i + 1}',
-      customerName: ['Ahmed Ali', 'Sara Mohammed', 'Omar Hassan', 'Fatima Khan', 'Ali Ibrahim',
-          'Nora Salem', 'Khalid Omar', 'Mona Ali', 'Yusuf Ahmed', 'Layla Khan',
-          'Hassan Ibrahim', 'Noor Saeed', 'Tariq Nasser', 'Reem Omar', 'Sami Youssef'][i],
-      medicineId: 'MED-${(i % 8) + 1}',
-      medicineName: ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Vitamin C', 'Cetirizine',
-          'Omeprazole', 'Metformin', 'Losartan'][i % 8],
-      orderId: 'ORD-${2000 + i}',
-      rating: (i % 5) + 1,
-      comment: ['Great medicine, works well!', 'Good quality and fast delivery.',
-          'As described, recommend.', 'Not effective for me.', 'Excellent product!',
-          'Good value for money.', 'Fast shipping, thanks!', 'Average quality.',
-          'Very satisfied with the purchase.', 'Will buy again.',
-          'Product was damaged on arrival.', 'Perfect, exactly what I needed.',
-          'Could be better.', 'Top notch service!', 'Fair product.'][i],
-      adminReply: i < 3 ? 'Thank you for your feedback!' : null,
-      status: ['approved', 'approved', 'approved', 'pending', 'approved',
-          'approved', 'rejected', 'pending', 'approved', 'approved',
-          'pending', 'approved', 'pending', 'approved', 'rejected'][i],
-      createdAt: DateTime.now().subtract(Duration(days: i * 2)),
-    ),
-  );
-});
-
-final reviewStatusFilterProvider = StateProvider<String>((ref) => '');
+import 'package:pharmaworld_dashboard/features/reviews/providers/reviews_provider.dart';
 
 class ReviewsPage extends ConsumerWidget {
   const ReviewsPage({super.key});
@@ -183,7 +154,24 @@ class ReviewsPage extends ConsumerWidget {
                                 children: [
                                   if (review.status == 'pending') ...[
                                     ElevatedButton.icon(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        try {
+                                          final api = ref.read(apiServiceProvider);
+                                          await api.approveReview(review.id);
+                                          ref.read(reviewsProvider.notifier).invalidate();
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Review approved')),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Error: $e')),
+                                            );
+                                          }
+                                        }
+                                      },
                                       icon: const Icon(Icons.check, size: 16),
                                       label: const Text('Approve'),
                                       style: ElevatedButton.styleFrom(
@@ -193,7 +181,24 @@ class ReviewsPage extends ConsumerWidget {
                                     ),
                                     const SizedBox(width: 8),
                                     ElevatedButton.icon(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        try {
+                                          final api = ref.read(apiServiceProvider);
+                                          await api.rejectReview(review.id);
+                                          ref.read(reviewsProvider.notifier).invalidate();
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Review rejected')),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Error: $e')),
+                                            );
+                                          }
+                                        }
+                                      },
                                       icon: const Icon(Icons.close, size: 16),
                                       label: const Text('Reject'),
                                       style: ElevatedButton.styleFrom(
@@ -204,7 +209,7 @@ class ReviewsPage extends ConsumerWidget {
                                     const SizedBox(width: 8),
                                   ],
                                   OutlinedButton.icon(
-                                    onPressed: () => _showReplyDialog(context, review),
+                                    onPressed: () => _showReplyDialog(context, ref, review),
                                     icon: const Icon(Icons.reply, size: 16),
                                     label: const Text('Reply'),
                                   ),
@@ -226,7 +231,7 @@ class ReviewsPage extends ConsumerWidget {
     );
   }
 
-  void _showReplyDialog(BuildContext context, Review review) {
+  void _showReplyDialog(BuildContext context, WidgetRef ref, Review review) {
     final controller = TextEditingController(text: review.adminReply ?? '');
     showDialog(
       context: context,
@@ -246,9 +251,20 @@ class ReviewsPage extends ConsumerWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reply sent')));
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.replyToReview(review.id, controller.text);
+                ref.read(reviewsProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reply sent')));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
             },
             child: const Text('Send Reply'),
           ),

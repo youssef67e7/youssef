@@ -2,31 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final notificationsProvider = FutureProvider<List<NotificationModel>>((ref) async {
-  return List.generate(
-    10,
-    (i) => NotificationModel(
-      id: 'NTF-${i + 1}',
-      title: ['Order Confirmed', 'Delivery Update', 'New Offer Available', 'Payment Received',
-          'Account Suspended', 'Promotion', 'System Update', 'Welcome Message',
-          'Refund Processed', 'Review Reminder'][i],
-      body: ['Your order #${2000 + i} has been confirmed.', 'Driver is on the way.',
-          'Check out our new summer sale!', 'Payment of \$${(i + 1) * 50} received.',
-          'Your account has been suspended.', 'Enjoy 20% off all medicines.',
-          'System maintenance scheduled.', 'Welcome to PharmaWorld!',
-          'Your refund has been processed.', 'Rate your recent purchase.'][i],
-      targetType: i % 3 == 0 ? 'all' : 'specific',
-      sentCount: i % 3 == 0 ? 1250 : 150 + i * 20,
-      readCount: (i % 3 == 0 ? 800 : 100 + i * 15),
-      status: 'sent',
-      createdAt: DateTime.now().subtract(Duration(days: i * 3)),
-    ),
-  );
-});
-
-final notificationTabProvider = StateProvider<int>((ref) => 0);
+import 'package:pharmaworld_dashboard/features/notifications/providers/notifications_provider.dart';
 
 class NotificationsPage extends ConsumerWidget {
   const NotificationsPage({super.key});
@@ -45,7 +23,7 @@ class NotificationsPage extends ConsumerWidget {
             subtitle: 'Send and manage notifications',
             actions: [
               ElevatedButton.icon(
-                onPressed: () => _showSendNotificationDialog(context),
+                onPressed: () => _showSendNotificationDialog(context, ref),
                 icon: const Icon(Icons.send, size: 18),
                 label: const Text('Send Notification'),
               ),
@@ -155,10 +133,27 @@ class NotificationsPage extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Notification sent successfully')),
-                    );
+                  onPressed: () async {
+                    try {
+                      final api = ref.read(apiServiceProvider);
+                      await api.sendNotification({
+                        'title': 'New Notification',
+                        'body': 'Notification body',
+                        'targetType': 'all',
+                      });
+                      ref.read(notificationsProvider.notifier).invalidate();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Notification sent successfully')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
+                    }
                   },
                   icon: const Icon(Icons.send, size: 18),
                   label: const Text('Send Notification'),
@@ -171,43 +166,66 @@ class NotificationsPage extends ConsumerWidget {
     );
   }
 
-  void _showSendNotificationDialog(BuildContext context) {
+  void _showSendNotificationDialog(BuildContext context, WidgetRef ref) {
+    final titleController = TextEditingController();
+    final bodyController = TextEditingController();
+    String targetType = 'all';
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Send Notification'),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const TextFormField(decoration: InputDecoration(labelText: 'Title')),
-              const SizedBox(height: 12),
-              const TextFormField(decoration: InputDecoration(labelText: 'Body'), maxLines: 3),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Target'),
-                items: const [
-                  DropdownMenuItem(value: 'all', child: Text('All Users')),
-                  DropdownMenuItem(value: 'specific', child: Text('Specific Users')),
-                ],
-                onChanged: (v) {},
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Send Notification'),
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
+                const SizedBox(height: 12),
+                TextFormField(controller: bodyController, decoration: const InputDecoration(labelText: 'Body'), maxLines: 3),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Target'),
+                  value: targetType,
+                  items: const [
+                    DropdownMenuItem(value: 'all', child: Text('All Users')),
+                    DropdownMenuItem(value: 'specific', child: Text('Specific Users')),
+                  ],
+                  onChanged: (v) => setState(() => targetType = v ?? 'all'),
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final api = ref.read(apiServiceProvider);
+                  await api.sendNotification({
+                    'title': titleController.text,
+                    'body': bodyController.text,
+                    'targetType': targetType,
+                  });
+                  ref.read(notificationsProvider.notifier).invalidate();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Notification sent')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Send'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Notification sent')),
-              );
-            },
-            child: const Text('Send'),
-          ),
-        ],
       ),
     );
   }

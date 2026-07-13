@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../shared/widgets/search_bar.dart';
+import '../../../../shared/widgets/search_bar.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});

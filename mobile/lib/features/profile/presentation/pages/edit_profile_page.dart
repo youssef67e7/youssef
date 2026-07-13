@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../shared/widgets/custom_button.dart';
-import '../../../shared/widgets/custom_text_field.dart';
+import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/custom_text_field.dart';
+import '../providers/profile_provider.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key});
@@ -14,10 +15,20 @@ class EditProfilePage extends ConsumerStatefulWidget {
 
 class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'John Doe');
-  final _emailController = TextEditingController(text: 'john@example.com');
-  final _phoneController = TextEditingController(text: '+201234567890');
-  final _cityController = TextEditingController(text: 'Cairo');
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _cityController;
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = ref.read(profileProvider);
+    _nameController = TextEditingController(text: profile.name ?? '');
+    _emailController = TextEditingController(text: profile.email ?? '');
+    _phoneController = TextEditingController(text: profile.phone ?? '');
+    _cityController = TextEditingController(text: profile.city ?? '');
+  }
 
   @override
   void dispose() {
@@ -106,6 +117,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               CustomButton(
                 text: 'Update Profile',
                 onPressed: () {
+                  ref.read(profileProvider.notifier).updateProfile(
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        phone: _phoneController.text,
+                        city: _cityController.text,
+                      );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Profile updated successfully')),
                   );

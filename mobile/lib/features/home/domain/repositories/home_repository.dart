@@ -1,5 +1,5 @@
-import '../datasources/home_remote_datasource.dart';
-import '../models/home_models.dart';
+import '../../data/datasources/home_remote_datasource.dart';
+import '../../data/models/home_models.dart';
 
 abstract class HomeRepository {
   Future<HomeData> getHomeData();

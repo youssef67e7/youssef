@@ -5,53 +5,10 @@ import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/bulk_action_bar.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/export_button.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/import_button.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/models/medicine_model.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 import 'package:pharmaworld_dashboard/core/utils/validators.dart';
-
-final medicinesProvider = FutureProvider<List<Medicine>>((ref) async {
-  return List.generate(
-    25,
-    (i) => Medicine(
-      id: 'MED-${i + 1}',
-      name: ['Paracetamol 500mg', 'Ibuprofen 400mg', 'Amoxicillin 250mg', 'Vitamin C 1000mg',
-          'Cetirizine 10mg', 'Omeprazole 20mg', 'Metformin 500mg', 'Losartan 50mg',
-          'Amlodipine 5mg', 'Atorvastatin 20mg', 'Omeprazole 40mg', 'Azithromycin 250mg',
-          'Dexamethasone 4mg', 'Prednisone 5mg', 'Metoprolol 50mg', 'Gabapentin 300mg',
-          'Pantoprazole 40mg', 'Montelukast 10mg', 'Salbutamol Inhaler', 'Insulin Glargine',
-          'Warfarin 5mg', 'Clopidogrel 75mg', 'Levothyroxine 50mcg', 'Hydrochlorothiazide 25mg',
-          'Diazepam 5mg'][i],
-      nameAr: ['باراسيتامول', 'إيبوبروفين', 'أموكسيسيلين', 'فيتامين سي',
-          'سيتريزين', 'أوميبرازول', 'متفورمين', 'لوزارتان',
-          'أملوديبين', 'أتورفاستاتين', 'أوميبرازول', 'أزيثروميسين',
-          'ديكساميثازون', 'بريدنيزون', 'ميتوبرولول', 'جابابنتين',
-          'بانتوبرازول', 'مونتيلوكاست', 'سالبيوتامول', 'إنسولين',
-          'وارفارين', 'كلبيدوجريل', 'ليفوثيروكسين', 'هيدروكلوروثيازيد',
-          'ديازيبام'][i],
-      price: [5.99, 7.99, 12.50, 15.99, 8.50, 22.00, 18.75, 25.00,
-          14.50, 35.00, 28.00, 32.00, 10.50, 12.00, 16.50, 45.00,
-          30.00, 20.00, 25.50, 85.00, 40.00, 28.50, 15.00, 12.50, 8.00][i],
-      stock: [100, 50, 200, 150, 80, 30, 120, 45, 90, 60, 35, 75, 25, 110, 55, 40, 65, 85, 30, 20, 45, 70, 95, 120, 15][i],
-      categoryId: 'CAT-${(i % 5) + 1}',
-      categoryName: ['Pain Relief', 'Antibiotics', 'Vitamins', 'Allergy', 'Gastrointestinal'][i % 5],
-      brandId: 'BRAND-${(i % 4) + 1}',
-      brandName: ['PharmaCo', 'MedLife', 'HealthPlus', 'BioGen'][i % 4],
-      manufacturer: ['PharmaCo', 'MedLife', 'HealthPlus', 'BioGen', 'GlobalPharm'][i % 5],
-      sku: 'SKU-${(i + 1).toString().padLeft(4, '0')}',
-      isActive: i != 5 && i != 12,
-      isFeatured: i < 5,
-      rating: 3.5 + (i % 4) * 0.3,
-      soldCount: [245, 198, 165, 142, 128, 115, 98, 85, 78, 72, 65, 60, 55, 50, 48, 42, 38, 35, 32, 28, 25, 22, 20, 18, 15][i],
-      createdAt: DateTime.now().subtract(Duration(days: 365 - i * 10)),
-      updatedAt: DateTime.now().subtract(Duration(days: i)),
-    ),
-  );
-});
-
-final medicineSearchProvider = StateProvider<String>((ref) => '');
-final medicineCategoryFilterProvider = StateProvider<String>((ref) => '');
-final medicinePageProvider = StateProvider<int>((ref) => 1);
-final selectedMedicinesProvider = StateProvider<Set<String>>((ref) => {});
+import 'package:pharmaworld_dashboard/features/medicines/providers/medicines_provider.dart';
 
 class MedicinesPage extends ConsumerWidget {
   const MedicinesPage({super.key});
@@ -90,9 +47,53 @@ class MedicinesPage extends ConsumerWidget {
           const SizedBox(height: 16),
           BulkActionBar(
             selectedCount: selectedIds.length,
-            onDelete: () {},
-            onActivate: () {},
-            onDeactivate: () {},
+            onDelete: () async {
+              final api = ref.read(apiServiceProvider);
+              try {
+                await api.bulkDeleteMedicines(selectedIds.toList());
+                ref.read(medicinesProvider.notifier).invalidate();
+                ref.read(selectedMedicinesProvider.notifier).state = {};
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Medicines deleted')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
+            onActivate: () async {
+              final api = ref.read(apiServiceProvider);
+              try {
+                await api.bulkUpdateMedicines(selectedIds.toList(), {'isActive': true});
+                ref.read(medicinesProvider.notifier).invalidate();
+                ref.read(selectedMedicinesProvider.notifier).state = {};
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
+            onDeactivate: () async {
+              final api = ref.read(apiServiceProvider);
+              try {
+                await api.bulkUpdateMedicines(selectedIds.toList(), {'isActive': false});
+                ref.read(medicinesProvider.notifier).invalidate();
+                ref.read(selectedMedicinesProvider.notifier).state = {};
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
             onClearSelection: () {
               ref.read(selectedMedicinesProvider.notifier).state = {};
             },
@@ -493,11 +494,31 @@ class MedicinesPage extends ConsumerWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Medicine added successfully')),
-              );
+            onPressed: () async {
+              final data = {
+                'name': nameController.text,
+                'nameAr': nameArController.text,
+                'price': double.tryParse(priceController.text) ?? 0,
+                'stock': int.tryParse(stockController.text) ?? 0,
+                'sku': skuController.text,
+              };
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.createMedicine(data);
+                ref.read(medicinesProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Medicine added successfully')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
             },
             child: const Text('Save'),
           ),
@@ -559,11 +580,31 @@ class MedicinesPage extends ConsumerWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Medicine updated successfully')),
-              );
+            onPressed: () async {
+              final data = {
+                'name': nameController.text,
+                'nameAr': nameArController.text,
+                'price': double.tryParse(priceController.text) ?? 0,
+                'stock': int.tryParse(stockController.text) ?? 0,
+                'sku': skuController.text,
+              };
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.updateMedicine(medicine.id, data);
+                ref.read(medicinesProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Medicine updated successfully')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
             },
             child: const Text('Save'),
           ),
@@ -585,11 +626,24 @@ class MedicinesPage extends ConsumerWidget {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Medicine deleted')),
-              );
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.deleteMedicine(medicine.id);
+                ref.read(medicinesProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Medicine deleted')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
             },
             child: const Text('Delete'),
           ),

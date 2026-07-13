@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class UploadService {
@@ -20,18 +21,34 @@ export class UploadService {
       throw new BadRequestException('File size too large. Maximum: 5MB');
     }
 
-    const filename = `${folder}/${uuidv4()}-${file.originalname}`;
+    const bucket = admin.storage().bucket();
+    const fileName = `${folder}/${uuidv4()}-${file.originalname}`;
+    const fileRef = bucket.file(fileName);
 
-    this.logger.log(`File uploaded: ${filename}`);
+    await fileRef.save(file.buffer, {
+      metadata: {
+        contentType: file.mimetype,
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4(),
+        },
+      },
+    });
+
+    const [url] = await fileRef.getSignedUrl({
+      action: 'read',
+      expires: '03-01-2500',
+    });
+
+    this.logger.log(`File uploaded: ${fileName}`);
 
     return {
       message: 'File uploaded successfully',
       data: {
-        filename,
+        url,
+        fileName,
         originalName: file.originalname,
         mimetype: file.mimetype,
         size: file.size,
-        url: `/files/${filename}`,
       },
     };
   }
@@ -57,18 +74,34 @@ export class UploadService {
       throw new BadRequestException('File size too large. Maximum: 10MB');
     }
 
-    const filename = `${folder}/${uuidv4()}-${file.originalname}`;
+    const bucket = admin.storage().bucket();
+    const fileName = `${folder}/${uuidv4()}-${file.originalname}`;
+    const fileRef = bucket.file(fileName);
 
-    this.logger.log(`Document uploaded: ${filename}`);
+    await fileRef.save(file.buffer, {
+      metadata: {
+        contentType: file.mimetype,
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4(),
+        },
+      },
+    });
+
+    const [url] = await fileRef.getSignedUrl({
+      action: 'read',
+      expires: '03-01-2500',
+    });
+
+    this.logger.log(`Document uploaded: ${fileName}`);
 
     return {
       message: 'Document uploaded successfully',
       data: {
-        filename,
+        url,
+        fileName,
         originalName: file.originalname,
         mimetype: file.mimetype,
         size: file.size,
-        url: `/files/${filename}`,
       },
     };
   }
@@ -90,9 +123,10 @@ export class UploadService {
     };
   }
 
-  async deleteFile(filename: string) {
-    this.logger.log(`File deleted: ${filename}`);
-
+  async deleteFile(filePath: string) {
+    const bucket = admin.storage().bucket();
+    await bucket.file(filePath).delete();
+    this.logger.log(`File deleted: ${filePath}`);
     return { message: 'File deleted successfully' };
   }
 }

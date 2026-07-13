@@ -1,5 +1,5 @@
-import '../../../core/constants/api_constants.dart';
-import '../../../core/network/dio_client.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../../core/network/dio_client.dart';
 import '../models/medicine_models.dart';
 
 abstract class MedicineRemoteDataSource {

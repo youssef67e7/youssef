@@ -8,8 +8,10 @@ import 'package:pharmaworld_driver/core/utils/formatters.dart';
 import 'package:pharmaworld_driver/core/utils/snackbar_helper.dart';
 import 'package:pharmaworld_driver/features/deliveries/provider/delivery_provider.dart';
 import 'package:pharmaworld_driver/shared/widgets/loading_indicator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pharmaworld_driver/shared/widgets/empty_state.dart';
 import 'package:pharmaworld_driver/shared/widgets/confirmation_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ActiveDeliveryPage extends ConsumerWidget {
   const ActiveDeliveryPage({super.key});
@@ -261,8 +263,11 @@ class ActiveDeliveryPage extends ConsumerWidget {
                 Text(delivery.customer.phone),
                 const Spacer(),
                 TextButton.icon(
-                  onPressed: () {
-                    // Launch phone call
+                  onPressed: () async {
+                    final url = Uri.parse('tel:${delivery.customer.phone}');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url);
+                    }
                   },
                   icon: const Icon(Icons.call, size: 16),
                   label: Text(l10n?.call ?? 'Call'),
@@ -433,17 +438,20 @@ class ActiveDeliveryPage extends ConsumerWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () async {
-                  // Take photo and confirm
-                  Navigator.pop(context);
-                  try {
-                    await ref.read(deliveryActionProvider.notifier).confirmDelivery(deliveryId);
-                    if (context.mounted) {
-                      SnackbarHelper.showSuccess(context, 'Delivery completed!');
-                      ref.invalidate(activeDeliveryProvider);
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      SnackbarHelper.showError(context, e.toString());
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? image = await picker.pickImage(source: ImageSource.camera);
+                  if (image != null) {
+                    Navigator.pop(context);
+                    try {
+                      await ref.read(deliveryActionProvider.notifier).confirmDelivery(deliveryId, photoUrl: image.path);
+                      if (context.mounted) {
+                        SnackbarHelper.showSuccess(context, 'Delivery completed!');
+                        ref.invalidate(activeDeliveryProvider);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        SnackbarHelper.showError(context, e.toString());
+                      }
                     }
                   }
                 },

@@ -3,28 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final couponsProvider = FutureProvider<List<Coupon>>((ref) async {
-  return List.generate(
-    8,
-    (i) => Coupon(
-      id: 'CPN-${i + 1}',
-      code: ['WELCOME10', 'SAVE20', 'HEALTH15', 'SUMMER25', 'VIP30', 'NEWUSER', 'FREESHIP', 'FLASH50'][i],
-      description: ['10% off first order', '20% off all items', '15% health products', '25% summer sale',
-          '30% VIP discount', '15% for new users', 'Free shipping', '50% flash sale'][i],
-      discountType: i % 2 == 0 ? 'percentage' : 'fixed',
-      discountValue: [10, 20, 15, 25, 30, 15, 0, 50][i].toDouble(),
-      minimumOrder: [50, 100, 30, 75, 200, 0, 80, 100][i].toDouble(),
-      maxUsage: [100, 50, 200, 30, 20, 500, 100, 10][i],
-      currentUsage: [45, 32, 120, 15, 18, 250, 65, 8][i],
-      isActive: i != 5 && i != 7,
-      validFrom: DateTime.now().subtract(Duration(days: 30 - i * 3)),
-      validTo: DateTime.now().add(Duration(days: 30 + i * 5)),
-      createdAt: DateTime.now().subtract(Duration(days: 30 - i * 3)),
-    ),
-  );
-});
+import 'package:pharmaworld_dashboard/features/coupons/providers/coupons_provider.dart';
 
 class CouponsPage extends ConsumerWidget {
   const CouponsPage({super.key});
@@ -104,7 +85,28 @@ class CouponsPage extends ConsumerWidget {
                                   const PopupMenuItem(value: 'toggle', child: Text('Toggle Active')),
                                   const PopupMenuItem(value: 'delete', child: Text('Delete')),
                                 ],
-                                onSelected: (v) {},
+                                onSelected: (value) async {
+                                  try {
+                                    final api = ref.read(apiServiceProvider);
+                                    if (value == 'toggle') {
+                                      await api.updateCoupon(coupon.id, {'isActive': !coupon.isActive});
+                                    } else if (value == 'delete') {
+                                      await api.deleteCoupon(coupon.id);
+                                    }
+                                    ref.read(couponsProvider.notifier).invalidate();
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Coupon $value')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                             ),
                           ]),
@@ -162,9 +164,20 @@ class CouponsPage extends ConsumerWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coupon created')));
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.createCoupon({'code': 'NEWCOUPON'});
+                ref.read(couponsProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coupon created')));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
             },
             child: const Text('Save'),
           ),

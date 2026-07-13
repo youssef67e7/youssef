@@ -3,29 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final driversProvider = FutureProvider<List<Driver>>((ref) async {
-  return List.generate(
-    10,
-    (i) => Driver(
-      id: 'DRV-${i + 1}',
-      name: ['Mohammed Driver', 'Salem Driver', 'Ali Driver', 'Omar Driver', 'Hassan Driver',
-          'Khalid Driver', 'Yusuf Driver', 'Tariq Driver', 'Faisal Driver', 'Sami Driver'][i],
-      email: 'driver${i + 1}@example.com',
-      phone: '+9665${(50000000 + i * 1111111).toString().substring(0, 8)}',
-      vehicleType: ['Car', 'Motorcycle', 'Car', 'Motorcycle', 'Car', 'Bicycle', 'Motorcycle', 'Car', 'Car', 'Motorcycle'][i],
-      vehicleNumber: 'ABC-${1000 + i}',
-      isOnline: i < 6,
-      isActive: i != 4,
-      totalDeliveries: [450, 380, 520, 300, 250, 420, 350, 280, 150, 200][i],
-      totalEarnings: [12500, 10800, 15200, 8500, 7200, 11500, 9800, 7600, 4500, 5800][i].toDouble(),
-      rating: 4.0 + (i % 5) * 0.2,
-      createdAt: DateTime.now().subtract(Duration(days: 365 - i * 30)),
-    ),
-  );
-});
-
-final driverSearchProvider = StateProvider<String>((ref) => '');
+import 'package:pharmaworld_dashboard/features/drivers/providers/drivers_provider.dart';
 
 class DriversPage extends ConsumerWidget {
   const DriversPage({super.key});

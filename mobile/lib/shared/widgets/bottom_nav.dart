@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_icons.dart';
 import '../../core/router/route_names.dart';
+import '../../features/cart/presentation/providers/cart_provider.dart';
 import 'custom_badge.dart';
 
-class BottomNav extends StatelessWidget {
+class BottomNav extends ConsumerWidget {
   final int currentIndex;
   final Widget child;
 
@@ -17,8 +19,11 @@ class BottomNav extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final cartState = ref.watch(cartProvider);
+    final cartCount = cartState.itemCount;
+    final showBadge = cartCount > 0;
 
     return Scaffold(
       body: child,
@@ -53,13 +58,13 @@ class BottomNav extends StatelessWidget {
           ),
           NavigationDestination(
             icon: CustomBadge(
-              count: '3',
-              showBadge: true,
+              count: '$cartCount',
+              showBadge: showBadge,
               child: const Icon(AppIcons.cartIcon),
             ),
             selectedIcon: CustomBadge(
-              count: '3',
-              showBadge: true,
+              count: '$cartCount',
+              showBadge: showBadge,
               child: const Icon(AppIcons.cartFilled),
             ),
             label: 'Cart',

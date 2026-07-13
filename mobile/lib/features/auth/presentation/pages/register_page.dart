@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_strings.dart';
-import '../../../core/router/route_names.dart';
-import '../../../core/utils/validators.dart';
-import '../../../shared/widgets/custom_button.dart';
-import '../../../shared/widgets/custom_text_field.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/custom_text_field.dart';
 import '../providers/auth_provider.dart' as feature_auth;
 
 class RegisterPage extends ConsumerStatefulWidget {

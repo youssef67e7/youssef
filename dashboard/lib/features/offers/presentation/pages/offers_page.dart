@@ -3,30 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final offersProvider = FutureProvider<List<Offer>>((ref) async {
-  return List.generate(
-    8,
-    (i) => Offer(
-      id: 'OFF-${i + 1}',
-      title: ['Summer Sale', 'Health Week', 'New User Bonus', 'VIP Exclusive',
-          'Flash Friday', 'Monthly Deal', 'Clearance Sale', 'Holiday Special'][i],
-      titleAr: ['عرض الصيف', 'أسبوع الصحة', 'مميز مستخدم جديد', 'عرض VIP',
-          'عرض الجمعة', 'عرض الشهر', 'تخفيضات', 'عرض الأعياد'][i],
-      description: ['Up to 30% off', '15% on health products', '20% first order',
-          '30% for VIP members', '50% on selected items', '10% all items',
-          'Up to 40% off', '25% holiday discount'][i],
-      type: 'percentage',
-      discountValue: [30, 15, 20, 30, 50, 10, 40, 25][i].toDouble(),
-      isActive: i != 6,
-      isScheduled: i >= 6,
-      startDate: i >= 6 ? DateTime.now().add(Duration(days: i * 5)) : null,
-      endDate: i >= 6 ? DateTime.now().add(Duration(days: i * 5 + 14)) : null,
-      createdAt: DateTime.now().subtract(Duration(days: 30 - i * 3)),
-    ),
-  );
-});
+import 'package:pharmaworld_dashboard/features/offers/providers/offers_provider.dart';
 
 class OffersPage extends ConsumerWidget {
   const OffersPage({super.key});
@@ -44,7 +23,19 @@ class OffersPage extends ConsumerWidget {
             subtitle: 'Manage promotional offers',
             actions: [
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  try {
+                    final api = ref.read(apiServiceProvider);
+                    await api.createOffer({'title': 'New Offer', 'type': 'percentage'});
+                    ref.read(offersProvider.notifier).invalidate();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: $e')),
+                      );
+                    }
+                  }
+                },
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add Offer'),
               ),
@@ -90,7 +81,28 @@ class OffersPage extends ConsumerWidget {
                                   const PopupMenuItem(value: 'toggle', child: Text('Toggle Active')),
                                   const PopupMenuItem(value: 'delete', child: Text('Delete')),
                                 ],
-                                onSelected: (v) {},
+                                onSelected: (value) async {
+                                  try {
+                                    final api = ref.read(apiServiceProvider);
+                                    if (value == 'toggle') {
+                                      await api.updateOffer(offer.id, {'isActive': !offer.isActive});
+                                    } else if (value == 'delete') {
+                                      await api.deleteOffer(offer.id);
+                                    }
+                                    ref.read(offersProvider.notifier).invalidate();
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Offer $value')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                             ),
                           ]),

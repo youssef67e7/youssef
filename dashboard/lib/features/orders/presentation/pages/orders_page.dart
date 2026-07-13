@@ -4,34 +4,10 @@ import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/filter_chip_group.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/export_button.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/models/order_model.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final ordersProvider = FutureProvider<List<Order>>((ref) async {
-  return List.generate(
-    30,
-    (i) => Order(
-      id: 'ORD-${2000 + i}',
-      orderNumber: '#${2000 + i}',
-      customerId: 'C${i + 1}',
-      customerName: ['Ahmed Ali', 'Sara Mohammed', 'Omar Hassan', 'Fatima Khan', 'Ali Ibrahim',
-          'Nora Salem', 'Khalid Omar', 'Mona Ali', 'Yusuf Ahmed', 'Layla Khan'][i % 10],
-      totalAmount: [245.00, 180.50, 320.00, 150.75, 420.00, 95.50, 275.00, 190.25, 340.00, 210.00][i % 10],
-      subtotal: 0,
-      status: ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled', 'returned'][i % 8],
-      paymentMethod: ['cash_on_delivery', 'credit_card', 'mada', 'apple_pay'][i % 4],
-      driverId: i % 3 == 0 ? null : 'DRV-${(i % 5) + 1}',
-      driverName: i % 3 == 0 ? null : ['Mohammed Driver', 'Salem Driver', 'Ali Driver', 'Omar Driver', 'Hassan Driver'][i % 5],
-      deliveryAddress: 'Riyadh, Saudi Arabia',
-      createdAt: DateTime.now().subtract(Duration(hours: i * 3)),
-      updatedAt: DateTime.now().subtract(Duration(hours: i)),
-    ),
-  );
-});
-
-final orderStatusFilterProvider = StateProvider<String>((ref) => '');
-final orderSearchProvider = StateProvider<String>((ref) => '');
-final orderPageProvider = StateProvider<int>((ref) => 1);
+import 'package:pharmaworld_dashboard/features/orders/providers/orders_provider.dart';
 
 class OrdersPage extends ConsumerWidget {
   const OrdersPage({super.key});
@@ -132,7 +108,7 @@ class OrdersPage extends ConsumerWidget {
                                           const PopupMenuItem(value: 'assign', child: Text('Assign Driver')),
                                         const PopupMenuItem(value: 'invoice', child: Text('Print Invoice')),
                                       ],
-                                      onSelected: (value) => _handleOrderAction(context, value, order),
+                                      onSelected: (value) => _handleOrderAction(context, ref, value, order),
                                     ),
                                   ),
                                 ]),
@@ -229,16 +205,16 @@ class OrdersPage extends ConsumerWidget {
     );
   }
 
-  void _handleOrderAction(BuildContext context, String action, Order order) {
+  void _handleOrderAction(BuildContext context, WidgetRef ref, String action, Order order) {
     switch (action) {
       case 'view':
         _showOrderDetail(context, order);
         break;
       case 'status':
-        _showStatusUpdateDialog(context, order);
+        _showStatusUpdateDialog(context, ref, order);
         break;
       case 'assign':
-        _showAssignDriverDialog(context, order);
+        _showAssignDriverDialog(context, ref, order);
         break;
       case 'invoice':
         ScaffoldMessenger.of(context).showSnackBar(
@@ -288,7 +264,7 @@ class OrdersPage extends ConsumerWidget {
     );
   }
 
-  void _showStatusUpdateDialog(BuildContext context, Order order) {
+  void _showStatusUpdateDialog(BuildContext context, WidgetRef ref, Order order) {
     String newStatus = order.status;
     showDialog(
       context: context,
@@ -312,11 +288,24 @@ class OrdersPage extends ConsumerWidget {
           actions: [
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Order status updated')),
-                );
+              onPressed: () async {
+                try {
+                  final api = ref.read(apiServiceProvider);
+                  await api.updateOrderStatus(order.id, newStatus);
+                  ref.read(ordersProvider.notifier).invalidate();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Order status updated')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
               },
               child: const Text('Update'),
             ),
@@ -326,32 +315,49 @@ class OrdersPage extends ConsumerWidget {
     );
   }
 
-  void _showAssignDriverDialog(BuildContext context, Order order) {
+  void _showAssignDriverDialog(BuildContext context, WidgetRef ref, Order order) {
+    String? selectedDriverId;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Assign Driver'),
-        content: DropdownButtonFormField<String>(
-          decoration: const InputDecoration(labelText: 'Select Driver'),
-          items: const [
-            DropdownMenuItem(value: '1', child: Text('Mohammed Driver (Online)')),
-            DropdownMenuItem(value: '2', child: Text('Salem Driver (Online)')),
-            DropdownMenuItem(value: '3', child: Text('Ali Driver (Offline)')),
-          ],
-          onChanged: (v) {},
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Driver assigned successfully')),
-              );
-            },
-            child: const Text('Assign'),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Assign Driver'),
+          content: DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Driver'),
+            items: const [
+              DropdownMenuItem(value: 'DRV-1', child: Text('Mohammed Driver (Online)')),
+              DropdownMenuItem(value: 'DRV-2', child: Text('Salem Driver (Online)')),
+              DropdownMenuItem(value: 'DRV-3', child: Text('Ali Driver (Offline)')),
+            ],
+            onChanged: (v) => setState(() => selectedDriverId = v),
           ),
-        ],
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () async {
+                if (selectedDriverId == null) return;
+                try {
+                  final api = ref.read(apiServiceProvider);
+                  await api.assignDriver(order.id, selectedDriverId!);
+                  ref.read(ordersProvider.notifier).invalidate();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Driver assigned successfully')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Assign'),
+            ),
+          ],
+        ),
       ),
     );
   }

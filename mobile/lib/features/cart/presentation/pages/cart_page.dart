@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../core/router/route_names.dart';
-import '../../../shared/widgets/custom_button.dart';
-import '../../../shared/widgets/quantity_selector.dart';
-import '../../../shared/widgets/empty_state.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/quantity_selector.dart';
+import '../../../../shared/widgets/empty_state.dart';
+import '../providers/cart_provider.dart';
 
 class CartPage extends ConsumerStatefulWidget {
   const CartPage({super.key});
@@ -16,41 +17,12 @@ class CartPage extends ConsumerStatefulWidget {
 }
 
 class _CartPageState extends ConsumerState<CartPage> {
-  final List<Map<String, dynamic>> _cartItems = [
-    {
-      'id': '1',
-      'name': 'Panadol Extra',
-      'price': 45.0,
-      'quantity': 2,
-      'image': 'https://via.placeholder.com/100',
-    },
-    {
-      'id': '2',
-      'name': 'Augmentin 1g',
-      'price': 120.0,
-      'quantity': 1,
-      'image': 'https://via.placeholder.com/100',
-    },
-    {
-      'id': '3',
-      'name': 'Vitamin C',
-      'price': 85.0,
-      'quantity': 3,
-      'image': 'https://via.placeholder.com/100',
-    },
-  ];
-
-  double get _subtotal =>
-      _cartItems.fold(0, (sum, item) => sum + item['price'] * item['quantity']);
-  double get _deliveryFee => 25.0;
-  double get _tax => _subtotal * 0.14;
-  double get _total => _subtotal + _deliveryFee + _tax;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cartState = ref.watch(cartProvider);
 
-    if (_cartItems.isEmpty) {
+    if (cartState.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Cart')),
         body: const EmptyState(
@@ -64,13 +36,11 @@ class _CartPageState extends ConsumerState<CartPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cart (${_cartItems.length})'),
+        title: Text('Cart (${cartState.itemCount})'),
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                _cartItems.clear();
-              });
+              ref.read(cartProvider.notifier).clear();
             },
             child: const Text('Clear All'),
           ),
@@ -81,9 +51,9 @@ class _CartPageState extends ConsumerState<CartPage> {
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.all(16.r),
-              itemCount: _cartItems.length,
+              itemCount: cartState.items.length,
               itemBuilder: (context, index) {
-                final item = _cartItems[index];
+                final item = cartState.items[index];
                 return Card(
                   margin: EdgeInsets.only(bottom: 8.h),
                   child: Padding(
@@ -108,14 +78,14 @@ class _CartPageState extends ConsumerState<CartPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item['name'],
+                                item.name,
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               SizedBox(height: 4.h),
                               Text(
-                                'E£${item['price'].toStringAsFixed(2)}',
+                                'E£${item.price.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   color: theme.colorScheme.error,
                                   fontWeight: FontWeight.bold,
@@ -123,13 +93,11 @@ class _CartPageState extends ConsumerState<CartPage> {
                               ),
                               SizedBox(height: 8.h),
                               QuantitySelector(
-                                quantity: item['quantity'],
+                                quantity: item.quantity,
                                 minQuantity: 1,
                                 maxQuantity: 10,
                                 onChanged: (qty) {
-                                  setState(() {
-                                    _cartItems[index]['quantity'] = qty;
-                                  });
+                                  ref.read(cartProvider.notifier).updateQuantity(item.id, qty);
                                 },
                                 size: 32,
                               ),
@@ -142,9 +110,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                             color: theme.colorScheme.error,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _cartItems.removeAt(index);
-                            });
+                            ref.read(cartProvider.notifier).removeItem(item.id);
                           },
                         ),
                       ],
@@ -175,7 +141,7 @@ class _CartPageState extends ConsumerState<CartPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Subtotal'),
-                Text('E£${_subtotal.toStringAsFixed(2)}'),
+                Text('E£${cartState.subtotal.toStringAsFixed(2)}'),
               ],
             ),
             SizedBox(height: 4.h),
@@ -183,7 +149,7 @@ class _CartPageState extends ConsumerState<CartPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Delivery Fee'),
-                Text('E£${_deliveryFee.toStringAsFixed(2)}'),
+                Text('E£${cartState.deliveryFee.toStringAsFixed(2)}'),
               ],
             ),
             SizedBox(height: 4.h),
@@ -191,7 +157,7 @@ class _CartPageState extends ConsumerState<CartPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Tax (14%)'),
-                Text('E£${_tax.toStringAsFixed(2)}'),
+                Text('E£${cartState.tax.toStringAsFixed(2)}'),
               ],
             ),
             const Divider(),
@@ -205,7 +171,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                   ),
                 ),
                 Text(
-                  'E£${_total.toStringAsFixed(2)}',
+                  'E£${cartState.total.toStringAsFixed(2)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.error,

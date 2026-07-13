@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../shared/widgets/medicine_card.dart';
+import '../../../../shared/widgets/medicine_card.dart';
 
 class CategoryDetailPage extends ConsumerWidget {
   final String categoryId;

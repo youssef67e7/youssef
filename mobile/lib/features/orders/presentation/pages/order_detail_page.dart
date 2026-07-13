@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../shared/widgets/custom_button.dart';
-import '../../../shared/widgets/order_status_chip.dart';
+import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/order_status_chip.dart';
 
 class OrderDetailPage extends ConsumerWidget {
   final String orderId;

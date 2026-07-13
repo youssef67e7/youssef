@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/router/route_names.dart';
-import '../../../core/utils/validators.dart';
-import '../../../shared/widgets/custom_button.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../shared/widgets/custom_button.dart';
 import '../providers/auth_provider.dart' as feature_auth;
 
 class OtpVerificationPage extends ConsumerStatefulWidget {

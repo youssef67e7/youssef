@@ -3,31 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/export_button.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final customersProvider = FutureProvider<List<Customer>>((ref) async {
-  return List.generate(
-    20,
-    (i) => Customer(
-      id: 'CUST-${i + 1}',
-      name: ['Ahmed Ali', 'Sara Mohammed', 'Omar Hassan', 'Fatima Khan', 'Ali Ibrahim',
-          'Nora Salem', 'Khalid Omar', 'Mona Ali', 'Yusuf Ahmed', 'Layla Khan',
-          'Hassan Ibrahim', 'Noor Saeed', 'Tariq Nasser', 'Reem Omar', 'Sami Youssef',
-          'Aisha Malik', 'Faisal Al-Rashid', 'Huda Benali', 'Majed Soliman', 'Rania Adel'][i],
-      email: 'user${i + 1}@example.com',
-      phone: '+9665${(10000000 + i * 111111).toString().substring(0, 8)}',
-      address: 'Riyadh, Saudi Arabia',
-      isBlocked: i == 7 || i == 14,
-      totalOrders: [45, 32, 28, 15, 50, 12, 38, 22, 8, 35, 18, 42, 5, 30, 25, 40, 10, 20, 33, 16][i],
-      totalSpent: [2450, 1800, 3200, 1500, 4200, 950, 2750, 1900, 340, 2100, 1200, 3500, 450, 1800, 1500, 2800, 800, 1400, 2000, 1100][i].toDouble(),
-      createdAt: DateTime.now().subtract(Duration(days: 365 - i * 15)),
-      lastOrderAt: DateTime.now().subtract(Duration(days: i * 2)),
-    ),
-  );
-});
-
-final customerSearchProvider = StateProvider<String>((ref) => '');
-final customerPageProvider = StateProvider<int>((ref) => 1);
+import 'package:pharmaworld_dashboard/features/customers/providers/customers_provider.dart';
 
 class CustomersPage extends ConsumerWidget {
   const CustomersPage({super.key});
@@ -148,10 +126,31 @@ class CustomersPage extends ConsumerWidget {
                                               style: TextStyle(color: customer.isBlocked ? Colors.green : Colors.red)),
                                         ),
                                       ],
-                                      onSelected: (value) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('$value action performed')),
-                                        );
+                                      onSelected: (value) async {
+                                        if (value == 'block') {
+                                          try {
+                                            final api = ref.read(apiServiceProvider);
+                                            await api.toggleBlockCustomer(customer.id);
+                                            ref.read(customersProvider.notifier).invalidate();
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text(
+                                                  customer.isBlocked ? 'Customer unblocked' : 'Customer blocked',
+                                                )),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text('Error: $e')),
+                                              );
+                                            }
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('$value action performed')),
+                                          );
+                                        }
                                       },
                                     ),
                                   ),

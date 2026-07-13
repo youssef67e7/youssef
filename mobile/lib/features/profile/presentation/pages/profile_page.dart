@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/router/route_names.dart';
-import '../../../shared/providers/auth_provider.dart';
-import '../../../shared/widgets/custom_avatar.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../shared/providers/auth_provider.dart';
+import '../../../../shared/widgets/custom_avatar.dart';
+import '../providers/profile_provider.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -14,6 +15,10 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final user = ref.watch(currentUserProvider);
+    final profile = ref.watch(profileProvider);
+
+    final displayName = profile.name ?? user?.name ?? 'John Doe';
+    final displayEmail = profile.email ?? user?.email ?? 'john@example.com';
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +26,7 @@ class ProfilePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () {},
+            onPressed: () => context.push(RouteNames.settings),
           ),
         ],
       ),
@@ -35,20 +40,20 @@ class ProfilePage extends ConsumerWidget {
                 child: Column(
                   children: [
                     CustomAvatar(
-                      name: user?.name ?? 'John Doe',
+                      name: displayName,
                       imageUrl: user?.avatar,
                       radius: 40,
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      user?.name ?? 'John Doe',
+                      displayName,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 4.h),
                     Text(
-                      user?.email ?? 'john@example.com',
+                      displayEmail,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -82,43 +87,43 @@ class ProfilePage extends ConsumerWidget {
               context,
               icon: Icons.location_on_outlined,
               title: 'Addresses',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.addresses),
             ),
             _buildMenuItem(
               context,
               icon: Icons.account_balance_wallet_outlined,
               title: 'Wallet',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.wallet),
             ),
             _buildMenuItem(
               context,
               icon: Icons.local_offer_outlined,
               title: 'My Coupons',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.coupons),
             ),
             _buildMenuItem(
               context,
               icon: Icons.star_border,
               title: 'My Reviews',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.reviews),
             ),
             _buildMenuItem(
               context,
               icon: Icons.loyalty,
               title: 'Loyalty Points',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.loyalty),
             ),
             _buildMenuItem(
               context,
               icon: Icons.card_giftcard,
               title: 'Referral',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.referral),
             ),
             _buildMenuItem(
               context,
               icon: Icons.support_agent,
               title: 'Support',
-              onTap: () {},
+              onTap: () => context.push(RouteNames.support),
             ),
             _buildMenuItem(
               context,

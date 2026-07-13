@@ -117,11 +117,28 @@ describe('PaymentsService', () => {
   });
 
   describe('verifyPayment', () => {
-    it('should verify payment', async () => {
-      const result = await service.verifyPayment('pay_123');
+    it('should verify a paid payment', async () => {
+      orderModel.findById.mockResolvedValue({ ...mockOrder, paymentStatus: 'PAID' });
+
+      const result = await service.verifyPayment('order123');
 
       expect(result.message).toBe('Payment verified');
       expect(result.data.verified).toBe(true);
+    });
+
+    it('should not verify an unpaid payment', async () => {
+      orderModel.findById.mockResolvedValue({ ...mockOrder, paymentStatus: 'PENDING' });
+
+      const result = await service.verifyPayment('order123');
+
+      expect(result.message).toBe('Payment not verified');
+      expect(result.data.verified).toBe(false);
+    });
+
+    it('should throw NotFoundException for non-existent payment', async () => {
+      orderModel.findById.mockResolvedValue(null);
+
+      await expect(service.verifyPayment('nonexistent')).rejects.toThrow(NotFoundException);
     });
   });
 

@@ -1,5 +1,5 @@
-import '../datasources/auth_remote_datasource.dart';
-import '../models/auth_models.dart';
+import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/models/auth_models.dart';
 
 abstract class AuthRepository {
   Future<AuthResponseModel> login(String email, String password);

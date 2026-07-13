@@ -3,30 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final returnsProvider = FutureProvider<List<ReturnRequest>>((ref) async {
-  return List.generate(
-    10,
-    (i) => ReturnRequest(
-      id: 'RET-${i + 1}',
-      orderId: 'ORD-${2000 + i}',
-      orderNumber: '#${2000 + i}',
-      customerId: 'C${i + 1}',
-      customerName: ['Ahmed Ali', 'Sara Mohammed', 'Omar Hassan', 'Fatima Khan', 'Ali Ibrahim',
-          'Nora Salem', 'Khalid Omar', 'Mona Ali', 'Yusuf Ahmed', 'Layla Khan'][i],
-      reason: ['Damaged product', 'Wrong item received', 'Allergic reaction', 'Product expired',
-          'Changed mind', 'Quality issue', 'Late delivery', 'Not as described',
-          'Duplicate order', 'Better price found'][i],
-      refundAmount: [45.00, 32.50, 67.00, 28.00, 55.75, 18.50, 90.00, 42.00, 35.00, 72.25][i],
-      status: ['pending', 'pending', 'approved', 'rejected', 'pending', 'processed', 'pending', 'approved', 'rejected', 'pending'][i],
-      createdAt: DateTime.now().subtract(Duration(days: i * 2)),
-      processedAt: i >= 5 ? DateTime.now().subtract(Duration(days: i)) : null,
-    ),
-  );
-});
-
-final returnsFilterProvider = StateProvider<String>((ref) => '');
+import 'package:pharmaworld_dashboard/features/returns/providers/returns_provider.dart';
 
 class ReturnsPage extends ConsumerWidget {
   const ReturnsPage({super.key});
@@ -116,7 +95,7 @@ class ReturnsPage extends ConsumerWidget {
                                       const PopupMenuItem(value: 'view', child: Text('View Details')),
                                     ];
                                   },
-                                  onSelected: (v) => _handleReturnAction(context, v, ret),
+                                  onSelected: (v) => _handleReturnAction(context, ref, v, ret),
                                 ),
                               ),
                             ]),
@@ -135,31 +114,56 @@ class ReturnsPage extends ConsumerWidget {
     );
   }
 
-  void _handleReturnAction(BuildContext context, String action, ReturnRequest ret) {
+  void _handleReturnAction(BuildContext context, WidgetRef ref, String action, ReturnRequest ret) async {
     switch (action) {
       case 'approve':
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Return approved')),
-        );
+        try {
+          final api = ref.read(apiServiceProvider);
+          await api.approveReturn(ret.id);
+          ref.read(returnsProvider.notifier).invalidate();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Return approved')),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+          }
+        }
         break;
       case 'reject':
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (ctx) => AlertDialog(
             title: const Text('Reject Return'),
             content: const TextField(
               decoration: InputDecoration(labelText: 'Reason for rejection'),
               maxLines: 3,
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Return rejected')),
-                  );
+                onPressed: () async {
+                  try {
+                    final api = ref.read(apiServiceProvider);
+                    await api.rejectReturn(ret.id);
+                    ref.read(returnsProvider.notifier).invalidate();
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Return rejected')),
+                      );
+                    }
+                  } catch (e) {
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: $e')),
+                      );
+                    }
+                  }
                 },
                 child: const Text('Reject'),
               ),
@@ -170,17 +174,31 @@ class ReturnsPage extends ConsumerWidget {
       case 'refund':
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (ctx) => AlertDialog(
             title: const Text('Process Refund'),
             content: Text('Process refund of ${Formatters.formatCurrency(ret.refundAmount)}?'),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Refund processed')),
-                  );
+                onPressed: () async {
+                  try {
+                    final api = ref.read(apiServiceProvider);
+                    await api.processRefund(ret.id, {'amount': ret.refundAmount});
+                    ref.read(returnsProvider.notifier).invalidate();
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Refund processed')),
+                      );
+                    }
+                  } catch (e) {
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: $e')),
+                      );
+                    }
+                  }
                 },
                 child: const Text('Process Refund'),
               ),

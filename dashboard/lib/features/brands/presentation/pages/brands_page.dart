@@ -2,22 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
-
-final brandsProvider = FutureProvider<List<Brand>>((ref) async {
-  return List.generate(
-    12,
-    (i) => Brand(
-      id: 'BRAND-${i + 1}',
-      name: ['PharmaCo', 'MedLife', 'HealthPlus', 'BioGen', 'GlobalPharm',
-          'NatureMed', 'VitaHealth', 'CureAll', 'MedSource', 'PharmaTech',
-          'WellnessCo', 'LifeScience'][i],
-      description: 'Brand description',
-      isActive: i != 8,
-      productCount: [45, 38, 52, 30, 25, 42, 35, 28, 15, 20, 33, 40][i],
-      createdAt: DateTime.now().subtract(Duration(days: 365 - i * 25)),
-    ),
-  );
-});
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
+import 'package:pharmaworld_dashboard/features/brands/providers/brands_provider.dart';
 
 class BrandsPage extends ConsumerWidget {
   const BrandsPage({super.key});
@@ -35,7 +21,7 @@ class BrandsPage extends ConsumerWidget {
             subtitle: 'Manage medicine brands',
             actions: [
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => _showAddBrandDialog(context, ref),
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add Brand'),
               ),
@@ -101,13 +87,13 @@ class BrandsPage extends ConsumerWidget {
                           ),
                         ),
                         DataCell(
-                          Row(
+                            Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(icon: const Icon(Icons.edit_outlined, size: 18), onPressed: () {}),
+                              IconButton(icon: const Icon(Icons.edit_outlined, size: 18), onPressed: () => _showEditBrandDialog(context, ref, brand)),
                               IconButton(
                                 icon: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade400),
-                                onPressed: () {},
+                                onPressed: () => _confirmDeleteBrand(context, ref, brand),
                               ),
                             ],
                           ),
@@ -119,6 +105,140 @@ class BrandsPage extends ConsumerWidget {
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text('Error: $e')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddBrandDialog(BuildContext context, WidgetRef ref) {
+    final nameController = TextEditingController();
+    final descController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Brand'),
+        content: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
+                const SizedBox(height: 12),
+                TextFormField(controller: descController, decoration: const InputDecoration(labelText: 'Description')),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.createBrand({
+                  'name': nameController.text,
+                  'description': descController.text,
+                });
+                ref.read(brandsProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Brand added successfully')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditBrandDialog(BuildContext context, WidgetRef ref, Brand brand) {
+    final nameController = TextEditingController(text: brand.name);
+    final descController = TextEditingController(text: brand.description ?? '');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Brand'),
+        content: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
+                const SizedBox(height: 12),
+                TextFormField(controller: descController, decoration: const InputDecoration(labelText: 'Description')),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.updateBrand(brand.id, {
+                  'name': nameController.text,
+                  'description': descController.text,
+                });
+                ref.read(brandsProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Brand updated')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteBrand(BuildContext context, WidgetRef ref, Brand brand) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Brand'),
+        content: Text('Are you sure you want to delete "${brand.name}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.deleteBrand(brand.id);
+                ref.read(brandsProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Brand deleted')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
+            },
+            child: const Text('Delete'),
           ),
         ],
       ),

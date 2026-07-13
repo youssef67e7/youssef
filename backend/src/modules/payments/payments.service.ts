@@ -113,12 +113,46 @@ export class PaymentsService {
   async verifyPayment(paymentId: string) {
     this.logger.log(`Verifying payment: ${paymentId}`);
 
+    // In production:
+    // For Stripe: Retrieve payment intent and check status
+    // For Paymob: Verify HMAC signature
+    // For Fawry: Check order status via API
+
+    const payment = await this.orderModel.findById(paymentId);
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    let verified = false;
+
+    switch (payment.paymentMethod) {
+      case 'STRIPE':
+        // In production: const paymentIntent = await stripe.paymentIntents.retrieve(payment.paymentId);
+        // verified = paymentIntent.status === 'succeeded';
+        verified = payment.paymentStatus === 'PAID';
+        break;
+      case 'PAYMOB':
+        // In production: Verify HMAC signature from Paymob callback
+        verified = payment.paymentStatus === 'PAID';
+        break;
+      case 'FAWRY':
+        // In production: Check Fawry order status via API
+        verified = payment.paymentStatus === 'PAID';
+        break;
+      case 'WALLET':
+      case 'CASH_ON_DELIVERY':
+        verified = payment.paymentStatus === 'PAID';
+        break;
+      default:
+        verified = payment.paymentStatus === 'PAID';
+    }
+
     return {
-      message: 'Payment verified',
+      message: verified ? 'Payment verified' : 'Payment not verified',
       data: {
         paymentId,
-        verified: true,
-        verifiedAt: new Date(),
+        verified,
+        verifiedAt: verified ? new Date() : null,
       },
     };
   }
@@ -249,17 +283,80 @@ export class PaymentsService {
 
   private async processStripePayment(dto: ProcessPaymentDto): Promise<boolean> {
     this.logger.log(`Processing Stripe payment for order ${dto.orderId}`);
-    return true;
+
+    // In production, use actual Stripe SDK:
+    // import Stripe from 'stripe';
+    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    //
+    // const paymentIntent = await stripe.paymentIntents.create({
+    //   amount: Math.round(dto.amount * 100), // Stripe uses cents
+    //   currency: (dto.currency || 'egp').toLowerCase(),
+    //   metadata: { orderId: dto.orderId },
+    //   payment_method: dto.paymentMethodId,
+    //   confirm: !!dto.paymentMethodId,
+    // });
+    //
+    // return {
+    //   paymentIntentId: paymentIntent.id,
+    //   status: paymentIntent.status,
+    //   clientSecret: paymentIntent.client_secret,
+    // };
+
+    // For now, simulate the flow
+    return {
+      paymentIntentId: `pi_${Date.now()}`,
+      status: 'pending',
+      clientSecret: `cs_${Date.now()}_secret`,
+    } as any;
   }
 
   private async processPaymobPayment(dto: ProcessPaymentDto): Promise<boolean> {
     this.logger.log(`Processing Paymob payment for order ${dto.orderId}`);
-    return true;
+
+    // In production, use actual Paymob SDK:
+    // const paymobResponse = await axios.post('https://accept.paymob.com/api/acceptance/payments/pay', {
+    //   amount: dto.amount * 100, // Paymob uses cents
+    //   currency: dto.currency || 'EGP',
+    //   payment_token: dto.paymentToken,
+    // });
+    //
+    // return {
+    //   transactionId: paymobResponse.data.id,
+    //   status: paymobResponse.data.success ? 'completed' : 'pending',
+    // };
+
+    // For now, simulate the flow
+    return {
+      transactionId: `paymob_${Date.now()}`,
+      status: 'pending',
+      redirectUrl: `https://accept.paymob.com/api/acceptance/payments/pay`,
+    } as any;
   }
 
   private async processFawryPayment(dto: ProcessPaymentDto): Promise<boolean> {
     this.logger.log(`Processing Fawry payment for order ${dto.orderId}`);
-    return true;
+
+    // In production, use actual Fawry SDK:
+    // const fawryResponse = await axios.post('https://atfawry.com/ECommerceWeb/Fawry/v2/payments/charge', {
+    //   merchantCode: process.env.FAWRY_MERCHANT_CODE,
+    //   merchantRefNumber: dto.orderId,
+    //   amount: dto.amount,
+    //   currency: dto.currency || 'EGP',
+    //   paymentMethod: dto.paymentMethodCode,
+    // });
+    //
+    // return {
+    //   referenceNumber: fawryResponse.data.referenceNumber,
+    //   status: fawryResponse.data.fawryResponseCode === '200' ? 'completed' : 'pending',
+    //   paymentUrl: fawryResponse.data.payUrl,
+    // };
+
+    // For now, simulate the flow
+    return {
+      referenceNumber: `fawry_${Date.now()}`,
+      status: 'pending',
+      paymentUrl: `https://atfawry.com/payment/${Date.now()}`,
+    } as any;
   }
 
   private async processWalletPayment(userId: string, amount: number): Promise<boolean> {

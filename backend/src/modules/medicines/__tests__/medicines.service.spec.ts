@@ -1,7 +1,8 @@
 jest.mock('slug', () => {
-  return jest.fn().mockImplementation((text: string, opts: any) => {
+  const fn = jest.fn().mockImplementation((text: string, opts: any) => {
     return text.toLowerCase().replace(/\s+/g, '-');
   });
+  return { __esModule: true, default: fn };
 });
 
 import { Test, TestingModule } from '@nestjs/testing';

@@ -191,14 +191,61 @@ class ProfilePage extends ConsumerWidget {
             context,
             icon: Icons.directions_car_outlined,
             title: l10n?.vehicleInfo ?? 'Vehicle Info',
-            onTap: () {},
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Vehicle Information'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(title: const Text('Vehicle Type'), subtitle: const Text('Motorcycle')),
+                      ListTile(title: const Text('Vehicle Number'), subtitle: const Text('ABC-1234')),
+                      ListTile(title: const Text('License'), subtitle: const Text('DL-567890')),
+                    ],
+                  ),
+                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+                ),
+              );
+            },
           ),
           const Divider(height: 1),
           _buildMenuItem(
             context,
             icon: Icons.description_outlined,
             title: l10n?.documents ?? 'Documents',
-            onTap: () {},
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Documents'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.description),
+                        title: const Text('Driving License'),
+                        subtitle: const Text('Valid until 2028'),
+                        trailing: const Icon(Icons.check_circle, color: AppColors.success),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.description),
+                        title: const Text('Vehicle Registration'),
+                        subtitle: const Text('Valid until 2027'),
+                        trailing: const Icon(Icons.check_circle, color: AppColors.success),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.description),
+                        title: const Text('Insurance'),
+                        subtitle: const Text('Valid until 2026'),
+                        trailing: const Icon(Icons.check_circle, color: AppColors.success),
+                      ),
+                    ],
+                  ),
+                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+                ),
+              );
+            },
           ),
           const Divider(height: 1),
           _buildMenuItem(

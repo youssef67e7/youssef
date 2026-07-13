@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/network/dio_client.dart';
-import '../datasources/medicine_remote_datasource.dart';
-import '../models/medicine_models.dart';
-import '../repositories/medicine_repository.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../data/datasources/medicine_remote_datasource.dart';
+import '../../data/models/medicine_models.dart';
+import '../../domain/repositories/medicine_repository.dart';
 
 final medicineRemoteDataSourceProvider = Provider<MedicineRemoteDataSource>((ref) {
   return MedicineRemoteDataSourceImpl(dioClient: ref.watch(dioClientProvider));

@@ -4,25 +4,7 @@ import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/date_range_picker.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
-
-final auditLogProvider = FutureProvider<List<AuditLog>>((ref) async {
-  return List.generate(
-    25,
-    (i) => AuditLog(
-      id: 'LOG-${i + 1}',
-      userId: 'USR-${(i % 5) + 1}',
-      userName: ['Admin Ahmed', 'Pharmacist Sara', 'Manager Omar', 'Admin Fatima', 'Pharmacist Ali'][i % 5],
-      action: ['create', 'update', 'delete', 'login', 'logout', 'approve', 'reject', 'export'][i % 8],
-      entity: ['Medicine', 'Order', 'Customer', 'Category', 'Coupon', 'Offer', 'Banner', 'Settings'][i % 8],
-      entityId: '${(i % 8) + 100}',
-      ipAddress: '192.168.1.${100 + i}',
-      createdAt: DateTime.now().subtract(Duration(minutes: i * 15)),
-    ),
-  );
-});
-
-final auditActionFilterProvider = StateProvider<String>((ref) => '');
-final auditEntityFilterProvider = StateProvider<String>((ref) => '');
+import 'package:pharmaworld_dashboard/features/audit_log/providers/audit_log_provider.dart';
 
 class AuditLogPage extends ConsumerWidget {
   const AuditLogPage({super.key});

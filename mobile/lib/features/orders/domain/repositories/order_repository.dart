@@ -1,5 +1,5 @@
-import '../datasources/order_remote_datasource.dart';
-import '../models/order_models.dart';
+import '../../data/datasources/order_remote_datasource.dart';
+import '../../data/models/order_models.dart';
 
 abstract class OrderRepository {
   Future<List<OrderModel>> getOrders({String? status, int page = 1});

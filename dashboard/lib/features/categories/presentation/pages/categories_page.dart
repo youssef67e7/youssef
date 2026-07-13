@@ -2,28 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
-
-final categoriesProvider = FutureProvider<List<Category>>((ref) async {
-  return List.generate(
-    15,
-    (i) => Category(
-      id: 'CAT-${i + 1}',
-      name: ['Pain Relief', 'Antibiotics', 'Vitamins & Supplements', 'Allergy',
-          'Gastrointestinal', 'Cardiovascular', 'Respiratory', 'Dermatology',
-          'Diabetes', 'Eye Care', 'Oral Care', 'Baby Care', 'First Aid',
-          'Herbal', 'Personal Care'][i],
-      nameAr: ['مسكنات', 'مضادات حيوية', 'فيتامينات', 'حساسية',
-          'جهاز هضمي', ' Cardiovascular', 'تنفسي', 'جلدية',
-          'سكري', 'رعاية العيون', 'عناية فموية', 'رعاية الأطفال',
-          'إسعافات أولية', 'أعشاب', 'عناية شخصية'][i],
-      description: 'Category description',
-      productCount: [120, 85, 95, 45, 60, 40, 35, 50, 30, 25, 20, 45, 55, 70, 80][i],
-      isActive: i != 10,
-      sortOrder: i,
-      createdAt: DateTime.now().subtract(Duration(days: 365 - i * 20)),
-    ),
-  );
-});
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
+import 'package:pharmaworld_dashboard/features/categories/providers/categories_provider.dart';
 
 class CategoriesPage extends ConsumerWidget {
   const CategoriesPage({super.key});
@@ -85,16 +65,16 @@ class CategoriesPage extends ConsumerWidget {
                         ),
                         DataCell(Text(cat.sortOrder.toString())),
                         DataCell(
-                          Row(
+                            Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.edit_outlined, size: 18),
-                                onPressed: () {},
+                                onPressed: () => _showEditCategoryDialog(context, ref, cat),
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade400),
-                                onPressed: () {},
+                                onPressed: () => _confirmDeleteCategory(context, ref, cat),
                               ),
                             ],
                           ),
@@ -145,13 +125,110 @@ class CategoriesPage extends ConsumerWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Category added successfully')),
-              );
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.createCategory({'name': 'New Category'});
+                ref.read(categoriesProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Category added successfully')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
             },
             child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditCategoryDialog(BuildContext context, WidgetRef ref, Category cat) {
+    final nameController = TextEditingController(text: cat.name);
+    final nameArController = TextEditingController(text: cat.nameAr);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Category'),
+        content: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name (English)')),
+                const SizedBox(height: 12),
+                TextFormField(controller: nameArController, decoration: const InputDecoration(labelText: 'Name (Arabic)')),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.updateCategory(cat.id, {
+                  'name': nameController.text,
+                  'nameAr': nameArController.text,
+                });
+                ref.read(categoriesProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Category updated')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteCategory(BuildContext context, WidgetRef ref, Category cat) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Category'),
+        content: Text('Are you sure you want to delete "${cat.name}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              try {
+                final api = ref.read(apiServiceProvider);
+                await api.deleteCategory(cat.id);
+                ref.read(categoriesProvider.notifier).invalidate();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Category deleted')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
+            },
+            child: const Text('Delete'),
           ),
         ],
       ),
