@@ -7,11 +7,16 @@ export default function BrandsPage() {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
+  const [nameAr, setNameAr] = useState('');
 
   const load = async () => {
     setLoading(true);
-    try { const res = await brandsAPI.list(); setBrands(res.data?.data || res.data || []); }
-    catch { toast.error('Failed'); }
+    try {
+      const res = await brandsAPI.list();
+      const items = res.data?.data || res.data || [];
+      const list = items?.data || items;
+      setBrands(Array.isArray(list) ? list : []);
+    } catch { toast.error('Failed'); }
     setLoading(false);
   };
 
@@ -19,14 +24,16 @@ export default function BrandsPage() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    try { await brandsAPI.create({ name }); toast.success('Added'); setName(''); load(); }
-    catch { toast.error('Failed'); }
+    try {
+      await brandsAPI.create({ name, nameAr: nameAr || undefined });
+      toast.success('Added'); setName(''); setNameAr(''); load();
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete?')) return;
     try { await brandsAPI.delete(id); toast.success('Deleted'); load(); }
-    catch { toast.error('Failed'); }
+    catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
   };
 
   return (
@@ -34,6 +41,7 @@ export default function BrandsPage() {
       <h1 className="text-2xl font-bold">Brands</h1>
       <form onSubmit={handleAdd} className="flex gap-2">
         <input value={name} onChange={e => setName(e.target.value)} required placeholder="Brand name" className="px-4 py-2 border rounded-lg text-sm flex-1 max-w-sm" />
+        <input value={nameAr} onChange={e => setNameAr(e.target.value)} placeholder="Arabic name (optional)" className="px-4 py-2 border rounded-lg text-sm flex-1 max-w-sm" />
         <button type="submit" className="flex items-center gap-1 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm"><Plus size={16} /> Add</button>
       </form>
       <div className="bg-white rounded-xl shadow-sm border divide-y">
@@ -41,7 +49,10 @@ export default function BrandsPage() {
           brands.length === 0 ? <div className="py-8 text-center text-gray-400">No brands</div> :
             brands.map(b => (
               <div key={b._id || b.id} className="flex items-center justify-between px-5 py-3">
-                <span className="font-medium">{b.name}</span>
+                <div>
+                  <span className="font-medium">{b.name}</span>
+                  {b.nameAr && <span className="ml-2 text-gray-400 text-sm">({b.nameAr})</span>}
+                </div>
                 <button onClick={() => handleDelete(b._id || b.id)} className="text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
               </div>
             ))}

@@ -6,6 +6,7 @@ import 'package:pharmaworld_dashboard/shared/widgets/bulk_action_bar.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/export_button.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/import_button.dart';
 import 'package:pharmaworld_dashboard/shared/models/medicine_model.dart';
+import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 import 'package:pharmaworld_dashboard/core/utils/validators.dart';
 import 'package:pharmaworld_dashboard/features/medicines/providers/medicines_provider.dart';
@@ -51,7 +52,7 @@ class MedicinesPage extends ConsumerWidget {
               final api = ref.read(apiServiceProvider);
               try {
                 await api.bulkDeleteMedicines(selectedIds.toList());
-                ref.read(medicinesProvider.notifier).invalidate();
+                ref.invalidate(medicinesProvider);
                 ref.read(selectedMedicinesProvider.notifier).state = {};
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -70,7 +71,7 @@ class MedicinesPage extends ConsumerWidget {
               final api = ref.read(apiServiceProvider);
               try {
                 await api.bulkUpdateMedicines(selectedIds.toList(), {'isActive': true});
-                ref.read(medicinesProvider.notifier).invalidate();
+                ref.invalidate(medicinesProvider);
                 ref.read(selectedMedicinesProvider.notifier).state = {};
               } catch (e) {
                 if (context.mounted) {
@@ -84,7 +85,7 @@ class MedicinesPage extends ConsumerWidget {
               final api = ref.read(apiServiceProvider);
               try {
                 await api.bulkUpdateMedicines(selectedIds.toList(), {'isActive': false});
-                ref.read(medicinesProvider.notifier).invalidate();
+                ref.invalidate(medicinesProvider);
                 ref.read(selectedMedicinesProvider.notifier).state = {};
               } catch (e) {
                 if (context.mounted) {
@@ -505,7 +506,7 @@ class MedicinesPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.createMedicine(data);
-                ref.read(medicinesProvider.notifier).invalidate();
+                ref.invalidate(medicinesProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -591,7 +592,7 @@ class MedicinesPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.updateMedicine(medicine.id, data);
-                ref.read(medicinesProvider.notifier).invalidate();
+                ref.invalidate(medicinesProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -630,7 +631,7 @@ class MedicinesPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.deleteMedicine(medicine.id);
-                ref.read(medicinesProvider.notifier).invalidate();
+                ref.invalidate(medicinesProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

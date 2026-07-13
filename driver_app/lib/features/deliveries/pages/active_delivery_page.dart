@@ -10,7 +10,6 @@ import 'package:pharmaworld_driver/features/deliveries/provider/delivery_provide
 import 'package:pharmaworld_driver/shared/widgets/loading_indicator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pharmaworld_driver/shared/widgets/empty_state.dart';
-import 'package:pharmaworld_driver/shared/widgets/confirmation_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ActiveDeliveryPage extends ConsumerWidget {

@@ -292,7 +292,7 @@ class OrdersPage extends ConsumerWidget {
                 try {
                   final api = ref.read(apiServiceProvider);
                   await api.updateOrderStatus(order.id, newStatus);
-                  ref.read(ordersProvider.notifier).invalidate();
+                  ref.invalidate(ordersProvider);
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -339,7 +339,7 @@ class OrdersPage extends ConsumerWidget {
                 try {
                   final api = ref.read(apiServiceProvider);
                   await api.assignDriver(order.id, selectedDriverId!);
-                  ref.read(ordersProvider.notifier).invalidate();
+                  ref.invalidate(ordersProvider);
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(

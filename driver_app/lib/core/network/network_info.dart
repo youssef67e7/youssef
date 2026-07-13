@@ -6,13 +6,13 @@ class NetworkInfo {
   NetworkInfo(this._connectivity);
 
   Future<bool> get isConnected async {
-    final connectivityResults = await _connectivity.checkConnectivity();
-    if (connectivityResults.any((r) => r == ConnectivityResult.none)) {
+    final connectivityResult = await _connectivity.checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
       return false;
     }
     return true;
   }
 
-  Stream<List<ConnectivityResult>> get onConnectivityChanged =>
+  Stream<ConnectivityResult> get onConnectivityChanged =>
       _connectivity.onConnectivityChanged;
 }

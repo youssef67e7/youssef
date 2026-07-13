@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_driver/core/di/injection.dart';
 import 'package:pharmaworld_driver/core/network/dio_client.dart';
 import 'package:pharmaworld_driver/core/constants/api_constants.dart';
-import 'package:pharmaworld_driver/shared/models/earnings.dart';
 
 final earningsServiceProvider = Provider((ref) {
   return EarningsService(dioClient: ref.watch(dioClientProvider));

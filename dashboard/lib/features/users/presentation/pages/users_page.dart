@@ -24,7 +24,7 @@ class UsersPage extends ConsumerWidget {
             subtitle: 'Manage admin and pharmacist accounts',
             actions: [
               ElevatedButton.icon(
-                onPressed: () => _showAddUserDialog(context),
+                onPressed: () => _showAddUserDialog(context, ref),
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add User'),
               ),
@@ -131,7 +131,7 @@ class UsersPage extends ConsumerWidget {
                                     final api = ref.read(apiServiceProvider);
                                     if (value == 'toggle') {
                                       await api.updateUser(user.id, {'isActive': !user.isActive});
-                                      ref.read(adminUsersProvider.notifier).invalidate();
+                                      ref.invalidate(adminUsersProvider);
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text(
@@ -222,7 +222,7 @@ class UsersPage extends ConsumerWidget {
     }
   }
 
-  void _showAddUserDialog(BuildContext context) {
+  void _showAddUserDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -233,11 +233,11 @@ class UsersPage extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const TextFormField(decoration: InputDecoration(labelText: 'Full Name')),
+                TextFormField(decoration: const InputDecoration(labelText: 'Full Name')),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Email'), keyboardType: TextInputType.emailAddress),
+                TextFormField(decoration: const InputDecoration(labelText: 'Email'), keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Password'), obscureText: true),
+                TextFormField(decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Role'),
@@ -265,7 +265,7 @@ class UsersPage extends ConsumerWidget {
                   'email': 'new@pharmaworld.com',
                   'role': 'viewer',
                 });
-                ref.read(adminUsersProvider.notifier).invalidate();
+                ref.invalidate(adminUsersProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

@@ -158,7 +158,7 @@ class ReviewsPage extends ConsumerWidget {
                                         try {
                                           final api = ref.read(apiServiceProvider);
                                           await api.approveReview(review.id);
-                                          ref.read(reviewsProvider.notifier).invalidate();
+                                          ref.invalidate(reviewsProvider);
                                           if (context.mounted) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(content: Text('Review approved')),
@@ -185,7 +185,7 @@ class ReviewsPage extends ConsumerWidget {
                                         try {
                                           final api = ref.read(apiServiceProvider);
                                           await api.rejectReview(review.id);
-                                          ref.read(reviewsProvider.notifier).invalidate();
+                                          ref.invalidate(reviewsProvider);
                                           if (context.mounted) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(content: Text('Review rejected')),
@@ -255,7 +255,7 @@ class ReviewsPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.replyToReview(review.id, controller.text);
-                ref.read(reviewsProvider.notifier).invalidate();
+                ref.invalidate(reviewsProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reply sent')));

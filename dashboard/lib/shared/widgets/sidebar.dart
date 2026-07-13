@@ -153,8 +153,8 @@ class Sidebar extends ConsumerWidget {
                   _buildMenuItem(
                     context: context,
                     ref: ref,
-                    icon: Icons.sale_outlined,
-                    activeIcon: Icons.sale,
+                    icon: Icons.local_offer_outlined,
+                    activeIcon: Icons.local_offer,
                     label: 'Offers',
                     route: '/offers',
                     isSelected: selectedRoute == '/offers',

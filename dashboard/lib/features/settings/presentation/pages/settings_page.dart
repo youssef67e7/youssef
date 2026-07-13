@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/shared/providers/theme_provider.dart';
 import 'package:pharmaworld_dashboard/shared/providers/locale_provider.dart';
@@ -87,28 +86,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
               children: [
                 const Text('Store Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Store Name'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Store Name'),
                   initialValue: 'PharmaWorld',
                 ),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Store Address'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Store Address'),
                   initialValue: 'Riyadh, Saudi Arabia',
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
-                      child: const TextFormField(
-                        decoration: InputDecoration(labelText: 'Store Phone'),
+                      child: TextFormField(
+                        decoration: const InputDecoration(labelText: 'Store Phone'),
                         initialValue: '+966 11 234 5678',
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: const TextFormField(
-                        decoration: InputDecoration(labelText: 'Store Email'),
+                      child: TextFormField(
+                        decoration: const InputDecoration(labelText: 'Store Email'),
                         initialValue: 'info@pharmaworld.com',
                       ),
                     ),
@@ -196,7 +195,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                           'storeName': 'PharmaWorld',
                           'storeAddress': 'Riyadh, Saudi Arabia',
                         });
-                        ref.read(settingsProvider.notifier).invalidate();
+                        ref.invalidate(settingsProvider);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Settings saved successfully')),
@@ -244,16 +243,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                 const SizedBox(height: 16),
                 const Text('Tax Settings', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Tax Rate (%)'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Tax Rate (%)'),
                   initialValue: '15',
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
                 const Text('Platform Fee', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Platform Fee (%)'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Platform Fee (%)'),
                   initialValue: '10',
                   keyboardType: TextInputType.number,
                 ),
@@ -265,7 +264,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                       try {
                         final api = ref.read(apiServiceProvider);
                         await api.updateSettings({'taxRate': 15, 'platformFee': 10});
-                        ref.read(settingsProvider.notifier).invalidate();
+                        ref.invalidate(settingsProvider);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Payment settings saved')),
@@ -311,20 +310,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
               children: [
                 const Text('Delivery Configuration', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Delivery Radius (km)'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Delivery Radius (km)'),
                   initialValue: '25',
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Free Delivery Threshold'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Free Delivery Threshold'),
                   initialValue: '100',
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
-                const TextFormField(
-                  decoration: InputDecoration(labelText: 'Default Delivery Fee'),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Default Delivery Fee'),
                   initialValue: '15',
                   keyboardType: TextInputType.number,
                 ),
@@ -357,7 +356,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                       try {
                         final api = ref.read(apiServiceProvider);
                         await api.updateSettings({'deliveryRadius': 25, 'freeDeliveryThreshold': 100});
-                        ref.read(settingsProvider.notifier).invalidate();
+                        ref.invalidate(settingsProvider);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Delivery settings saved')),
@@ -417,7 +416,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                       try {
                         final api = ref.read(apiServiceProvider);
                         await api.toggleFeatureFlag(entry.key, v);
-                        ref.read(settingsProvider.notifier).invalidate();
+                        ref.invalidate(settingsProvider);
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -485,7 +484,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                     try {
                       final api = ref.read(apiServiceProvider);
                       await api.toggleMaintenanceMode(v);
-                      ref.read(settingsProvider.notifier).invalidate();
+                      ref.invalidate(settingsProvider);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(v ? 'Maintenance mode enabled' : 'Maintenance mode disabled')),
@@ -501,8 +500,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                   },
                 ),
                 const SizedBox(height: 24),
-                const TextFormField(
-                  decoration: InputDecoration(
+                TextFormField(
+                  decoration: const InputDecoration(
                     labelText: 'Maintenance Message',
                     hintText: 'We are currently performing scheduled maintenance...',
                   ),
@@ -516,7 +515,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                       try {
                         final api = ref.read(apiServiceProvider);
                         await api.updateSettings({'maintenanceMode': true});
-                        ref.read(settingsProvider.notifier).invalidate();
+                        ref.invalidate(settingsProvider);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Maintenance settings saved')),

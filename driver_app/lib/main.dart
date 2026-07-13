@@ -20,8 +20,8 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        darkModeProvider.overrideWithValue(darkMode),
-        languageProvider.overrideWithValue(language),
+        darkModeProvider.overrideWith((ref) => darkMode),
+        languageProvider.overrideWith((ref) => language),
       ],
       child: const PharmaWorldDriverApp(),
     ),

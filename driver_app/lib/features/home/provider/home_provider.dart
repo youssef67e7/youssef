@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_driver/core/di/injection.dart';
+import 'package:pharmaworld_driver/features/home/service/home_service.dart';
 import 'package:pharmaworld_driver/shared/models/delivery.dart';
 import 'package:pharmaworld_driver/shared/providers/auth_provider.dart';
 
-final homeServiceProvider = Provider((ref) {
-  return Injection.deliveryService;
+final homeServiceProvider = Provider<HomeService>((ref) {
+  return HomeService(dioClient: Injection.dioClient);
 });
 
 final activeDeliveryProvider = FutureProvider<Delivery?>((ref) async {

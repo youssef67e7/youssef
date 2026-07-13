@@ -63,8 +63,9 @@ class ExportButton extends StatelessWidget {
 
       if (format == 'csv') {
         final List<List<dynamic>> rows = [];
-        if (headers != null) {
-          rows.add(headers);
+        final h = headers;
+        if (h != null) {
+          rows.add(h.map((e) => e as dynamic).toList());
         }
         rows.addAll(data);
         content = const ListToCsvConverter().convert(rows);

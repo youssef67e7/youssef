@@ -14,7 +14,7 @@ final rolesProvider = StateNotifierProvider<RolesNotifier, List<Role>>((ref) {
 });
 
 class RolesNotifier extends StateNotifier<List<Role>> {
-  RolesNotifier() : super(const [
+  RolesNotifier() : super([
     Role(id: '1', name: 'Super Admin', description: 'Full system access', permissions: ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15'], userCount: 2, isSystem: true, createdAt: DateTime(2022, 1, 1)),
     Role(id: '2', name: 'Admin', description: 'System administration', permissions: ['1','2','3','4','5','6','10','12','13','14'], userCount: 5, isSystem: true, createdAt: DateTime(2022, 1, 1)),
     Role(id: '3', name: 'Pharmacy Owner', description: 'Pharmacy ownership management', permissions: ['1','3','5','10','12'], userCount: 47, isSystem: false, createdAt: DateTime(2022, 3, 1)),

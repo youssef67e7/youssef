@@ -80,7 +80,7 @@ class SystemHealthPage extends ConsumerWidget {
         const SizedBox(height: 24),
         _buildMetricsGrid(health, loc),
         const SizedBox(height: 24),
-        _buildCharts(health, loc),
+        _buildCharts(ref, health, loc),
       ],
     );
   }
@@ -152,7 +152,7 @@ class SystemHealthPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildCharts(SystemHealth health, AppLocalizations loc) {
+  Widget _buildCharts(WidgetRef ref, SystemHealth health, AppLocalizations loc) {
     final apiHistory = ref.watch(apiHealthHistoryProvider);
     return LayoutBuilder(
       builder: (context, constraints) {

@@ -6,7 +6,6 @@ import 'package:pharmaworld_dashboard/shared/widgets/chart_card.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
 import 'package:pharmaworld_dashboard/shared/models/models.dart';
-import 'package:pharmaworld_dashboard/shared/models/order_model.dart';
 import 'package:pharmaworld_dashboard/core/constants/app_colors.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 import 'package:pharmaworld_dashboard/features/dashboard/providers/dashboard_provider.dart';
@@ -377,7 +376,7 @@ class DashboardPage extends ConsumerWidget {
                   getTitlesWidget: (value, meta) {
                     final label = data[value.toInt()].label;
                     return SideTitleWidget(
-                      meta: meta,
+                      axisSide: meta.axisSide,
                       child: Text(
                         label.length > 8 ? '${label.substring(0, 8)}...' : label,
                         style: TextStyle(

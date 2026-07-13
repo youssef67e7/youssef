@@ -5,7 +5,6 @@ import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/chart_card.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/date_range_picker.dart';
 import 'package:pharmaworld_dashboard/core/constants/app_colors.dart';
-import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 
 class AnalyticsPage extends ConsumerStatefulWidget {
   const AnalyticsPage({super.key});
@@ -86,10 +85,10 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(kpi['title']!,
+                      Text(kpi['title'] as String,
                           style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
                       const SizedBox(height: 8),
-                      Text(kpi['value']!,
+                      Text(kpi['value'] as String,
                           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Row(
@@ -192,7 +191,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                         x: e.key,
                         barRods: [
                           BarChartRodData(
-                            toY: e.value['value']!,
+                            toY: (e.value['value'] as num).toDouble(),
                             color: AppColors.chartColors[e.key % AppColors.chartColors.length],
                             width: 30,
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),

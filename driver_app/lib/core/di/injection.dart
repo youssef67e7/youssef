@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:pharmaworld_driver/core/network/dio_client.dart';
@@ -7,10 +6,6 @@ import 'package:pharmaworld_driver/features/auth/repository/auth_repository.dart
 import 'package:pharmaworld_driver/features/auth/service/auth_service.dart';
 import 'package:pharmaworld_driver/features/deliveries/repository/delivery_repository.dart';
 import 'package:pharmaworld_driver/features/deliveries/service/delivery_service.dart';
-import 'package:pharmaworld_driver/features/earnings/provider/earnings_provider.dart';
-import 'package:pharmaworld_driver/features/profile/provider/profile_provider.dart';
-import 'package:pharmaworld_driver/features/home/provider/home_provider.dart';
-import 'package:pharmaworld_driver/features/settings/provider/settings_provider.dart';
 
 class Injection {
   static final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -24,7 +19,6 @@ class Injection {
 
   static AuthService get authService => AuthService(
         dioClient: _dioClient,
-        storage: _storage,
       );
 
   static AuthRepository get authRepository => AuthRepository(

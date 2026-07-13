@@ -120,7 +120,7 @@ class ReturnsPage extends ConsumerWidget {
         try {
           final api = ref.read(apiServiceProvider);
           await api.approveReturn(ret.id);
-          ref.read(returnsProvider.notifier).invalidate();
+          ref.invalidate(returnsProvider);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Return approved')),
@@ -149,7 +149,7 @@ class ReturnsPage extends ConsumerWidget {
                   try {
                     final api = ref.read(apiServiceProvider);
                     await api.rejectReturn(ret.id);
-                    ref.read(returnsProvider.notifier).invalidate();
+                    ref.invalidate(returnsProvider);
                     if (ctx.mounted) {
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -184,7 +184,7 @@ class ReturnsPage extends ConsumerWidget {
                   try {
                     final api = ref.read(apiServiceProvider);
                     await api.processRefund(ret.id, {'amount': ret.refundAmount});
-                    ref.read(returnsProvider.notifier).invalidate();
+                    ref.invalidate(returnsProvider);
                     if (ctx.mounted) {
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(

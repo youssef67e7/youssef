@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 import 'package:pharmaworld_dashboard/features/coupons/providers/coupons_provider.dart';
@@ -93,7 +92,7 @@ class CouponsPage extends ConsumerWidget {
                                     } else if (value == 'delete') {
                                       await api.deleteCoupon(coupon.id);
                                     }
-                                    ref.read(couponsProvider.notifier).invalidate();
+                                    ref.invalidate(couponsProvider);
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('Coupon $value')),
@@ -135,9 +134,9 @@ class CouponsPage extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const TextFormField(decoration: InputDecoration(labelText: 'Coupon Code')),
+                TextFormField(decoration: const InputDecoration(labelText: 'Coupon Code')),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Description')),
+                TextFormField(decoration: const InputDecoration(labelText: 'Description')),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Discount Type'),
@@ -148,15 +147,15 @@ class CouponsPage extends ConsumerWidget {
                   onChanged: (v) {},
                 ),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Discount Value'), keyboardType: TextInputType.number),
+                TextFormField(decoration: const InputDecoration(labelText: 'Discount Value'), keyboardType: TextInputType.number),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Minimum Order'), keyboardType: TextInputType.number),
+                TextFormField(decoration: const InputDecoration(labelText: 'Minimum Order'), keyboardType: TextInputType.number),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Max Usage'), keyboardType: TextInputType.number),
+                TextFormField(decoration: const InputDecoration(labelText: 'Max Usage'), keyboardType: TextInputType.number),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Valid From'), readOnly: true),
+                TextFormField(decoration: const InputDecoration(labelText: 'Valid From'), readOnly: true),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Valid To'), readOnly: true),
+                TextFormField(decoration: const InputDecoration(labelText: 'Valid To'), readOnly: true),
               ],
             ),
           ),
@@ -168,7 +167,7 @@ class CouponsPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.createCoupon({'code': 'NEWCOUPON'});
-                ref.read(couponsProvider.notifier).invalidate();
+                ref.invalidate(couponsProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coupon created')));

@@ -141,7 +141,7 @@ class BrandsPage extends ConsumerWidget {
                   'name': nameController.text,
                   'description': descController.text,
                 });
-                ref.read(brandsProvider.notifier).invalidate();
+                ref.invalidate(brandsProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -191,7 +191,7 @@ class BrandsPage extends ConsumerWidget {
                   'name': nameController.text,
                   'description': descController.text,
                 });
-                ref.read(brandsProvider.notifier).invalidate();
+                ref.invalidate(brandsProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -225,7 +225,7 @@ class BrandsPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.deleteBrand(brand.id);
-                ref.read(brandsProvider.notifier).invalidate();
+                ref.invalidate(brandsProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

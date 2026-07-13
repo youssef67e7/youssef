@@ -1,21 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_driver/features/auth/repository/auth_repository.dart';
+import 'package:pharmaworld_driver/features/auth/service/auth_service.dart';
 import 'package:pharmaworld_driver/shared/models/user.dart';
 import 'package:pharmaworld_driver/shared/providers/auth_provider.dart';
+import 'package:pharmaworld_driver/core/di/injection.dart';
+
+final authServiceProvider = Provider<AuthService>((ref) {
+  return AuthService(dioClient: Injection.dioClient);
+});
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
     authService: ref.read(authServiceProvider),
-    storage: ref.read(storageProvider),
+    storage: Injection.storage,
   );
-});
-
-final authServiceProvider = Provider((ref) {
-  return ref.read(authRepositoryProvider);
-});
-
-final storageProvider = Provider((ref) {
-  throw UnimplementedError('Override in main');
 });
 
 final loginProvider = StateNotifierProvider<LoginNotifier, AsyncValue<String?>>((ref) {

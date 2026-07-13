@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pharmaworld_driver/shared/providers/auth_provider.dart';
 
 final locationProvider = StateNotifierProvider<LocationNotifier, LocationState>((ref) {
   return LocationNotifier();

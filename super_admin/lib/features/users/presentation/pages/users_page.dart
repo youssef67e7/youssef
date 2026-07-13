@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/helpers.dart';
@@ -12,6 +11,7 @@ import '../../../../shared/widgets/role_badge.dart';
 import '../../../../shared/widgets/user_avatar.dart';
 import '../../../../shared/widgets/confirm_dialog.dart';
 import '../../../../shared/widgets/export_button.dart';
+import '../../../../shared/widgets/status_indicator.dart';
 
 final usersProvider = Provider<List<AppUser>>((ref) {
   return [

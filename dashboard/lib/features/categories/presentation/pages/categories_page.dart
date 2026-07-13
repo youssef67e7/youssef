@@ -103,11 +103,11 @@ class CategoriesPage extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const TextFormField(decoration: InputDecoration(labelText: 'Name (English)')),
+                TextFormField(decoration: const InputDecoration(labelText: 'Name (English)')),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Name (Arabic)')),
+                TextFormField(decoration: const InputDecoration(labelText: 'Name (Arabic)')),
                 const SizedBox(height: 12),
-                const TextFormField(decoration: InputDecoration(labelText: 'Description')),
+                TextFormField(decoration: const InputDecoration(labelText: 'Description')),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Parent Category'),
@@ -129,7 +129,7 @@ class CategoriesPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.createCategory({'name': 'New Category'});
-                ref.read(categoriesProvider.notifier).invalidate();
+                ref.invalidate(categoriesProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -181,7 +181,7 @@ class CategoriesPage extends ConsumerWidget {
                   'name': nameController.text,
                   'nameAr': nameArController.text,
                 });
-                ref.read(categoriesProvider.notifier).invalidate();
+                ref.invalidate(categoriesProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -215,7 +215,7 @@ class CategoriesPage extends ConsumerWidget {
               try {
                 final api = ref.read(apiServiceProvider);
                 await api.deleteCategory(cat.id);
-                ref.read(categoriesProvider.notifier).invalidate();
+                ref.invalidate(categoriesProvider);
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

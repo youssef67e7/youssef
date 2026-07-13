@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/export_button.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 import 'package:pharmaworld_dashboard/features/customers/providers/customers_provider.dart';
@@ -131,7 +130,7 @@ class CustomersPage extends ConsumerWidget {
                                           try {
                                             final api = ref.read(apiServiceProvider);
                                             await api.toggleBlockCustomer(customer.id);
-                                            ref.read(customersProvider.notifier).invalidate();
+                                            ref.invalidate(customersProvider);
                                             if (context.mounted) {
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 SnackBar(content: Text(

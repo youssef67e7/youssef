@@ -8,12 +8,14 @@ class AppLocalizations {
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 
+  String? get accept => null;
   String? get accepted => null;
   String? get activeDelivery => null;
   String? get arabic => null;
   String? get appTitle => null;
   String? get areYouSure => null;
   String? get availabilitySchedule => null;
+  String? get averageRating => null;
   String? get baseFee => null;
   String? get bonuses => null;
   String? get call => null;
@@ -31,6 +33,7 @@ class AppLocalizations {
   String? get distance => null;
   String? get documents => null;
   String? get didntReceiveCode => null;
+  String? get dropoff => null;
   String? get editProfile => null;
   String? get email => null;
   String? get english => null;
@@ -69,6 +72,7 @@ class AppLocalizations {
   String? get resend => null;
   String? get routeMap => null;
   String? get save => null;
+  String? get sendOtp => null;
   String? get settings => null;
   String? get signInToContinue => null;
   String? get specialInstructions => null;

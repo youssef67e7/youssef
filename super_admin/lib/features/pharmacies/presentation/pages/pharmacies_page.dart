@@ -9,6 +9,7 @@ import '../../../../shared/widgets/page_header.dart';
 import '../../../../shared/widgets/status_indicator.dart';
 import '../../../../shared/widgets/confirm_dialog.dart';
 import '../../../../shared/widgets/chart_card.dart';
+import '../../../../core/utils/extensions.dart';
 
 final pharmaciesProvider = Provider<List<Branch>>((ref) {
   return [
@@ -45,7 +46,7 @@ class PharmaciesPage extends ConsumerWidget {
         ),
         _buildComparisonChart(pharmacies, loc),
         const SizedBox(height: 24),
-        _buildPharmaciesTable(pharmacies, loc),
+        _buildPharmaciesTable(context, pharmacies, loc),
       ],
     );
   }
@@ -59,7 +60,7 @@ class PharmaciesPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPharmaciesTable(List<Branch> pharmacies, AppLocalizations loc) {
+  Widget _buildPharmaciesTable(BuildContext context, List<Branch> pharmacies, AppLocalizations loc) {
     return DataTableWidget<Branch>(
       data: pharmacies,
       columns: const [

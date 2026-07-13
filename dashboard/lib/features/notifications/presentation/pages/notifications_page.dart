@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/core/utils/formatters.dart';
 import 'package:pharmaworld_dashboard/features/notifications/providers/notifications_provider.dart';
@@ -65,7 +64,7 @@ class NotificationsPage extends ConsumerWidget {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
@@ -95,13 +94,13 @@ class NotificationsPage extends ConsumerWidget {
               error: (e, _) => Center(child: Text('Error: $e')),
             )
           else
-            _buildSendNotificationForm(context),
+            _buildSendNotificationForm(context, ref),
         ],
       ),
     );
   }
 
-  Widget _buildSendNotificationForm(BuildContext context) {
+  Widget _buildSendNotificationForm(BuildContext context, WidgetRef ref) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -111,10 +110,10 @@ class NotificationsPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const TextFormField(decoration: InputDecoration(labelText: 'Title')),
+              TextFormField(decoration: const InputDecoration(labelText: 'Title')),
               const SizedBox(height: 16),
-              const TextFormField(
-                decoration: InputDecoration(labelText: 'Body'),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Body'),
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
@@ -128,7 +127,7 @@ class NotificationsPage extends ConsumerWidget {
                 onChanged: (v) {},
               ),
               const SizedBox(height: 16),
-              const TextFormField(decoration: InputDecoration(labelText: 'Image URL (optional)')),
+              TextFormField(decoration: const InputDecoration(labelText: 'Image URL (optional)')),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -141,7 +140,7 @@ class NotificationsPage extends ConsumerWidget {
                         'body': 'Notification body',
                         'targetType': 'all',
                       });
-                      ref.read(notificationsProvider.notifier).invalidate();
+                      ref.invalidate(notificationsProvider);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Notification sent successfully')),
@@ -207,7 +206,7 @@ class NotificationsPage extends ConsumerWidget {
                     'body': bodyController.text,
                     'targetType': targetType,
                   });
-                  ref.read(notificationsProvider.notifier).invalidate();
+                  ref.invalidate(notificationsProvider);
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(

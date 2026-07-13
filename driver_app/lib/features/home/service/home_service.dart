@@ -6,6 +6,11 @@ class HomeService {
 
   HomeService({required DioClient dioClient}) : _dioClient = dioClient;
 
+  Future<Map<String, dynamic>> getActiveDelivery() async {
+    final response = await _dioClient.get(ApiConstants.activeDelivery);
+    return response.data;
+  }
+
   Future<Map<String, dynamic>> getDashboard() async {
     final response = await _dioClient.get(ApiConstants.activeDelivery);
     return response.data;

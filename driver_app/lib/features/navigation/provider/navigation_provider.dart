@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pharmaworld_driver/core/constants/app_colors.dart';
-import 'package:pharmaworld_driver/shared/providers/auth_provider.dart';
 
 final locationServiceProvider = Provider((ref) {
   return LocationService();
@@ -19,11 +17,11 @@ class LocationService {
     final dLat = _toRadians(lat2 - lat1);
     final dLng = _toRadians(lng2 - lng1);
     final a = (dLat / 2) * (dLat / 2) +
-        _toRadians(lat1).cos() *
-            _toRadians(lat2).cos() *
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
             (dLng / 2) *
             (dLng / 2);
-    final c = 2 * a.sqrt().asin();
+    final c = 2 * asin(sqrt(a));
     return R * c;
   }
 
