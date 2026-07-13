@@ -136,6 +136,7 @@ class _OrdersPageState extends ConsumerState<OrdersPage>
                   ],
                 ),
               ),
+            ),
             );
           },
         );

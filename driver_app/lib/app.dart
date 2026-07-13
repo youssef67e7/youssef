@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:pharmaworld_driver/core/theme/app_theme.dart';
 import 'package:pharmaworld_driver/core/router/app_router.dart';
 import 'package:pharmaworld_driver/core/localization/l10n.dart';

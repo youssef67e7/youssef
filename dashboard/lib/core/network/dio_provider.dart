@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/core/constants/app_constants.dart';
-import 'package:pharmaworld_dashboard/core/network/dio_client.dart';
 import 'package:pharmaworld_dashboard/core/network/auth_interceptor.dart';
 import 'package:pharmaworld_dashboard/core/network/logging_interceptor.dart';
 import 'package:shared_preferences/shared_preferences.dart';

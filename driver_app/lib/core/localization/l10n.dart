@@ -1,23 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
-  const AppLocalizationsDelegate();
-
-  @override
-  bool isSupported(Locale locale) {
-    return ['en', 'ar'].contains(locale.languageCode);
-  }
-
-  @override
-  Future<AppLocalizations> load(Locale locale) async {
-    return AppLocalizations.delegate.load(locale);
-  }
-
-  @override
-  bool shouldReload(AppLocalizationsDelegate old) => false;
-}
+import 'package:pharmaworld_driver/core/localization/app_localizations.dart';
 
 class LocalizationConfig {
   static const supportedLocales = [

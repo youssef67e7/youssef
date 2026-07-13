@@ -1,22 +1,18 @@
 import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
 import 'package:pharmaworld_dashboard/core/network/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pharmaworld_dashboard/core/network/dio_provider.dart';
 
-final getIt = GetIt.instance;
+Dio? _dio;
+ApiService? _apiService;
+SharedPreferences? _prefs;
 
-void setupServiceLocator() {
-  getIt.registerLazySingletonAsync<Dio>(() async {
-    final dio = DioClient.createDio();
-    return dio;
-  });
+Dio get getDio => _dio ??= DioClient.createDio();
+ApiService get getApiService => _apiService ??= ApiService(getDio);
+SharedPreferences get getPrefs => _prefs!;
 
-  getIt.registerLazySingletonAsync<ApiService>(() async {
-    final dio = await getIt.getAsync<Dio>();
-    return ApiService(dio);
-  });
-
-  getIt.registerLazySingletonAsync<SharedPreferences>(
-      () => SharedPreferences.getInstance());
+Future<void> setupServiceLocator() async {
+  _dio = DioClient.createDio();
+  _apiService = ApiService(_dio!);
+  _prefs = await SharedPreferences.getInstance();
 }

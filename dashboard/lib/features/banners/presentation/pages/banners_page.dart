@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/page_header.dart';
 import 'package:pharmaworld_dashboard/shared/widgets/status_badge.dart';
-import 'package:pharmaworld_dashboard/shared/models/models.dart';
 import 'package:pharmaworld_dashboard/shared/providers/auth_provider.dart';
 import 'package:pharmaworld_dashboard/features/banners/providers/banners_provider.dart';
 
@@ -27,7 +26,7 @@ class BannersPage extends ConsumerWidget {
                   try {
                     final api = ref.read(apiServiceProvider);
                     await api.createBanner({'title': 'New Banner'});
-                    ref.read(bannersProvider.notifier).invalidate();
+                                            ref.invalidate(bannersProvider);
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +107,7 @@ class BannersPage extends ConsumerWidget {
                                           try {
                                             final api = ref.read(apiServiceProvider);
                                             await api.deleteBanner(banner.id);
-                                            ref.read(bannersProvider.notifier).invalidate();
+                    ref.invalidate(bannersProvider);
                                             if (context.mounted) {
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(content: Text('Banner deleted')),

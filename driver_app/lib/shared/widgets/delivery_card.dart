@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pharmaworld_driver/core/localization/app_localizations.dart';
 import 'package:pharmaworld_driver/core/constants/app_colors.dart';
 import 'package:pharmaworld_driver/core/utils/formatters.dart';
 import 'package:pharmaworld_driver/core/utils/helpers.dart';

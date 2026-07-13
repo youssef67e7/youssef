@@ -6,16 +6,16 @@ class Formatters {
   static final DateFormat _dateFormat = DateFormat('MMM dd, yyyy');
   static final DateFormat _dateTimeFormat = DateFormat('MMM dd, yyyy HH:mm');
   static final DateFormat _timeFormat = DateFormat('HH:mm');
-  static final DateFormat _numberFormat = DateFormat('#,##0.00');
-  static final DateFormat _currencyFormat = DateFormat('#,##0.00');
   static final DateFormat _compactFormat = DateFormat('MMM dd');
 
   static String formatDate(DateTime date) => _dateFormat.format(date);
   static String formatDateTime(DateTime date) => _dateTimeFormat.format(date);
   static String formatTime(DateTime date) => _timeFormat.format(date);
-  static String formatNumber(double number) => _numberFormat.format(number);
+  static String formatNumber(double number) {
+    return number.toStringAsFixed(2);
+  }
   static String formatCurrency(double amount, {String symbol = '\$'}) {
-    return '$symbol${_currencyFormat.format(amount)}';
+    return '$symbol${amount.toStringAsFixed(2)}';
   }
 
   static String formatCompact(DateTime date) => _compactFormat.format(date);

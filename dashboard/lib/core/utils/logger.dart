@@ -1,29 +1,23 @@
-import 'package:logger/logger.dart';
-
 class Logger {
-  static final Logger _logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 0,
-      errorMethodCount: 5,
-      lineLength: 80,
-      colors: true,
-      printEmojis: true,
-    ),
-  );
+  Logger._();
 
   static void debug(String message) {
-    _logger.d(message);
+    // ignore: avoid_print
+    print('[DEBUG] $message');
   }
 
   static void info(String message) {
-    _logger.i(message);
+    // ignore: avoid_print
+    print('[INFO] $message');
   }
 
   static void warning(String message) {
-    _logger.w(message);
+    // ignore: avoid_print
+    print('[WARNING] $message');
   }
 
   static void error(String message) {
-    _logger.e(message);
+    // ignore: avoid_print
+    print('[ERROR] $message');
   }
 }

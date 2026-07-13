@@ -79,10 +79,10 @@ class MedicineDetailPage extends ConsumerWidget {
                     ],
                   ),
                   SizedBox(height: 8.h),
-                  const Row(
+                  Row(
                     children: [
                       StarRating(rating: 4.5),
-                      SizedBox(width: 8.w),
+                      SizedBox(width: 8),
                       Text(
                         '4.5 (120 reviews)',
                         style: theme.textTheme.bodySmall,

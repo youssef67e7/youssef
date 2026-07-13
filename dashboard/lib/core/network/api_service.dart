@@ -130,7 +130,7 @@ class ApiService {
       get(ApiEndpoints.offers, queryParameters: params);
   Future<Response> createOffer(Map<String, dynamic> data) =>
       post(ApiEndpoints.offers, data: data);
-  Future(Response> updateOffer(String id, Map<String, dynamic> data) =>
+  Future<Response> updateOffer(String id, Map<String, dynamic> data) =>
       put('${ApiEndpoints.offers}/$id', data: data);
   Future<Response> deleteOffer(String id) =>
       delete('${ApiEndpoints.offers}/$id');
