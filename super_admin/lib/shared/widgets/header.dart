@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../core/localization/app_localizations.dart';
-import '../../core/utils/helpers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import 'notification_badge.dart';

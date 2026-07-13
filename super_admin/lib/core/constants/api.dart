@@ -35,8 +35,8 @@ class ApiConstants {
   static const String permissionMatrix = '$roles/permission-matrix';
 
   static const String featureFlags = '$superAdmin/feature-flags';
-  static String featureFlagById(String id) => '$feature-flags/$id';
-  static String featureFlagToggle(String id) => '$feature-flags/$id/toggle';
+  static String featureFlagById(String id) => '$featureFlags/$id';
+  static String featureFlagToggle(String id) => '$featureFlags/$id/toggle';
 
   static const String maintenanceMode = '$superAdmin/maintenance';
   static const String maintenanceToggle = '$maintenanceMode/toggle';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-import '../../core/localization/app_localizations.dart';
+import '../../core/utils/extensions.dart';
 
 class PermissionMatrix extends StatelessWidget {
   final List<Map<String, dynamic>> roles;

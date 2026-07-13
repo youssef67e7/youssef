@@ -22,8 +22,8 @@ class AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401 && !_isRefreshing) {
       _isRefreshing = true;
+      final prefs = await SharedPreferences.getInstance();
       try {
-        final prefs = await SharedPreferences.getInstance();
         final refreshToken = prefs.getString(StorageKeys.refreshToken);
         if (refreshToken != null) {
           final response = await _dio.post('/v1/super-admin/auth/refresh',

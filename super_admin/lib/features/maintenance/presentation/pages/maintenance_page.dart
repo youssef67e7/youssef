@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/status_indicator.dart';
-import '../../../shared/widgets/confirm_dialog.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../shared/widgets/page_header.dart';
+import '../../../../shared/widgets/status_indicator.dart';
+import '../../../../shared/widgets/confirm_dialog.dart';
 
 class MaintenanceState {
   final bool isEnabled;
@@ -121,7 +121,7 @@ class _MaintenancePageState extends ConsumerState<MaintenancePage> {
                 ),
                 Switch(
                   value: state.isEnabled,
-                  activeColor: AppColors.warning,
+                  activeThumbColor: AppColors.warning,
                   onChanged: (_) {
                     ConfirmDialog.show(
                       context: context,

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../core/utils/formatters.dart';
-import '../../../core/utils/helpers.dart';
-import '../../../shared/models/user.dart';
-import '../../../shared/widgets/data_table_widget.dart';
-import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/role_badge.dart';
-import '../../../shared/widgets/user_avatar.dart';
-import '../../../shared/widgets/confirm_dialog.dart';
-import '../../../shared/widgets/export_button.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/formatters.dart';
+import '../../../../core/utils/helpers.dart';
+import '../../../../core/utils/extensions.dart';
+import '../../../../shared/models/user.dart';
+import '../../../../shared/widgets/data_table_widget.dart';
+import '../../../../shared/widgets/page_header.dart';
+import '../../../../shared/widgets/role_badge.dart';
+import '../../../../shared/widgets/user_avatar.dart';
+import '../../../../shared/widgets/confirm_dialog.dart';
+import '../../../../shared/widgets/export_button.dart';
 
 final usersProvider = Provider<List<AppUser>>((ref) {
   return [

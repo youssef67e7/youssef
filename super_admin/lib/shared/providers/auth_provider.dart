@@ -5,6 +5,7 @@ import '../../core/constants/storage.dart';
 import '../../core/network/api_service.dart';
 import '../../core/network/dio_client.dart';
 import '../../core/utils/logger.dart';
+import '../../core/di/providers.dart';
 
 class AuthState {
   final bool isLoggedIn;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../shared/models/feature_flag.dart';
-import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/confirm_dialog.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../shared/models/feature_flag.dart';
+import '../../../../shared/widgets/page_header.dart';
+import '../../../../shared/widgets/confirm_dialog.dart';
 
 final featureFlagsProvider = StateNotifierProvider<FeatureFlagsNotifier, List<FeatureFlag>>((ref) {
   return FeatureFlagsNotifier();
@@ -94,7 +94,7 @@ class _FeatureFlagsPageState extends ConsumerState<FeatureFlagsPage> {
                 Switch(
                   value: flag.isEnabled,
                   onChanged: (_) => ref.read(featureFlagsProvider.notifier).toggleFlag(flag.id),
-                  activeColor: AppColors.success,
+                  activeThumbColor: AppColors.success,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

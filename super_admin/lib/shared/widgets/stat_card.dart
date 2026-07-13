@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/constants/colors.dart';
-import '../../core/utils/helpers.dart';
 
 class StatCard extends StatelessWidget {
   final String title;

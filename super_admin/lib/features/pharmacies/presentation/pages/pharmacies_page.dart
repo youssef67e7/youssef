@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../core/utils/formatters.dart';
-import '../../../shared/models/branch.dart';
-import '../../../shared/widgets/data_table_widget.dart';
-import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/status_indicator.dart';
-import '../../../shared/widgets/confirm_dialog.dart';
-import '../../../shared/widgets/chart_card.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/formatters.dart';
+import '../../../../shared/models/branch.dart';
+import '../../../../shared/widgets/data_table_widget.dart';
+import '../../../../shared/widgets/page_header.dart';
+import '../../../../shared/widgets/status_indicator.dart';
+import '../../../../shared/widgets/confirm_dialog.dart';
+import '../../../../shared/widgets/chart_card.dart';
 
 final pharmaciesProvider = Provider<List<Branch>>((ref) {
   return [

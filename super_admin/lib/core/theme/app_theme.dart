@@ -27,12 +27,12 @@ class AppTheme {
         elevation: 0,
         shadowColor: Colors.black12,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.cardLight,
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      dataTableTheme: DataTableTheme(
+      dataTableTheme: DataTableThemeData(
         headingTextStyle: TextStyle(
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryLight,
@@ -96,12 +96,12 @@ class AppTheme {
         elevation: 0,
         shadowColor: Colors.black26,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.cardDark,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      dataTableTheme: DataTableTheme(
+      dataTableTheme: DataTableThemeData(
         headingTextStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryDark,

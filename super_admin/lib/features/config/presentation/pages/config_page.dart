@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../shared/widgets/page_header.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../shared/widgets/page_header.dart';
 
 class ConfigSection {
   final String name;

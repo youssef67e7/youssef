@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../core/utils/formatters.dart';
-import '../../../core/utils/helpers.dart';
-import '../../../shared/models/system_health.dart';
-import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/chart_card.dart';
-import '../../../shared/widgets/status_indicator.dart';
-import '../../../shared/widgets/stat_card.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/formatters.dart';
+import '../../../../core/utils/helpers.dart';
+import '../../../../shared/models/system_health.dart';
+import '../../../../shared/widgets/page_header.dart';
+import '../../../../shared/widgets/chart_card.dart';
+import '../../../../shared/widgets/status_indicator.dart';
+import '../../../../shared/widgets/stat_card.dart';
 
 final systemHealthProvider = Provider<SystemHealth>((ref) {
   return SystemHealth(

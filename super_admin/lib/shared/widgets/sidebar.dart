@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/constants/colors.dart';
-import '../../core/constants/strings.dart';
 import '../../core/localization/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
@@ -48,7 +46,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
                     _SidebarItem(Icons.dashboard, loc.translate('dashboard'), '/dashboard'),
                   ], currentPath, isDark),
                   _buildSection(loc.translate('userManagement'), [
-                    _SidebarItem(Icons.pharmacy, loc.translate('pharmacies'), '/pharmacies'),
+                    _SidebarItem(Icons.local_pharmacy, loc.translate('pharmacies'), '/pharmacies'),
                     _SidebarItem(Icons.people, loc.translate('users'), '/users'),
                     _SidebarItem(Icons.admin_panel_settings, loc.translate('roles'), '/roles'),
                   ], currentPath, isDark),
