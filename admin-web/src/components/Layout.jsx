@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LayoutDashboard, Users, Pill, ShoppingCart, Tags, Award, Ticket, Truck, Bell, Activity, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Pill, ShoppingCart, Tags, Award, Ticket, Truck, Bell, Activity, LogOut, Menu, X, Package, Percent, UsersRound, Bot, Stethoscope, Warehouse, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 const nav = [
@@ -8,11 +8,17 @@ const nav = [
   { to: '/services', icon: Activity, label: 'Services' },
   { to: '/users', icon: Users, label: 'Users' },
   { to: '/medicines', icon: Pill, label: 'Medicines' },
+  { to: '/inventory', icon: Warehouse, label: 'Inventory' },
+  { to: '/suppliers', icon: Package, label: 'Suppliers' },
   { to: '/orders', icon: ShoppingCart, label: 'Orders' },
   { to: '/categories', icon: Tags, label: 'Categories' },
   { to: '/brands', icon: Award, label: 'Brands' },
   { to: '/coupons', icon: Ticket, label: 'Coupons' },
+  { to: '/promotions', icon: Percent, label: 'Promotions' },
   { to: '/delivery', icon: Truck, label: 'Delivery' },
+  { to: '/staff', icon: UsersRound, label: 'Staff' },
+  { to: '/telemedicine', icon: Stethoscope, label: 'Telemedicine' },
+  { to: '/ai-prescription', icon: Bot, label: 'AI Prescription' },
   { to: '/notifications', icon: Bell, label: 'Notifications' },
 ];
 

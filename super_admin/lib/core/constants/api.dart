@@ -1,7 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'https://api.pharmaworld.com';
+  static const String baseUrl = 'https://pharmaworld.vercel.app';
   static const String apiVersion = '/api/v1';
   static const String superAdmin = '$apiVersion/super-admin';
 
@@ -63,4 +63,18 @@ class ApiConstants {
   static const String systemHealthDatabase = '$systemHealth/database';
   static const String systemHealthCache = '$systemHealth/cache';
   static const String systemHealthSessions = '$systemHealth/sessions';
+
+  static const String billing = '$superAdmin/billing';
+  static const String billingSummary = '$billing/summary';
+  static const String billingInvoices = '$billing/invoices';
+  static const String billingPayments = '$billing/payments';
+
+  static const String subscriptions = '$superAdmin/subscriptions';
+  static String subscriptionById(String id) => '$subscriptions/$id';
+  static String subscriptionCancel(String id) => '$subscriptions/$id/cancel';
+
+  static const String integrations = '$superAdmin/integrations';
+  static String integrationById(String id) => '$integrations/$id';
+  static String integrationToggle(String id) => '$integrations/$id/toggle';
+  static String integrationSync(String id) => '$integrations/$id/sync';
 }

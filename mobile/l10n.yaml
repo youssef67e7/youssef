@@ -5,4 +5,3 @@ output-class: AppLocalizations
 output-class-file: app_localizations.dart
 preferred-supported-locales: ["en"]
 nullable-getter: false
-synthetic-package: false

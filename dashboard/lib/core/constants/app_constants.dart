@@ -5,8 +5,8 @@ class AppConstants {
 
   static const String appName = 'PharmaWorld';
   static const String appVersion = '1.0.0';
-  static const String baseUrl = 'https://api.pharmaworld.com';
-  static const String devBaseUrl = 'https://api.pharmaworld.com';
+  static const String baseUrl = 'https://pharmaworld.vercel.app';
+  static const String devBaseUrl = 'https://pharmaworld.vercel.app';
   static const String apiVersion = '/api/v1';
 
   static const Duration timeout = Duration(seconds: 30);

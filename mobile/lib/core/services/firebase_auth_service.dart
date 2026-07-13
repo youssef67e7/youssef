@@ -1,16 +1,31 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
-  return FirebaseAuth.instance;
+final firebaseAuthProvider = Provider<FirebaseAuth?>((ref) {
+  try {
+    return FirebaseAuth.instance;
+  } catch (e) {
+    debugPrint('FirebaseAuth.instance failed: $e');
+    return null;
+  }
 });
 
-final firebaseAuthServiceProvider = Provider<FirebaseAuthService>((ref) {
-  return FirebaseAuthService(ref.watch(firebaseAuthProvider));
+final firebaseAuthServiceProvider = Provider<FirebaseAuthService?>((ref) {
+  final auth = ref.watch(firebaseAuthProvider);
+  if (auth == null) return null;
+  return FirebaseAuthService(auth);
 });
 
 final firebaseUserProvider = StreamProvider<User?>((ref) {
-  return ref.watch(firebaseAuthProvider).authStateChanges();
+  try {
+    final auth = ref.watch(firebaseAuthProvider);
+    if (auth == null) return Stream<User?>.value(null);
+    return auth.authStateChanges();
+  } catch (e) {
+    debugPrint('firebaseUserProvider failed: $e');
+    return Stream<User?>.value(null);
+  }
 });
 
 class FirebaseAuthService {

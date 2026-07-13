@@ -28,7 +28,7 @@ final configSectionsProvider = Provider<List<ConfigSection>>((ref) {
     ConfigSection(name: 'Environment', icon: '🌐', items: [
       ConfigItem(key: 'env', label: 'Environment', value: 'production'),
       ConfigItem(key: 'region', label: 'Region', value: 'us-east-1'),
-      ConfigItem(key: 'api_endpoint', label: 'API Endpoint', value: 'https://api.pharmaworld.com'),
+      ConfigItem(key: 'api_endpoint', label: 'API Endpoint', value: 'https://pharmaworld.vercel.app'),
       ConfigItem(key: 'debug_mode', label: 'Debug Mode', value: 'false'),
       ConfigItem(key: 'max_upload', label: 'Max Upload Size', value: '50 MB'),
     ]),

@@ -41,37 +41,7 @@ jobs:
             echo "$GOOGLE_SERVICES_B64" | base64 -d > android/app/google-services.json
             echo "Using real google-services.json from secrets"
           else
-            cat > android/app/google-services.json << 'DUMMY'
-            {
-              "project_info": {
-                "project_number": "000000000000",
-                "project_id": "pharmaworld-placeholder",
-                "storage_bucket": "pharmaworld-placeholder.appspot.com"
-              },
-              "client": [
-                {
-                  "client_info": {
-                    "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
-                    "android_client_info": {
-                      "package_name": "com.pharmaworld.mobile"
-                    }
-                  },
-                  "oauth_client": [],
-                  "api_key": [
-                    {
-                      "current_key": "AIzaSyDummyKeyForBuildOnly"
-                    }
-                  ],
-                  "services": {
-                    "appinvite_service": {
-                      "other_platform_oauth_client": []
-                    }
-                  }
-                }
-              ],
-              "configuration_version": "1"
-            }
-            DUMMY
+            printf '{\n  "project_info": {\n    "project_number": "000000000000",\n    "project_id": "pharmaworld-placeholder",\n    "storage_bucket": "pharmaworld-placeholder.appspot.com"\n  },\n  "client": [\n    {\n      "client_info": {\n        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",\n        "android_client_info": {\n          "package_name": "com.pharmaworld.mobile"\n        }\n      },\n      "oauth_client": [],\n      "api_key": [\n        {\n          "current_key": "AIzaSyDummyKeyForBuildOnly"\n        }\n      ],\n      "services": {\n        "appinvite_service": {\n          "other_platform_oauth_client": []\n        }\n      }\n    }\n  ],\n  "configuration_version": "1"\n}\n' > android/app/google-services.json
             echo "WARNING: Using dummy google-services.json. Firebase will not work in this build."
           fi
         env:

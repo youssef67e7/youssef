@@ -318,6 +318,7 @@ export class AuthService {
 
   private sanitizeUser(user: UserDocument) {
     const obj = user.toObject();
+    obj.id = obj._id.toString();
     delete obj.password;
     delete obj.mfaSecret;
     delete obj.passwordResetToken;

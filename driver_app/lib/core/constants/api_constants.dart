@@ -1,7 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'https://api.pharmaworld.com';
+  static const String baseUrl = 'https://pharmaworld.vercel.app';
   static const String apiVersion = '/api/v1';
 
   static const String login = '$apiVersion/driver/login';

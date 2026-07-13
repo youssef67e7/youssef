@@ -66,14 +66,14 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
   LoginNotifier({
     required LoginUseCase loginUseCase,
     required AuthStateNotifier authStateNotifier,
-    required FirebaseAuthService firebaseAuthService,
+    required FirebaseAuthService? firebaseAuthService,
   })  : _loginUseCase = loginUseCase,
         _authStateNotifier = authStateNotifier,
         _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
   final LoginUseCase _loginUseCase;
   final AuthStateNotifier _authStateNotifier;
-  final FirebaseAuthService _firebaseAuthService;
+  final FirebaseAuthService? _firebaseAuthService;
 
   Future<void> login({
     required String email,
@@ -81,34 +81,26 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final userCredential = await _firebaseAuthService.loginWithEmail(
-        email: email,
-        password: password,
+      // Try backend-only login first
+      final result = await _loginUseCase(
+        LoginParams(email: email, password: password),
       );
-
-      final firebaseUser = userCredential.user;
-      if (firebaseUser != null) {
-        final idToken = await firebaseUser.getIdToken();
-        final result = await _loginUseCase(
-          LoginParams(email: email, password: password),
+      if (result != null && result.data != null) {
+        await _authStateNotifier.login(
+          accessToken: result.data!.accessToken ?? '',
+          refreshToken: result.data!.refreshToken ?? '',
+          user: UserData(
+            id: result.data!.user?.id ?? email,
+            name: result.data!.user?.name ?? '',
+            email: result.data!.user?.email ?? email,
+            phone: result.data!.user?.phone,
+            avatar: result.data!.user?.avatar,
+          ),
         );
-        if (result != null && result.data != null) {
-          await _authStateNotifier.login(
-            accessToken: result.data!.accessToken ?? '',
-            refreshToken: result.data!.refreshToken ?? '',
-            user: UserData(
-              id: result.data!.user?.id ?? firebaseUser.uid,
-              name: result.data!.user?.name ?? firebaseUser.displayName ?? '',
-              email: result.data!.user?.email ?? firebaseUser.email ?? '',
-              phone: result.data!.user?.phone ?? firebaseUser.phoneNumber,
-              avatar: result.data!.user?.avatar ?? firebaseUser.photoURL,
-            ),
-          );
-        }
         state = AsyncValue.data(result);
+        return;
       }
-    } on FirebaseAuthException catch (e) {
-      state = AsyncValue.error(_mapFirebaseError(e), StackTrace.current);
+      state = AsyncValue.error('Login failed: no data returned', StackTrace.current);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -164,13 +156,16 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final userCredential = await _firebaseAuthService.verifySmsCode(
+      if (_firebaseAuthService == null) {
+        state = AsyncValue.error('Firebase Auth not available', StackTrace.current);
+        return;
+      }
+      final userCredential = await _firebaseAuthService!.verifySmsCode(
         verificationId: verificationId,
         smsCode: smsCode,
       );
       final firebaseUser = userCredential.user;
       if (firebaseUser != null) {
-        final idToken = await firebaseUser.getIdToken();
         final result = await _loginUseCase(
           LoginParams(
             email: firebaseUser.email ?? '',
@@ -203,11 +198,15 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
     required void Function(String verificationId) onCodeSent,
     required void Function(String error) onError,
   }) async {
-    await _firebaseAuthService.verifyPhoneNumber(
+    if (_firebaseAuthService == null) {
+      onError('Firebase Auth not available');
+      return;
+    }
+    await _firebaseAuthService!.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (credential) async {
         try {
-          await _firebaseAuthService.verifySmsCode(
+          await _firebaseAuthService!.verifySmsCode(
             verificationId: '',
             smsCode: credential.smsCode ?? '',
           );
@@ -263,12 +262,12 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
 
   RegisterNotifier({
     required RegisterUseCase registerUseCase,
-    required FirebaseAuthService firebaseAuthService,
+    required FirebaseAuthService? firebaseAuthService,
   })  : _registerUseCase = registerUseCase,
         _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
   final RegisterUseCase _registerUseCase;
-  final FirebaseAuthService _firebaseAuthService;
+  final FirebaseAuthService? _firebaseAuthService;
 
   Future<void> register({
     required String name,
@@ -279,14 +278,6 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final userCredential = await _firebaseAuthService.registerWithEmail(
-        email: email,
-        password: password,
-      );
-
-      await _firebaseAuthService.updateDisplayName(name);
-      await _firebaseAuthService.sendEmailVerification();
-
       final result = await _registerUseCase(
         RegisterParams(
           name: name,
@@ -297,22 +288,6 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
         ),
       );
       state = AsyncValue.data(result);
-    } on FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'email-already-in-use':
-          message = 'An account already exists with this email.';
-          break;
-        case 'weak-password':
-          message = 'Password is too weak.';
-          break;
-        case 'invalid-email':
-          message = 'Invalid email address.';
-          break;
-        default:
-          message = e.message ?? 'Registration failed.';
-      }
-      state = AsyncValue.error(message, StackTrace.current);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -323,17 +298,19 @@ class ForgotPasswordNotifier extends StateNotifier<AsyncValue<bool?>> {
 
   ForgotPasswordNotifier({
     required AuthRepository authRepository,
-    required FirebaseAuthService firebaseAuthService,
+    required FirebaseAuthService? firebaseAuthService,
   })  : _authRepository = authRepository,
         _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
   final AuthRepository _authRepository;
-  final FirebaseAuthService _firebaseAuthService;
+  final FirebaseAuthService? _firebaseAuthService;
 
   Future<void> forgotPassword({required String email}) async {
     state = const AsyncValue.loading();
     try {
-      await _firebaseAuthService.sendPasswordResetEmail(email);
+      if (_firebaseAuthService != null) {
+        await _firebaseAuthService!.sendPasswordResetEmail(email);
+      }
       await _authRepository.forgotPassword(email: email);
       state = const AsyncValue.data(true);
     } catch (e, st) {

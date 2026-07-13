@@ -56,7 +56,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: RouteNames.splash,
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      final isLoggedIn = authState.valueOrNull ?? false;
+      final authValue = authState.valueOrNull;
+      if (authValue == null) return null;
+      final isLoggedIn = authValue;
       final isOnAuthRoute = state.matchedLocation == RouteNames.splash ||
           state.matchedLocation == RouteNames.onboarding ||
           state.matchedLocation == RouteNames.login ||

@@ -1,15 +1,19 @@
 {
   "version": 2,
-  "installCommand": "npm install --include=dev && cd admin-web && npm install --include=dev && cd ../backend && npm install --include=dev",
-  "buildCommand": "cd admin-web && npm run build && cd ../backend && npm run build",
-  "outputDirectory": "admin-web/dist",
+  "installCommand": "cd admin-web && npm install --include=dev && cd ../backend && npm install --include=dev",
+  "buildCommand": "cd admin-web && npm run build && cd ../backend && npm run build && cd .. && node scripts/copy-builds.js",
+  "outputDirectory": "public",
   "functions": {
     "api/index.js": {
       "maxDuration": 60
     }
   },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/admin/assets/(.*)", "dest": "/admin/assets/$1" },
+    { "src": "/admin/(.*)", "dest": "/admin/index.html" },
+    { "src": "/PharmaWorld.apk", "dest": "/PharmaWorld.apk", "headers": { "Content-Type": "application/vnd.android.package-archive", "Content-Disposition": "attachment; filename=\"PharmaWorld.apk\"" } },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

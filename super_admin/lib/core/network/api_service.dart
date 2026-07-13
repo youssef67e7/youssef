@@ -25,7 +25,7 @@ class ApiService {
       _dio.get(ApiConstants.dashboardRevenue, queryParameters: params);
   Future<Response> getDashboardOrders(Map<String, dynamic> params) =>
       _dio.get(ApiConstants.dashboardOrders, queryParameters: params);
-  Future<Response> getSystemHealth() => _dio.get(ApiConstants.dashboardSystemHealth);
+  Future<Response> getDashboardSystemHealth() => _dio.get(ApiConstants.dashboardSystemHealth);
   Future<Response> getAlerts() => _dio.get(ApiConstants.dashboardAlerts);
 
   // Pharmacies
@@ -76,6 +76,7 @@ class ApiService {
   // Config
   Future<Response> getConfig(String section) =>
       _dio.get(ApiConstants.configSection(section));
+  Future<Response> getAllConfig() => _dio.get(ApiConstants.config);
   Future<Response> updateConfig(String section, Map<String, dynamic> data) =>
       _dio.put(ApiConstants.configSection(section), data: data);
 
@@ -96,14 +97,51 @@ class ApiService {
       _dio.get(ApiConstants.analyticsGeographic, queryParameters: params);
 
   // Reports
+  Future<Response> getReports() => _dio.get(ApiConstants.reports);
   Future<Response> generateReport(Map<String, dynamic> data) =>
       _dio.post(ApiConstants.reportsGenerate, data: data);
   Future<Response> exportReport(String reportId, String format) =>
       _dio.get('${ApiConstants.reportsExport}/$reportId', queryParameters: {'format': format});
 
   // System Health
+  Future<Response> getSystemHealth() => _dio.get(ApiConstants.systemHealth);
   Future<Response> getApiHealth() => _dio.get(ApiConstants.systemHealthApi);
   Future<Response> getDatabaseHealth() => _dio.get(ApiConstants.systemHealthDatabase);
   Future<Response> getCacheHealth() => _dio.get(ApiConstants.systemHealthCache);
   Future<Response> getActiveSessions() => _dio.get(ApiConstants.systemHealthSessions);
+
+  // Billing
+  Future<Response> getBilling(Map<String, dynamic> params) =>
+      _dio.get(ApiConstants.billing, queryParameters: params);
+  Future<Response> getBillingSummary() => _dio.get(ApiConstants.billingSummary);
+  Future<Response> getInvoices(Map<String, dynamic> params) =>
+      _dio.get(ApiConstants.billingInvoices, queryParameters: params);
+  Future<Response> getPayments(Map<String, dynamic> params) =>
+      _dio.get(ApiConstants.billingPayments, queryParameters: params);
+
+  // Subscriptions
+  Future<Response> getSubscriptions() => _dio.get(ApiConstants.subscriptions);
+  Future<Response> getSubscription(String id) =>
+      _dio.get(ApiConstants.subscriptionById(id));
+  Future<Response> createSubscription(Map<String, dynamic> data) =>
+      _dio.post(ApiConstants.subscriptions, data: data);
+  Future<Response> updateSubscription(String id, Map<String, dynamic> data) =>
+      _dio.put(ApiConstants.subscriptionById(id), data: data);
+  Future<Response> cancelSubscription(String id) =>
+      _dio.post(ApiConstants.subscriptionCancel(id));
+
+  // Integrations
+  Future<Response> getIntegrations() => _dio.get(ApiConstants.integrations);
+  Future<Response> getIntegration(String id) =>
+      _dio.get(ApiConstants.integrationById(id));
+  Future<Response> createIntegration(Map<String, dynamic> data) =>
+      _dio.post(ApiConstants.integrations, data: data);
+  Future<Response> updateIntegration(String id, Map<String, dynamic> data) =>
+      _dio.put(ApiConstants.integrationById(id), data: data);
+  Future<Response> toggleIntegration(String id) =>
+      _dio.post(ApiConstants.integrationToggle(id));
+  Future<Response> deleteIntegration(String id) =>
+      _dio.delete(ApiConstants.integrationById(id));
+  Future<Response> syncIntegration(String id) =>
+      _dio.post(ApiConstants.integrationSync(id));
 }

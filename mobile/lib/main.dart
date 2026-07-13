@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:pharmaworld/app.dart';
 import 'package:pharmaworld/core/di/injection.dart';
@@ -15,10 +14,13 @@ import 'package:pharmaworld/firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase init failed (non-fatal): $e');
+  }
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -32,15 +34,27 @@ void main() async {
     ),
   );
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-
-  if (kDebugMode) {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+  if (!kIsWeb) {
+    try {
+      final crashlytics = FirebaseCrashlytics.instance;
+      if (kDebugMode) {
+        await crashlytics.setCrashlyticsCollectionEnabled(false);
+      }
+      FlutterError.onError = (errorDetails) {
+        try {
+          crashlytics.recordFlutterFatalError(errorDetails);
+        } catch (_) {}
+      };
+    } catch (_) {}
   }
 
   runZonedGuarded<Future<void>>(() async {
     final container = ProviderContainer();
-    await container.read(initializationProvider.future);
+    try {
+      await container.read(initializationProvider.future);
+    } catch (e, st) {
+      debugPrint('Init provider failed: $e $st');
+    }
 
     runApp(
       UncontrolledProviderScope(
@@ -49,6 +63,6 @@ void main() async {
       ),
     );
   }, (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    debugPrint('Unhandled error: $error');
   });
 }
