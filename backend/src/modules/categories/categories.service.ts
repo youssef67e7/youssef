@@ -2,7 +2,9 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { CategoryRepository } from './repositories/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import slug from 'slug';
+function slugify(text: string): string {
+  return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 @Injectable()
 export class CategoriesService {
@@ -11,7 +13,7 @@ export class CategoriesService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
   async create(dto: CreateCategoryDto, adminId: string) {
-    const categorySlug = slug(dto.name, { lower: true });
+    const categorySlug = slugify(dto.name);
 
     const existing = await this.categoryRepository.findBySlug(categorySlug);
     if (existing) {
@@ -87,7 +89,7 @@ export class CategoriesService {
     }
 
     if (dto.name) {
-      (dto as any).slug = slug(dto.name, { lower: true });
+      (dto as any).slug = slugify(dto.name);
     }
 
     if (dto.parentCategory) {

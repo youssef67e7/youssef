@@ -4,7 +4,9 @@ import { CreateMedicineDto } from './dto/create-medicine.dto';
 import { UpdateMedicineDto } from './dto/update-medicine.dto';
 import { MedicineQueryDto } from './dto/medicine-query.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
-import slug from 'slug';
+function slugify(text: string): string {
+  return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 @Injectable()
 export class MedicinesService {
@@ -13,7 +15,7 @@ export class MedicinesService {
   constructor(private readonly medicineRepository: MedicineRepository) {}
 
   async create(dto: CreateMedicineDto, adminId: string) {
-    const medicineSlug = slug(dto.name, { lower: true });
+    const medicineSlug = slugify(dto.name);
 
     const existingMedicine = await this.medicineRepository.findBySlug(medicineSlug);
     if (existingMedicine) {
@@ -160,7 +162,7 @@ export class MedicinesService {
     }
 
     if (dto.name) {
-      (dto as any).slug = slug(dto.name, { lower: true });
+      (dto as any).slug = slugify(dto.name);
     }
 
     if (dto.costPrice && dto.price) {

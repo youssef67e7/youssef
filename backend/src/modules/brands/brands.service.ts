@@ -3,7 +3,9 @@ import { BrandRepository } from './repositories/brand.repository';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import slug from 'slug';
+function slugify(text: string): string {
+  return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 @Injectable()
 export class BrandsService {
@@ -12,7 +14,7 @@ export class BrandsService {
   constructor(private readonly brandRepository: BrandRepository) {}
 
   async create(dto: CreateBrandDto, adminId: string) {
-    const brandSlug = slug(dto.name, { lower: true });
+    const brandSlug = slugify(dto.name);
 
     const existing = await this.brandRepository.findBySlug(brandSlug);
     if (existing) {
@@ -75,7 +77,7 @@ export class BrandsService {
     }
 
     if (dto.name) {
-      (dto as any).slug = slug(dto.name, { lower: true });
+      (dto as any).slug = slugify(dto.name);
     }
 
     const updated = await this.brandRepository.update(id, dto as any);
