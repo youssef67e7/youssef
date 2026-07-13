@@ -65,7 +65,7 @@ export default function MaintenancePage() {
           <h3 className="font-semibold mb-4 dark:text-white flex items-center gap-2"><AlertTriangle size={18} /> Maintenance Message</h3>
           <textarea value={message} onChange={e => setMessage(e.target.value)} rows={4}
             className="w-full px-4 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600" placeholder="Message shown to users..." />
-          <button className="mt-3 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm">Save Message</button>
+          <button onClick={async () => { try { await maintenanceAPI.update({ message }); toast.success('Message saved'); } catch { toast.error('Failed'); } }} className="mt-3 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm">Save Message</button>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700 p-6">

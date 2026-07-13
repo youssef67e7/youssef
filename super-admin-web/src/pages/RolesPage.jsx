@@ -54,8 +54,14 @@ export default function RolesPage() {
     } catch { toast.error('Failed'); }
   };
 
+  const reload = async () => {
+    const res = await rolesAPI.list();
+    const data = res.data?.data;
+    setRoles(Array.isArray(data) ? data : data?.roles || []);
+  };
+
   const handleDelete = async () => {
-    try { await rolesAPI.delete(deleteTarget.id || deleteTarget._id); toast.success('Role deleted'); setDeleteTarget(null); load(); }
+    try { await rolesAPI.delete(deleteTarget.id || deleteTarget._id); toast.success('Role deleted'); setDeleteTarget(null); reload(); }
     catch { toast.error('Failed'); }
   };
 

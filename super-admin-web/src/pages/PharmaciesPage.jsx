@@ -22,12 +22,14 @@ export default function PharmaciesPage() {
   const [loading, setLoading] = useState(true);
   const [detail, setDetail] = useState(null);
 
-  useEffect(() => {
+  const load = () => {
     pharmaciesAPI.list({}).then(res => {
       const data = res.data?.data;
       setPharmacies(Array.isArray(data) ? data : data?.pharmacies || fallbackPharmacies);
     }).catch(() => setPharmacies(fallbackPharmacies)).finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []);
 
   const handleToggle = async (id) => {
     try { await pharmaciesAPI.toggle(id); toast.success('Pharmacy toggled'); load(); }

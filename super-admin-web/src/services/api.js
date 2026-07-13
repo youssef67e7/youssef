@@ -80,6 +80,7 @@ export const maintenanceAPI = {
   status: () => api.get(`${SA}/maintenance`),
   toggle: () => api.post(`${SA}/maintenance/toggle`),
   schedule: (data) => api.post(`${SA}/maintenance/schedule`, data),
+  update: (data) => api.put(`${SA}/maintenance`, data),
 };
 
 export const configAPI = {
@@ -104,6 +105,7 @@ export const reportsAPI = {
   list: () => api.get(`${SA}/reports`),
   generate: (data) => api.post(`${SA}/reports/generate`, data),
   export: (id, format) => api.get(`${SA}/reports/export/${id}`, { params: { format } }),
+  delete: (id) => api.delete(`${SA}/reports/${id}`),
 };
 
 export const systemHealthAPI = {
