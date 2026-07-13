@@ -50,11 +50,11 @@ export class CreateCouponDto {
 
   @ApiProperty()
   @IsDateString()
-  startDate: Date;
+  startDate: string;
 
   @ApiProperty()
   @IsDateString()
-  endDate: Date;
+  endDate: string;
 
   @ApiPropertyOptional()
   @IsOptional()
