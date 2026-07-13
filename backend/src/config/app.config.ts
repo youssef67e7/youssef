@@ -2,7 +2,7 @@ export const appConfig = {
   port: parseInt(process.env.PORT || '3000', 10),
   env: process.env.NODE_ENV || 'development',
   apiPrefix: process.env.API_PREFIX || 'api/v1',
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  corsOrigin: process.env.CORS_ORIGIN || '*',
   appName: process.env.APP_NAME || 'PharmaWorld',
   supportEmail: process.env.SUPPORT_EMAIL || 'support@pharmaworld.com',
   jwt: {

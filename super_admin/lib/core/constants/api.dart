@@ -2,7 +2,7 @@ class ApiConstants {
   ApiConstants._();
 
   static const String baseUrl = 'https://api.pharmaworld.com';
-  static const String apiVersion = '/v1';
+  static const String apiVersion = '/api/v1';
   static const String superAdmin = '$apiVersion/super-admin';
 
   static const String login = '$superAdmin/auth/login';

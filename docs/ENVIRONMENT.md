@@ -25,18 +25,15 @@ cp .env.example .env
 | Variable | Type | Default | Description | Required |
 |----------|------|---------|-------------|----------|
 | `MONGODB_URI` | string | - | MongoDB connection string | Yes |
-| `MONGODB_DB_NAME` | string | `pharmaworld` | Database name | No |
+| `MONGODB_DB_NAME` | string | `clinicDB` | Database name | No |
 
 **Examples:**
 ```bash
-# Local
-MONGODB_URI=mongodb://localhost:27017/pharmaworld
+# Atlas (Production)
+MONGODB_URI=mongodb+srv://Vercel-Admin-clinicDB:jVB1Dk0hkKGmB9Wj@clinicdb.0qyfdxo.mongodb.net/clinicDB?appName=Cluster0&retryWrites=true&w=majority
 
-# Atlas
-MONGODB_URI=mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/pharmaworld?retryWrites=true&w=majority
-
-# Docker
-MONGODB_URI=mongodb://admin:password@mongodb:27017/pharmaworld?authSource=admin
+# Docker (Local Development)
+MONGODB_URI=mongodb://admin:password@mongodb:27017/clinicDB?authSource=admin
 ```
 
 ### Redis

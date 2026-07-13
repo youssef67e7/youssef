@@ -1,0 +1,12 @@
+{
+  "name": "pharmaworld",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PharmaWorld - Enterprise Pharmacy Management System",
+  "scripts": {
+    "build:admin": "cd admin-web && npm install && npm run build",
+    "build:backend": "cd backend && npm install && npm run build",
+    "build": "npm run build:admin && npm run build:backend",
+    "install:all": "npm install && cd admin-web && npm install && cd ../backend && npm install"
+  }
+}

@@ -58,7 +58,7 @@ import { HealthModule } from './modules/health/health.module';
       ],
     }),
     ScheduleModule.forRoot(),
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/pharmaworld'),
+    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb+srv://Vercel-Admin-clinicDB:jVB1Dk0hkKGmB9Wj@clinicdb.0qyfdxo.mongodb.net/clinicDB?appName=Cluster0&retryWrites=true&w=majority'),
     AuthModule,
     UsersModule,
     MedicinesModule,
@@ -94,7 +94,7 @@ async function bootstrap() {
   console.log('Starting MongoDB Memory Server...');
 
   const mongod = await MongoMemoryServer.create({
-    instance: { port: 27017, dbName: 'pharmaworld' },
+    instance: { dbName: 'clinicDB' },
   });
   const uri = mongod.getUri();
   console.log(`In-memory MongoDB running at: ${uri}`);

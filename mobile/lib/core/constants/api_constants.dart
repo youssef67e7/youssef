@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  static const String baseUrl = 'https://api.pharmaworld.com/api/v1';
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
   static const Duration sendTimeout = Duration(seconds: 30);
