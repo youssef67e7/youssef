@@ -7,7 +7,7 @@ final networkInfoProvider = Provider<NetworkInfo>((ref) {
 
 abstract class NetworkInfo {
   Future<bool> get isConnected;
-  Stream<ConnectivityResult> get connectivityStream;
+  Stream<List<ConnectivityResult>> get connectivityStream;
 }
 
 class NetworkInfoImpl implements NetworkInfo {
@@ -23,6 +23,6 @@ class NetworkInfoImpl implements NetworkInfo {
   }
 
   @override
-  Stream<ConnectivityResult> get connectivityStream =>
+  Stream<List<ConnectivityResult>> get connectivityStream =>
       _connectivity.onConnectivityChanged;
 }

@@ -160,12 +160,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     required String value,
   }) {
     return Card(
-      child: RadioListTile<String>(
+      child: ListTile(
         leading: Icon(icon),
         title: Text(title),
-        value: value,
-        groupValue: _selectedPayment,
-        onChanged: (v) => setState(() => _selectedPayment = v!),
+        trailing: Radio<String>(
+          value: value,
+          groupValue: _selectedPayment,
+          onChanged: (v) => setState(() => _selectedPayment = v!),
+        ),
       ),
     );
   }

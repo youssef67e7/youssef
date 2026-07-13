@@ -216,7 +216,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
             ),
-            loading: const SliverToBoxAdapter(
+            loading: () => const SliverToBoxAdapter(
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => const SliverToBoxAdapter(

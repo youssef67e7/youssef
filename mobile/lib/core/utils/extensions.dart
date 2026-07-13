@@ -180,5 +180,5 @@ extension ListExtension<T> on List<T> {
 
 extension MapExtension<K, V> on Map<K, V> {
   Map<K, V> get nonNullValues =>
-      Map.from(entries.where((e) => e.value != null).map((e) => MapEntry(e.key, e.value)));
+      Map<K, V>.from(entries.where((e) => e.value != null).map((e) => MapEntry(e.key, e.value as V)));
 }

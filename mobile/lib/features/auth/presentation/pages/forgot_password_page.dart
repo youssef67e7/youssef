@@ -104,7 +104,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   keyboardType: TextInputType.emailAddress,
                   validator: Validators.email,
                   textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _handleSubmit(),
+                  onSubmitted: (_) => _handleSubmit(),
                 ),
                 const SizedBox(height: 24),
                 CustomButton(

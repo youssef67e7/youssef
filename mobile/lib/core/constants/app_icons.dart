@@ -63,7 +63,7 @@ class AppIcons {
   static const IconData chat = Icons.chat_outlined;
   static const IconData chatFilled = Icons.chat;
   static const IconData ticket = Icons.confirmation_number_outlined;
-  static const IconData points = Icons.points;
+  static const IconData points = Icons.stars;
   static const IconData referral = Icons.card_giftcard;
   static const IconData loyalty = Icons.loyalty;
   static const IconData shield = Icons.shield_outlined;
@@ -87,7 +87,7 @@ class AppIcons {
   static const IconData cancel = Icons.cancel_outlined;
   static const IconData warning = Icons.warning_amber;
   static const IconData error = Icons.error_outline;
-  static const IconData success = Icons.success;
+  static const IconData success = Icons.check_circle;
   static const IconData scan = Icons.document_scanner_outlined;
   static const IconData medicineBox = Icons.medical_services_outlined;
   static const IconData health = Icons.health_and_safety;

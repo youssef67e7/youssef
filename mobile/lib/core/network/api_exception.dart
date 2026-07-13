@@ -48,6 +48,11 @@ class ApiException implements Exception {
           message: 'An unexpected error occurred. Please try again.',
           details: dioError.message,
         );
+      case DioExceptionType.transformTimeout:
+        return ApiException(
+          message: 'Transform timeout. Please try again.',
+          statusCode: 408,
+        );
     }
   }
   final int? statusCode;

@@ -89,8 +89,9 @@ class _OrdersPageState extends ConsumerState<OrdersPage>
                   context.push(RouteNames.orderDetailPath(order.id ?? ''));
                 },
                 borderRadius: BorderRadius.circular(12.r),
-                padding: EdgeInsets.all(12.r),
-                child: Column(
+                child: Padding(
+                  padding: EdgeInsets.all(12.r),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(

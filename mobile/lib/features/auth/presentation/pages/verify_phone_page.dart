@@ -100,7 +100,7 @@ class _VerifyPhonePageState extends ConsumerState<VerifyPhonePage> {
                   keyboardType: TextInputType.phone,
                   validator: Validators.phone,
                   textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _handleSendOtp(),
+                  onSubmitted: (_) => _handleSendOtp(),
                 ),
                 const SizedBox(height: 24),
                 CustomButton(

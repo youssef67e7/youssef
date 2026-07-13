@@ -35,7 +35,6 @@ class AppTheme {
       progressIndicatorTheme: _progressIndicatorTheme(colorScheme),
       listTileTheme: _listTileTheme(colorScheme),
       dividerTheme: _dividerTheme(colorScheme),
-      splashTheme: const SplashTheme(splashColor: Colors.transparent),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.adaptivePlatformDensity,
     );
@@ -69,7 +68,6 @@ class AppTheme {
       progressIndicatorTheme: _progressIndicatorTheme(colorScheme),
       listTileTheme: _listTileTheme(colorScheme),
       dividerTheme: _dividerTheme(colorScheme),
-      splashTheme: const SplashTheme(splashColor: Colors.transparent),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.adaptivePlatformDensity,
     );
@@ -244,7 +242,7 @@ class AppTheme {
         iconTheme: IconThemeData(color: colorScheme.onSurface),
       );
 
-  static CardTheme _cardTheme(ColorScheme colorScheme) => CardTheme(
+  static CardThemeData _cardTheme(ColorScheme colorScheme) => CardThemeData(
         elevation: 1,
         shadowColor: colorScheme.shadow.withOpacity(0.1),
         shape: RoundedRectangleBorder(
@@ -427,7 +425,7 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       );
 
-  static DialogTheme _dialogTheme(ColorScheme colorScheme) => DialogTheme(
+  static DialogThemeData _dialogTheme(ColorScheme colorScheme) => DialogThemeData(
         backgroundColor: colorScheme.surfaceContainerHigh,
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -465,7 +463,7 @@ class AppTheme {
         ),
       );
 
-  static TabBarTheme _tabBarTheme(ColorScheme colorScheme) => TabBarTheme(
+  static TabBarThemeData _tabBarTheme(ColorScheme colorScheme) => TabBarThemeData(
         labelColor: colorScheme.primary,
         unselectedLabelColor: colorScheme.onSurfaceVariant,
         indicatorColor: colorScheme.primary,

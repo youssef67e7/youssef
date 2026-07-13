@@ -17,8 +17,8 @@ class StarRating extends StatelessWidget {
   final double rating;
   final int maxRating;
   final double size;
-  final Color activeColor;
-  final Color inactiveColor;
+  final Color? activeColor;
+  final Color? inactiveColor;
   final bool allowHalfRating;
 
   @override

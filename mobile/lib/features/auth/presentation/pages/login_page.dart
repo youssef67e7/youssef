@@ -108,7 +108,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   obscureText: true,
                   validator: Validators.password,
                   textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _handleLogin(),
+                  onSubmitted: (_) => _handleLogin(),
                 ),
                 const SizedBox(height: 8),
                 Row(

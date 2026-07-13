@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'api_response.freezed.dart';
-part 'api_response.g.dart';
 
 @freezed
 class ApiResponse<T> with _$ApiResponse<T> {
@@ -11,12 +10,6 @@ class ApiResponse<T> with _$ApiResponse<T> {
     T? data,
     PaginationData? pagination,
   }) = _ApiResponse;
-
-  factory ApiResponse.fromJson(
-    Map<String, dynamic> json,
-    T Function(Object?) fromJsonT,
-  ) =>
-      _$ApiResponseFromJson(json, fromJsonT);
 }
 
 @freezed
@@ -42,12 +35,6 @@ class ApiListResponse<T> with _$ApiListResponse<T> {
     List<T>? data,
     PaginationData? pagination,
   }) = _ApiListResponse;
-
-  factory ApiListResponse.fromJson(
-    Map<String, dynamic> json,
-    T Function(Object?) fromJsonT,
-  ) =>
-      _$ApiListResponseFromJson(json, fromJsonT);
 }
 
 @freezed

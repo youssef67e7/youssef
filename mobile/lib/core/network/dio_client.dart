@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:pharmaworld/constants/api_constants.dart';
-import 'package:pharmaworld/constants/storage_keys.dart';
+import 'package:pharmaworld/core/constants/api_constants.dart';
+import 'package:pharmaworld/core/constants/storage_keys.dart';
 import 'package:pharmaworld/core/network/api_exception.dart';
 
 final dioProvider = Provider<Dio>((ref) {
