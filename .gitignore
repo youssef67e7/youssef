@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.production
+*.env
+
+# Build
+dist/
+build/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+*.lcov
+
+# Firebase
+firebase-debug.log
+.firebase/
+
+# Generated
+*.g.dart
+*.freezed.dart
+*.mocks.dart

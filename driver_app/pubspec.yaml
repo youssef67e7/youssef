@@ -1,0 +1,66 @@
+name: pharmaworld_driver
+description: PharmaWorld Driver Delivery App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Routing
+  go_router: ^13.0.0
+
+  # Network
+  dio: ^5.4.0
+
+  # Serialization
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+
+  # UI
+  flutter_screenutil: ^5.9.1
+  google_fonts: ^6.1.0
+
+  # Utils
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.9
+  firebase_analytics: ^10.8.0
+
+  # Location & Maps
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.3
+
+  # Other
+  url_launcher: ^6.2.2
+  connectivity_plus: ^5.0.2
+  flutter_local_notifications: ^17.0.0
+  permission_handler: ^11.3.0
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.9
+
+flutter:
+  uses-material-design: true
+  generate: true

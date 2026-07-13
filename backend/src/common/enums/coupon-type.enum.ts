@@ -1,0 +1,6 @@
+export enum CouponType {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED = 'FIXED',
+  FREE_SHIPPING = 'FREE_SHIPPING',
+  BUY_X_GET_Y = 'BUY_X_GET_Y',
+}
