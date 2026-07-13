@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/services/firebase_auth_service.dart';
 import '../../../../shared/providers/auth_provider.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -32,6 +34,7 @@ final loginProvider =
   return LoginNotifier(
     loginUseCase: ref.watch(loginUseCaseProvider),
     authStateNotifier: ref.watch(authStateProvider.notifier),
+    firebaseAuthService: ref.watch(firebaseAuthServiceProvider),
   );
 });
 
@@ -39,6 +42,7 @@ final registerProvider =
     StateNotifierProvider<RegisterNotifier, AsyncValue<dynamic>>((ref) {
   return RegisterNotifier(
     registerUseCase: ref.watch(registerUseCaseProvider),
+    firebaseAuthService: ref.watch(firebaseAuthServiceProvider),
   );
 });
 
@@ -46,6 +50,7 @@ final forgotPasswordProvider =
     StateNotifierProvider<ForgotPasswordNotifier, AsyncValue<bool?>>((ref) {
   return ForgotPasswordNotifier(
     authRepository: ref.watch(authRepositoryProvider),
+    firebaseAuthService: ref.watch(firebaseAuthServiceProvider),
   );
 });
 
@@ -59,12 +64,15 @@ final resetPasswordProvider =
 class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
   final LoginUseCase _loginUseCase;
   final AuthStateNotifier _authStateNotifier;
+  final FirebaseAuthService _firebaseAuthService;
 
   LoginNotifier({
     required LoginUseCase loginUseCase,
     required AuthStateNotifier authStateNotifier,
+    required FirebaseAuthService firebaseAuthService,
   })  : _loginUseCase = loginUseCase,
         _authStateNotifier = authStateNotifier,
+        _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
 
   Future<void> login({
@@ -73,23 +81,34 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final result = await _loginUseCase(
-        LoginParams(email: email, password: password),
+      final userCredential = await _firebaseAuthService.loginWithEmail(
+        email: email,
+        password: password,
       );
-      if (result != null && result.data != null) {
-        await _authStateNotifier.login(
-          accessToken: result.data!.accessToken ?? '',
-          refreshToken: result.data!.refreshToken ?? '',
-          user: UserData(
-            id: result.data!.user?.id ?? '',
-            name: result.data!.user?.name ?? '',
-            email: result.data!.user?.email ?? '',
-            phone: result.data!.user?.phone,
-            avatar: result.data!.user?.avatar,
-          ),
+
+      final firebaseUser = userCredential.user;
+      if (firebaseUser != null) {
+        final idToken = await firebaseUser.getIdToken();
+        final result = await _loginUseCase(
+          LoginParams(email: email, password: password),
         );
+        if (result != null && result.data != null) {
+          await _authStateNotifier.login(
+            accessToken: result.data!.accessToken ?? '',
+            refreshToken: result.data!.refreshToken ?? '',
+            user: UserData(
+              id: result.data!.user?.id ?? firebaseUser.uid,
+              name: result.data!.user?.name ?? firebaseUser.displayName ?? '',
+              email: result.data!.user?.email ?? firebaseUser.email ?? '',
+              phone: result.data!.user?.phone ?? firebaseUser.phoneNumber,
+              avatar: result.data!.user?.avatar ?? firebaseUser.photoURL,
+            ),
+          );
+        }
+        state = AsyncValue.data(result);
       }
-      state = AsyncValue.data(result);
+    } on FirebaseAuthException catch (e) {
+      state = AsyncValue.error(_mapFirebaseError(e), StackTrace.current);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -139,20 +158,116 @@ class LoginNotifier extends StateNotifier<AsyncValue<dynamic>> {
     }
   }
 
+  Future<void> verifyPhoneOtp({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      final userCredential = await _firebaseAuthService.verifySmsCode(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      final firebaseUser = userCredential.user;
+      if (firebaseUser != null) {
+        final idToken = await firebaseUser.getIdToken();
+        final result = await _loginUseCase(
+          LoginParams(
+            email: firebaseUser.email ?? '',
+            password: '',
+          ),
+        );
+        if (result != null && result.data != null) {
+          await _authStateNotifier.login(
+            accessToken: result.data!.accessToken ?? '',
+            refreshToken: result.data!.refreshToken ?? '',
+            user: UserData(
+              id: result.data!.user?.id ?? firebaseUser.uid,
+              name: result.data!.user?.name ?? firebaseUser.displayName ?? '',
+              email: result.data!.user?.email ?? firebaseUser.email ?? '',
+              phone: result.data!.user?.phone ?? firebaseUser.phoneNumber,
+            ),
+          );
+        }
+        state = AsyncValue.data(result);
+      }
+    } on FirebaseAuthException catch (e) {
+      state = AsyncValue.error(_mapFirebaseError(e), StackTrace.current);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> sendPhoneVerification({
+    required String phoneNumber,
+    required void Function(String verificationId) onCodeSent,
+    required void Function(String error) onError,
+  }) async {
+    await _firebaseAuthService.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (credential) async {
+        try {
+          await _firebaseAuthService.verifySmsCode(
+            verificationId: '',
+            smsCode: credential.smsCode ?? '',
+          );
+        } catch (_) {}
+      },
+      verificationFailed: (e) {
+        onError(_mapFirebaseError(e));
+      },
+      codeSent: (verificationId, _) {
+        onCodeSent(verificationId);
+      },
+      codeAutoRetrievalTimeout: (_) {},
+    );
+  }
+
   Future<void> resendVerificationEmail() async {
     try {
-      await _loginUseCase.resendVerificationEmail();
+      await _firebaseAuthService.sendEmailVerification();
     } catch (e) {
       rethrow;
+    }
+  }
+
+  String _mapFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'user-not-found':
+        return 'No user found with this email.';
+      case 'wrong-password':
+        return 'Incorrect password.';
+      case 'email-already-in-use':
+        return 'An account already exists with this email.';
+      case 'invalid-email':
+        return 'Invalid email address.';
+      case 'weak-password':
+        return 'Password is too weak.';
+      case 'invalid-phone-number':
+        return 'Invalid phone number.';
+      case 'too-many-requests':
+        return 'Too many requests. Please try again later.';
+      case 'operation-not-allowed':
+        return 'This sign-in method is not enabled.';
+      case 'session-expired':
+        return 'Session expired. Please try again.';
+      case 'invalid-verification-code':
+        return 'Invalid verification code.';
+      default:
+        return e.message ?? 'Authentication failed.';
     }
   }
 }
 
 class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
   final RegisterUseCase _registerUseCase;
+  final FirebaseAuthService _firebaseAuthService;
 
-  RegisterNotifier({required RegisterUseCase registerUseCase})
-      : _registerUseCase = registerUseCase,
+  RegisterNotifier({
+    required RegisterUseCase registerUseCase,
+    required FirebaseAuthService firebaseAuthService,
+  })  : _registerUseCase = registerUseCase,
+        _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
 
   Future<void> register({
@@ -164,6 +279,14 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
   }) async {
     state = const AsyncValue.loading();
     try {
+      final userCredential = await _firebaseAuthService.registerWithEmail(
+        email: email,
+        password: password,
+      );
+
+      await _firebaseAuthService.updateDisplayName(name);
+      await _firebaseAuthService.sendEmailVerification();
+
       final result = await _registerUseCase(
         RegisterParams(
           name: name,
@@ -174,6 +297,22 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
         ),
       );
       state = AsyncValue.data(result);
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = 'An account already exists with this email.';
+          break;
+        case 'weak-password':
+          message = 'Password is too weak.';
+          break;
+        case 'invalid-email':
+          message = 'Invalid email address.';
+          break;
+        default:
+          message = e.message ?? 'Registration failed.';
+      }
+      state = AsyncValue.error(message, StackTrace.current);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -182,14 +321,19 @@ class RegisterNotifier extends StateNotifier<AsyncValue<dynamic>> {
 
 class ForgotPasswordNotifier extends StateNotifier<AsyncValue<bool?>> {
   final AuthRepository _authRepository;
+  final FirebaseAuthService _firebaseAuthService;
 
-  ForgotPasswordNotifier({required AuthRepository authRepository})
-      : _authRepository = authRepository,
+  ForgotPasswordNotifier({
+    required AuthRepository authRepository,
+    required FirebaseAuthService firebaseAuthService,
+  })  : _authRepository = authRepository,
+        _firebaseAuthService = firebaseAuthService,
         super(const AsyncValue.data(null));
 
   Future<void> forgotPassword({required String email}) async {
     state = const AsyncValue.loading();
     try {
+      await _firebaseAuthService.sendPasswordResetEmail(email);
       await _authRepository.forgotPassword(email: email);
       state = const AsyncValue.data(true);
     } catch (e, st) {

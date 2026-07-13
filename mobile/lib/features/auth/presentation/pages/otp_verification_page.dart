@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_names.dart';
-import '../../../../core/utils/validators.dart';
-import '../../../../shared/widgets/custom_button.dart';
 import '../providers/auth_provider.dart' as feature_auth;
 
 class OtpVerificationPage extends ConsumerStatefulWidget {
@@ -20,11 +18,18 @@ class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   int _resendSeconds = 60;
+  String? _verificationId;
 
   @override
   void initState() {
     super.initState();
     _startResendTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = GoRouterState.of(context).extra;
+      if (args is Map<String, dynamic>) {
+        _verificationId = args['verificationId'] as String?;
+      }
+    });
   }
 
   void _startResendTimer() {
@@ -52,15 +57,16 @@ class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
   String get _otp => _controllers.map((c) => c.text).join();
 
   Future<void> _handleVerify() async {
-    if (_otp.length != 6) {
+    if (_otp.length != 6 || _verificationId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid OTP')),
       );
       return;
     }
 
-    await ref.read(feature_auth.loginProvider.notifier).verifyOtp(
-          otp: _otp,
+    await ref.read(feature_auth.loginProvider.notifier).verifyPhoneOtp(
+          verificationId: _verificationId!,
+          smsCode: _otp,
         );
 
     final state = ref.read(feature_auth.loginProvider);

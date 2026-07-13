@@ -6,6 +6,7 @@ import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
+import '../providers/auth_provider.dart' as feature_auth;
 
 class VerifyPhonePage extends ConsumerStatefulWidget {
   const VerifyPhonePage({super.key});
@@ -17,6 +18,7 @@ class VerifyPhonePage extends ConsumerStatefulWidget {
 class _VerifyPhonePageState extends ConsumerState<VerifyPhonePage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -24,12 +26,30 @@ class _VerifyPhonePageState extends ConsumerState<VerifyPhonePage> {
     super.dispose();
   }
 
-  void _handleSendOtp() {
+  Future<void> _handleSendOtp() async {
     if (!_formKey.currentState!.validate()) return;
-    context.push(
-      RouteNames.otpVerification,
-      extra: {'phone': _phoneController.text.trim()},
-    );
+
+    setState(() => _isLoading = true);
+
+    await ref.read(feature_auth.loginProvider.notifier).sendPhoneVerification(
+          phoneNumber: _phoneController.text.trim(),
+          onCodeSent: (verificationId) {
+            setState(() => _isLoading = false);
+            context.push(
+              RouteNames.otpVerification,
+              extra: {'verificationId': verificationId},
+            );
+          },
+          onError: (error) {
+            setState(() => _isLoading = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          },
+        );
   }
 
   @override
@@ -75,7 +95,7 @@ class _VerifyPhonePageState extends ConsumerState<VerifyPhonePage> {
                 CustomTextField(
                   controller: _phoneController,
                   labelText: 'Phone Number',
-                  hintText: 'Enter your phone number',
+                  hintText: '+20 123 456 7890',
                   prefixIconData: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
                   validator: Validators.phone,
@@ -85,6 +105,7 @@ class _VerifyPhonePageState extends ConsumerState<VerifyPhonePage> {
                 const SizedBox(height: 24),
                 CustomButton(
                   text: 'Send Verification Code',
+                  isLoading: _isLoading,
                   onPressed: _handleSendOtp,
                 ),
               ],
