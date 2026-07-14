@@ -23,7 +23,6 @@ api.interceptors.response.use(
     }
     const message = err.response?.data?.message || err.message || 'An error occurred';
     if (err.config?.silentError) return Promise.reject(err);
-    toast.error(message);
     return Promise.reject(err);
   }
 );
