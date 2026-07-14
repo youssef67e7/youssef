@@ -110,8 +110,8 @@ export const reviewsAPI = {
   list: (params) => api.get('/reviews', { params }),
   listByMedicine: (medicineId, params) => api.get(`/reviews/medicine/${medicineId}`, { params }),
   create: (data) => api.post('/reviews', data),
-  approve: (id) => api.patch(`/reviews/${id}/status`, { status: 'approved' }),
-  reject: (id) => api.patch(`/reviews/${id}/status`, { status: 'rejected' }),
+  approve: (id) => api.patch(`/reviews/${id}/status`, { status: 'APPROVED' }),
+  reject: (id) => api.patch(`/reviews/${id}/status`, { status: 'REJECTED' }),
   adminReply: (id, reply) => api.post(`/reviews/${id}/admin-reply`, { reply }),
   delete: (id) => api.delete(`/reviews/${id}`),
 };

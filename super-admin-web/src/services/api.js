@@ -133,7 +133,7 @@ export const reportsAPI = {
   inventory: (params) => api.get('/reports/inventory', { params }),
   users: (params) => api.get('/reports/users', { params }),
   generate: (data) => api.post('/reports/sales', data),
-  export: (id, format) => api.get('/reports/sales', { params: { id, format }, responseType: 'blob' }),
+  export: (id, format) => api.get('/reports/export/sales', { params: { id, format }, responseType: 'blob' }),
   delete: () => Promise.resolve(),
 };
 
