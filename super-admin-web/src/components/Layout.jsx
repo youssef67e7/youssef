@@ -1,7 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LayoutDashboard, Building2, Users, Shield, Activity, Flag, Wrench, Settings, ClipboardList, BarChart3, FileText, HeartPulse, LogOut, Menu, X, Moon, Sun, Search, Bell, Pill, ShoppingCart, Star } from 'lucide-react';
+import { LayoutDashboard, Building2, Users, Shield, Activity, Flag, Wrench, Settings, ClipboardList, BarChart3, FileText, HeartPulse, LogOut, Menu, X, Moon, Sun, Search, Bell, Pill, ShoppingCart, Star, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 
 const navSections = [
@@ -9,6 +9,7 @@ const navSections = [
   { label: 'User Management', items: [
     { to: '/users', icon: Users, label: 'Users' },
     { to: '/roles', icon: Shield, label: 'Roles & Permissions' },
+    { to: '/staff', icon: UserCheck, label: 'Staff' },
   ]},
   { label: 'Content Management', items: [
     { to: '/pharmacies', icon: Building2, label: 'Pharmacies' },

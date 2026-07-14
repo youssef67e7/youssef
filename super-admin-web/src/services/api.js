@@ -218,6 +218,14 @@ export const rolesAPI = {
   delete: (id) => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
 };
 
+export const staffAPI = {
+  list: (params) => api.get('/staff', { params }),
+  get: (id) => api.get(`/staff/${id}`),
+  create: (data) => api.post('/staff', data),
+  update: (id, data) => api.patch(`/staff/${id}`, data),
+  delete: (id) => api.delete(`/staff/${id}`),
+};
+
 export const permissionsAPI = {
   list: () => Promise.resolve({ data: { data: [
     'users.view', 'users.manage', 'medicines.view', 'medicines.create', 'medicines.edit', 'medicines.delete',

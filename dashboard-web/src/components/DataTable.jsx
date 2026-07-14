@@ -112,7 +112,11 @@ export default function DataTable({
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-gray-700 dark:text-gray-300">
-                      {col.render ? col.render(row[col.key], row) : row[col.key]}
+                      {col.render ? col.render(row[col.key], row) : (
+                        row[col.key] != null && typeof row[col.key] === 'object'
+                          ? (row[col.key].name || row[col.key].label || JSON.stringify(row[col.key]))
+                          : (row[col.key] ?? '—')
+                      )}
                     </td>
                   ))}
                 </tr>
