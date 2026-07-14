@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { LogIn, Loader2, Pill, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { authAPI } from '../services/api';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
@@ -17,8 +18,7 @@ export default function LoginPage() {
     }
     setLoading(true);
     try {
-      const { data } = await authAPI.login(form.email, form.password);
-      localStorage.setItem('admin_token', data.token || data.data?.token);
+      await login(form.email, form.password);
       toast.success('Welcome back!');
       navigate('/');
     } catch (err) {
