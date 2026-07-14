@@ -13,7 +13,7 @@ import UserAvatar from '../components/UserAvatar';
 import PageHeader from '../components/PageHeader';
 import toast from 'react-hot-toast';
 
-const roleFilters = ['all', 'admin', 'pharmacy_owner', 'pharmacy_manager', 'driver', 'customer'];
+const roleFilters = ['all', 'SUPER_ADMIN', 'ADMIN', 'PHARMACIST', 'DRIVER', 'CUSTOMER'];
 
 function timeAgo(date) {
   if (!date) return 'N/A';
@@ -231,7 +231,7 @@ export default function UsersPage() {
                 : 'bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
-            {r === 'all' ? 'All Roles' : r.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+            {r === 'all' ? 'All Roles' : r.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
           </button>
         ))}
       </div>
@@ -336,8 +336,8 @@ export default function UsersPage() {
                 >
                   <option value="">Choose a role...</option>
                   {roles.map((r) => (
-                    <option key={r.id || r._id} value={r.id || r._id}>
-                      {r.name}
+                    <option key={r.name} value={r.name}>
+                      {r.name.replace(/_/g, ' ')}
                     </option>
                   ))}
                 </select>
