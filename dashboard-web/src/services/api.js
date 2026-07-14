@@ -19,7 +19,7 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('dashboard_token');
-      window.location.href = '/login';
+      window.location.href = '/dashboard/login';
     }
     const message = err.response?.data?.message || err.message || 'An error occurred';
     if (err.config?.silentError) return Promise.reject(err);

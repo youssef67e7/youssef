@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
       // Ignore logout API errors
     } finally {
       clearAuth();
-      window.location.href = '/login';
+      window.location.href = '/dashboard/login';
     }
   };
 

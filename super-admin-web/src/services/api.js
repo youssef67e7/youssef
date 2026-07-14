@@ -19,7 +19,7 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('super_admin_token');
-      window.location.href = '/login';
+      window.location.href = '/super-admin/login';
     }
     return Promise.reject(err);
   }
