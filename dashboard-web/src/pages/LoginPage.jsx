@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Mail, Lock, Loader2, Info } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -40,7 +40,7 @@ export default function LoginPage() {
               <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
                 className="w-full pl-10 pr-4 py-2.5 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                placeholder="admin@pharmaworld.com" />
+                placeholder="employee@pharmaworld.com" />
             </div>
           </div>
           <div>
@@ -57,6 +57,16 @@ export default function LoginPage() {
             {loading ? <><Loader2 size={16} className="animate-spin" /> Signing in...</> : 'Sign In'}
           </button>
         </form>
+        <div className="mt-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+          <div className="flex items-center gap-2 mb-2">
+            <Info size={14} className="text-primary-600 dark:text-primary-400" />
+            <span className="text-xs font-semibold text-primary-700 dark:text-primary-400 uppercase">Demo Credentials</span>
+          </div>
+          <div className="space-y-1 text-sm">
+            <p className="text-gray-700 dark:text-gray-300"><span className="font-medium">Email:</span> employee@pharmaworld.com</p>
+            <p className="text-gray-700 dark:text-gray-300"><span className="font-medium">Password:</span> Admin@123</p>
+          </div>
+        </div>
       </div>
     </div>
   );

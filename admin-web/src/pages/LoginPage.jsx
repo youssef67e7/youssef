@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Loader2, Pill } from 'lucide-react';
+import { LogIn, Loader2, Pill, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authAPI } from '../services/api';
 
@@ -48,7 +48,7 @@ export default function LoginPage() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 transition"
-                placeholder="admin@pharmacy.com"
+                placeholder="pharmacy@pharmaworld.com"
                 autoComplete="email"
               />
             </div>
@@ -72,6 +72,17 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+        </div>
+
+        <div className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
+          <div className="flex items-center gap-2 mb-2">
+            <Info size={14} className="text-primary-600" />
+            <span className="text-xs font-semibold text-primary-700 uppercase">Demo Credentials</span>
+          </div>
+          <div className="space-y-1 text-sm">
+            <p className="text-gray-700"><span className="font-medium">Email:</span> pharmacy@pharmaworld.com</p>
+            <p className="text-gray-700"><span className="font-medium">Password:</span> Admin@123</p>
+          </div>
         </div>
       </div>
     </div>
