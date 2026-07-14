@@ -6,8 +6,8 @@ import PageHeader from '../components/PageHeader';
 import StatusIndicator from '../components/StatusIndicator';
 import ConfirmDialog from '../components/ConfirmDialog';
 
-const ROLES = ['pharmacist', 'cashier', 'manager', 'delivery', 'admin'];
-const emptyForm = { name: '', email: '', password: '', role: 'pharmacist', salary: '' };
+const ROLES = ['PHARMACIST', 'CASHIER', 'INVENTORY_MANAGER', 'DELIVERY_STAFF'];
+const emptyForm = { name: '', email: '', password: '', role: 'PHARMACIST', salary: '' };
 
 export default function StaffPage() {
   const [staff, setStaff] = useState([]);
