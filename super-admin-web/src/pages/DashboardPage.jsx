@@ -64,8 +64,28 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const revenueData = stats?.revenueTrend || fallbackRevenue;
-  const activity = stats?.recentActivity || fallbackActivity;
+  const revenueData = Array.isArray(stats?.revenueTrend) ? stats.revenueTrend : fallbackRevenue;
+  const activity = Array.isArray(stats?.recentActivity) ? stats.recentActivity : fallbackActivity;
+
+  const healthServices = (() => {
+    if (Array.isArray(health?.services)) return health.services;
+    if (health?.services && typeof health.services === 'object') {
+      return Object.entries(health.services).map(([name, info]) => ({
+        name,
+        status: info.status === 'ok' ? 'healthy' : info.status,
+        latency: info.latency || null,
+        message: info.message || '',
+      }));
+    }
+    return [
+      { name: 'API Gateway', status: 'healthy', latency: '45ms' },
+      { name: 'Database', status: 'healthy', latency: '12ms' },
+      { name: 'Cache Layer', status: 'healthy', latency: '3ms' },
+      { name: 'File Storage', status: 'healthy', latency: '28ms' },
+    ];
+  })();
+
+  const apiStatus = health?.api?.status || (health?.status === 'ok' ? 'healthy' : health?.status) || 'healthy';
 
   if (loading) {
     return (
@@ -99,7 +119,7 @@ export default function DashboardPage() {
         subtitle="Platform-wide overview and analytics"
         actions={
           <div className="flex items-center gap-2">
-            <StatusIndicator status={health?.api?.status || 'healthy'} size="lg" />
+            <StatusIndicator status={apiStatus} size="lg" />
             <span className="text-xs text-gray-500 dark:text-gray-400">System Status</span>
           </div>
         }
@@ -167,12 +187,7 @@ export default function DashboardPage() {
             <Activity size={18} className="text-gray-400" />
           </div>
           <div className="space-y-4">
-            {(health?.services || [
-              { name: 'API Gateway', status: 'healthy', latency: '45ms' },
-              { name: 'Database', status: 'healthy', latency: '12ms' },
-              { name: 'Cache Layer', status: 'healthy', latency: '3ms' },
-              { name: 'File Storage', status: 'healthy', latency: '28ms' },
-            ]).map((service, i) => {
+            {healthServices.map((service, i) => {
               const IconComp = healthIcons[service.name?.toLowerCase().includes('db') ? 'database'
                 : service.name?.toLowerCase().includes('api') ? 'api'
                 : service.name?.toLowerCase().includes('cache') ? 'cache' : 'overall'];
