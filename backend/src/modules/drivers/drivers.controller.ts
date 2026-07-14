@@ -15,8 +15,8 @@ export class DriversController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  async create(@Body() dto: CreateDriverDto, @CurrentUser('sub') adminId: string) {
-    return this.driversService.create(dto, adminId);
+  async create(@Body() dto: CreateDriverDto) {
+    return this.driversService.create(dto);
   }
 
   @Get()
@@ -36,15 +36,15 @@ export class DriversController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  async update(@Param('id') id: string, @Body() dto: UpdateDriverDto, @CurrentUser('sub') adminId: string) {
-    return this.driversService.update(id, dto, adminId);
+  async update(@Param('id') id: string, @Body() dto: UpdateDriverDto) {
+    return this.driversService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  async remove(@Param('id') id: string, @CurrentUser('sub') adminId: string) {
-    return this.driversService.remove(id, adminId);
+  async remove(@Param('id') id: string) {
+    return this.driversService.remove(id);
   }
 
   @Patch(':id/online')

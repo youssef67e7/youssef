@@ -6,16 +6,12 @@ import { UpdateDriverDto } from './dto/update-driver.dto';
 @Injectable()
 export class DriversService {
   private readonly logger = new Logger(DriversService.name);
-
   constructor(private readonly driverRepository: DriverRepository) {}
 
-  async create(dto: CreateDriverDto, adminId: string) {
+  async create(dto: CreateDriverDto) {
     const existing = await this.driverRepository.findAll({ email: dto.email });
     if (existing.length > 0) throw new BadRequestException('Driver with this email already exists');
-
     const driver = await this.driverRepository.create(dto);
-    await this.driverRepository.logAudit({ user: adminId, action: 'CREATE_DRIVER', entity: 'Driver', entityId: driver._id.toString(), newValues: dto });
-    this.logger.log(`Driver created: ${driver.name}`);
     return { message: 'Driver created successfully', data: driver };
   }
 
@@ -33,25 +29,17 @@ export class DriversService {
     return { message: 'Driver retrieved', data: driver };
   }
 
-  async update(id: string, dto: UpdateDriverDto, adminId: string) {
+  async update(id: string, dto: UpdateDriverDto) {
     const driver = await this.driverRepository.findById(id);
     if (!driver || driver.deletedAt) throw new NotFoundException('Driver not found');
-
-    if (dto.email && dto.email !== driver.email) {
-      const existing = await this.driverRepository.findAll({ email: dto.email });
-      if (existing.length > 0) throw new BadRequestException('Email already in use');
-    }
-
     const updated = await this.driverRepository.update(id, dto);
-    await this.driverRepository.logAudit({ user: adminId, action: 'UPDATE_DRIVER', entity: 'Driver', entityId: id, newValues: dto });
     return { message: 'Driver updated', data: updated };
   }
 
-  async remove(id: string, adminId: string) {
+  async remove(id: string) {
     const driver = await this.driverRepository.findById(id);
     if (!driver || driver.deletedAt) throw new NotFoundException('Driver not found');
     await this.driverRepository.softDelete(id);
-    await this.driverRepository.logAudit({ user: adminId, action: 'DELETE_DRIVER', entity: 'Driver', entityId: id });
     return { message: 'Driver deleted' };
   }
 

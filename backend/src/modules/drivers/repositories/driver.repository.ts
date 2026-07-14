@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Driver, DriverDocument } from '../drivers.schema';
-import { AuditLog, AuditLogDocument } from '../../../database/schemas/audit-log.schema';
+import { DriverProfile, DriverProfileDocument } from '../drivers.schema';
 
 @Injectable()
 export class DriverRepository {
   constructor(
-    @InjectModel(Driver.name) private driverModel: Model<DriverDocument>,
-    @InjectModel(AuditLog.name) private auditModel: Model<AuditLogDocument>,
+    @InjectModel(DriverProfile.name) private driverModel: Model<DriverProfileDocument>,
   ) {}
 
   async findAll(filter: any = {}, sort: any = { createdAt: -1 }) {
@@ -43,6 +41,6 @@ export class DriverRepository {
   }
 
   async logAudit(data: any) {
-    try { await this.auditModel.create(data); } catch {}
+    // Audit logging is handled by the global audit-log module
   }
 }

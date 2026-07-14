@@ -21,7 +21,9 @@ export class ReportsController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    return this.reportsService.getSalesReport(new Date(startDate), new Date(endDate));
+    const end = endDate ? new Date(endDate) : new Date();
+    const start = startDate ? new Date(startDate) : new Date(end.getTime() - 90 * 24 * 60 * 60 * 1000);
+    return this.reportsService.getSalesReport(start, end);
   }
 
   @Get('revenue')
@@ -30,7 +32,9 @@ export class ReportsController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    return this.reportsService.getRevenueReport(new Date(startDate), new Date(endDate));
+    const end = endDate ? new Date(endDate) : new Date();
+    const start = startDate ? new Date(startDate) : new Date(end.getTime() - 90 * 24 * 60 * 60 * 1000);
+    return this.reportsService.getRevenueReport(start, end);
   }
 
   @Get('inventory')
@@ -52,7 +56,9 @@ export class ReportsController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    const report = await this.reportsService.getSalesReport(new Date(startDate), new Date(endDate));
+    const end = endDate ? new Date(endDate) : new Date();
+    const start = startDate ? new Date(startDate) : new Date(end.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const report = await this.reportsService.getSalesReport(start, end);
     const csv = await this.reportsService.exportCSV(report.data.orders);
 
     res.setHeader('Content-Type', 'text/csv');

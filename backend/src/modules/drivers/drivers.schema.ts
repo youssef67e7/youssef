@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type DriverDocument = Driver & Document;
+export type DriverProfileDocument = DriverProfile & Document;
 
-@Schema({ timestamps: true, collection: 'drivers' })
-export class Driver {
+@Schema({ timestamps: true, collection: 'driver_profiles' })
+export class DriverProfile {
   @Prop({ required: true })
   name: string;
 
@@ -26,8 +26,8 @@ export class Driver {
   @Prop({ default: true })
   isAvailable: boolean;
 
-  @Prop({ type: { lat: { type: Number }, lng: { type: Number } }, default: null })
-  currentLocation: { lat: number; lng: number };
+  @Prop({ type: Object, default: null })
+  currentLocation: any;
 
   @Prop({ default: 0 })
   rating: number;
@@ -45,10 +45,10 @@ export class Driver {
   deletedAt: Date;
 }
 
-export const DriverSchema = SchemaFactory.createForClass(Driver);
+export const DriverProfileSchema = SchemaFactory.createForClass(DriverProfile);
 
-DriverSchema.index({ email: 1 });
-DriverSchema.index({ isOnline: 1 });
-DriverSchema.index({ isActive: 1 });
-DriverSchema.index({ deletedAt: 1 });
-DriverSchema.index({ createdAt: -1 });
+DriverProfileSchema.index({ email: 1 });
+DriverProfileSchema.index({ isOnline: 1 });
+DriverProfileSchema.index({ isActive: 1 });
+DriverProfileSchema.index({ deletedAt: 1 });
+DriverProfileSchema.index({ createdAt: -1 });

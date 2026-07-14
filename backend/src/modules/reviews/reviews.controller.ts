@@ -26,6 +26,12 @@ export class ReviewsController {
     return this.reviewsService.create(userId, dto);
   }
 
+  @Get()
+  @ApiOperation({ summary: 'List all reviews' })
+  async findAll(@Query() query: PaginationDto) {
+    return this.reviewsService.findAll(query);
+  }
+
   @Get('medicine/:medicineId')
   @ApiOperation({ summary: 'Get reviews for a medicine' })
   @ApiParam({ name: 'medicineId' })

@@ -54,6 +54,28 @@ export class ReviewsService {
     };
   }
 
+  async findAll(query: PaginationDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 50;
+    const skip = (page - 1) * limit;
+
+    const filter = { deletedAt: null };
+
+    const [data, total] = await Promise.all([
+      this.reviewModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit)
+        .populate('user', 'name email avatar')
+        .populate('medicine', 'name')
+        .exec(),
+      this.reviewModel.countDocuments(filter).exec(),
+    ]);
+
+    return {
+      message: 'Reviews retrieved',
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
   async findByMedicine(medicineId: string, query: PaginationDto) {
     const filter = { medicine: medicineId, status: 'APPROVED', deletedAt: null };
 
