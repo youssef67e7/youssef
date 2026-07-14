@@ -143,9 +143,23 @@ export const reportsAPI = {
   revenue: (params) => api.get('/reports/revenue', { params }),
   inventory: (params) => api.get('/reports/inventory', { params }),
   users: (params) => api.get('/reports/users', { params }),
-  generate: (data) => api.post('/reports/sales', data),
-  export: (id, format) => api.get('/reports/export/sales', { params: { id, format }, responseType: 'blob' }),
-  delete: () => Promise.resolve(),
+  generate: (data) => {
+    const params = {};
+    if (data.dateRange) {
+      const now = new Date();
+      const days = data.dateRange === '7d' ? 7 : data.dateRange === '30d' ? 30 : data.dateRange === '90d' ? 90 : 365;
+      params.startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
+      params.endDate = now.toISOString();
+    }
+    const endpoint = data.type === 'revenue' ? '/reports/revenue' : data.type === 'inventory' ? '/reports/inventory' : data.type === 'users' ? '/reports/users' : '/reports/sales';
+    return api.get(endpoint, { params });
+  },
+  export: (startDate, endDate) => {
+    const params = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    return api.get('/reports/export/sales', { params, responseType: 'blob' });
+  },
 };
 
 export const systemHealthAPI = {
