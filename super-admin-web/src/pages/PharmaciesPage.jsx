@@ -28,7 +28,7 @@ export default function PharmaciesPage() {
   const [toggleTarget, setToggleTarget] = useState(null);
   const [toggleLoading, setToggleLoading] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
-  const [createForm, setCreateForm] = useState({ name: '', city: '', address: '', managerEmail: '' });
+  const [createForm, setCreateForm] = useState({ name: '', city: '', address: '', managerEmail: '', phone: '' });
   const [createLoading, setCreateLoading] = useState(false);
 
   const load = useCallback(async (p = page, s = search, f = statusFilter) => {
@@ -113,7 +113,7 @@ export default function PharmaciesPage() {
       await pharmaciesAPI.create(createForm);
       toast.success('Pharmacy created');
       setShowCreate(false);
-      setCreateForm({ name: '', city: '', address: '', managerEmail: '' });
+      setCreateForm({ name: '', city: '', address: '', managerEmail: '', phone: '' });
       load();
     } catch {
       toast.error('Failed to create pharmacy');
@@ -358,6 +358,16 @@ export default function PharmaciesPage() {
               value={createForm.managerEmail}
               onChange={(e) => setCreateForm({ ...createForm, managerEmail: e.target.value })}
               placeholder="manager@example.com"
+              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium dark:text-gray-300 mb-1">Phone</label>
+            <input
+              type="tel"
+              value={createForm.phone}
+              onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
+              placeholder="+201234567890"
               className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
             />
           </div>

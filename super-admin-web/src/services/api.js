@@ -43,7 +43,16 @@ export const dashboardAPI = {
 export const pharmaciesAPI = {
   list: (params) => api.get('/users', { params: { ...params, role: 'ADMIN' } }),
   get: (id) => api.get(`/users/${id}`),
-  create: (data) => api.post('/users', { ...data, role: 'ADMIN' }),
+  create: (data) => {
+    const payload = {
+      name: data.name,
+      email: data.managerEmail || data.email,
+      phone: data.phone || '+201000000000',
+      password: data.password || 'Admin@123',
+      role: 'ADMIN',
+    };
+    return api.post('/auth/register', payload);
+  },
   toggle: (id) => api.patch(`/users/${id}`),
   metrics: (id) => api.get(`/users/${id}`),
 };

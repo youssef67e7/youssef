@@ -86,6 +86,16 @@ export const deliveryAPI = {
   updateStatus: (id, status) => api.patch(`/delivery/${id}/status`, { status }),
 };
 
+export const driversAPI = {
+  list: (params) => api.get('/drivers', { params }),
+  create: (data) => api.post('/drivers', data),
+  update: (id, data) => api.patch(`/drivers/${id}`, data),
+  delete: (id) => api.delete(`/drivers/${id}`),
+  setOnline: (id, isOnline) => api.patch(`/drivers/${id}/online`, { isOnline }),
+  earnings: (id) => api.get(`/drivers/${id}/earnings`),
+  deliveries: (id, params) => api.get('/delivery', { params: { driver: id, ...params } }),
+};
+
 export const notificationsAPI = {
   list: (params) => api.get('/notifications', { params }),
   sendBulk: (data) => api.post('/notifications/send-bulk', data),
