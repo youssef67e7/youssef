@@ -51,7 +51,7 @@ export default function BrandsPage() {
     if (!form.nameEn.trim()) return toast.error('English name is required');
     setSaving(true);
     try {
-      const payload = { name: form.nameEn, nameEn: form.nameEn, nameAr: form.nameAr, description: form.description, logo: form.logo, isActive: form.isActive };
+      const payload = { name: form.nameEn, nameAr: form.nameAr, description: form.description, logo: form.logo, isActive: form.isActive };
       if (editing) {
         await brandsAPI.update(editing._id || editing.id, payload);
         toast.success('Brand updated');
