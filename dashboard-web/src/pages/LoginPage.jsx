@@ -19,7 +19,7 @@ export default function LoginPage() {
       toast.success('Welcome back!');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Invalid credentials');
+      toast.error(err.message || err.response?.data?.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }

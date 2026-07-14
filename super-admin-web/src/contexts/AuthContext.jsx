@@ -3,6 +3,7 @@ import { authAPI } from '../services/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
+const ALLOWED_ROLES = ['SUPER_ADMIN'];
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -12,7 +13,13 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('super_admin_token');
     if (token) {
       authAPI.profile().then(res => {
-        setUser(res.data?.data || res.data);
+        const userData = res.data?.data || res.data;
+        if (userData && !ALLOWED_ROLES.includes(userData.role)) {
+          localStorage.removeItem('super_admin_token');
+          toast.error('Access denied. This portal is for Super Admins only.');
+        } else {
+          setUser(userData);
+        }
       }).catch(() => {
         localStorage.removeItem('super_admin_token');
         toast.error('Session expired. Please login again.');
@@ -26,6 +33,9 @@ export function AuthProvider({ children }) {
     const res = await authAPI.login(email, password);
     const data = res.data?.data || res.data;
     if (data?.accessToken) {
+      if (data.user && !ALLOWED_ROLES.includes(data.user.role)) {
+        throw new Error('Access denied. This portal is for Super Admins only.');
+      }
       localStorage.setItem('super_admin_token', data.accessToken);
       setUser(data.user);
       return { requiresMfa: false };
@@ -41,6 +51,9 @@ export function AuthProvider({ children }) {
     const res = await authAPI.verifyMfa(code, mfaToken);
     const data = res.data?.data || res.data;
     if (data?.accessToken) {
+      if (data.user && !ALLOWED_ROLES.includes(data.user.role)) {
+        throw new Error('Access denied. This portal is for Super Admins only.');
+      }
       localStorage.setItem('super_admin_token', data.accessToken);
       setUser(data.user);
       return true;
@@ -51,9 +64,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await authAPI.logout();
-    } catch {
-      // logout endpoint may fail but we still clear locally
-    }
+    } catch {}
     localStorage.removeItem('super_admin_token');
     setUser(null);
   };
