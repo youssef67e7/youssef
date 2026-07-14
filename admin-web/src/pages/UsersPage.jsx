@@ -1,112 +1,104 @@
-import { useEffect, useState } from 'react';
-import { usersAPI } from '../services/api';
-import { Trash2, Edit2, Search, X, Shield, Ban, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Trash2, Users, ToggleLeft, ToggleRight } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-const ROLES = ['user', 'admin', 'pharmacy_owner', 'pharmacy_manager', 'driver', 'delivery_staff'];
+import DataTable from '../components/DataTable';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { usersAPI } from '../services/api';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
-  const [showEdit, setShowEdit] = useState(false);
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', role: 'user', isActive: true });
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const load = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await usersAPI.list({ search: search || undefined, limit: 50 });
-      setUsers(res.data?.data || res.data?.users || []);
-    } catch { toast.error('Failed to load users'); }
-    setLoading(false);
+      const params = { page, limit: 15 };
+      if (search) params.search = search;
+      const { data } = await usersAPI.list(params);
+      const d = data.data || data;
+      setUsers(d.users || d.items || d || []);
+      setTotalPages(d.totalPages || 1);
+      setTotal(d.total || 0);
+    } catch {
+      toast.error('Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, search]);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await usersAPI.delete(deleteTarget._id || deleteTarget.id);
+      toast.success('User deleted');
+      fetchUsers();
+    } catch {
+      toast.error('Failed to delete user');
+    }
   };
 
-  useEffect(() => { load(); }, []);
-
-  const openEdit = (u) => {
-    setEditForm({ name: u.name || '', email: u.email || '', phone: u.phone || '', role: u.role || 'user', isActive: u.isActive !== false });
-    setShowEdit(u._id || u.id);
+  const toggleActive = async (u) => {
+    try {
+      await usersAPI.update(u._id || u.id, { isActive: !u.isActive });
+      toast.success(u.isActive ? 'User deactivated' : 'User activated');
+      fetchUsers();
+    } catch {
+      toast.error('Failed to update status');
+    }
   };
 
-  const handleEdit = async (e) => {
-    e.preventDefault();
-    try { await usersAPI.update(showEdit, editForm); toast.success('User updated'); setShowEdit(false); load(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Failed to update'); }
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this user?')) return;
-    try { await usersAPI.delete(id); toast.success('User deleted'); load(); }
-    catch { toast.error('Failed to delete'); }
-  };
-
-  const handleToggleActive = async (u) => {
-    try { await usersAPI.update(u._id || u.id, { isActive: !u.isActive }); toast.success(u.isActive ? 'User deactivated' : 'User activated'); load(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
-  };
+  const columns = [
+    { key: 'name', label: 'Name', sortable: true, render: (v) => <span className="font-medium text-gray-900">{v || '—'}</span> },
+    { key: 'email', label: 'Email' },
+    { key: 'phone', label: 'Phone', render: (v) => v || '—' },
+    { key: 'isActive', label: 'Status', render: (v, row) => (
+      <button onClick={() => toggleActive(row)} className="flex items-center gap-1">
+        {v !== false ? <ToggleRight size={20} className="text-green-500" /> : <ToggleLeft size={20} className="text-gray-400" />}
+        <span className={`text-xs font-medium ${v !== false ? 'text-green-600' : 'text-gray-500'}`}>{v !== false ? 'Active' : 'Inactive'}</span>
+      </button>
+    )},
+    { key: 'createdAt', label: 'Joined', sortable: true, render: (v) => v ? new Date(v).toLocaleDateString() : '—' },
+    { key: 'actions', label: 'Actions', width: '80px', render: (_, row) => (
+      <button onClick={() => setDeleteTarget(row)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+        <Trash2 size={16} />
+      </button>
+    )},
+  ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Users</h1>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && load()}
-              className="pl-9 pr-4 py-2 border rounded-lg text-sm w-64" placeholder="Search users..." />
-          </div>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+        <p className="text-sm text-gray-500 mt-1">Manage registered customers</p>
       </div>
 
-      {showEdit && (
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold">Edit User</h2>
-            <button onClick={() => setShowEdit(false)}><X size={18} /></button>
-          </div>
-          <form onSubmit={handleEdit} className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} required placeholder="Name" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} required placeholder="Email" type="email" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} placeholder="Phone" className="px-3 py-2 border rounded-lg text-sm" />
-            <select value={editForm.role} onChange={e => setEditForm({...editForm, role: e.target.value})} className="px-3 py-2 border rounded-lg text-sm">
-              {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={editForm.isActive} onChange={e => setEditForm({...editForm, isActive: e.target.checked})} className="rounded" /> Active</label>
-            <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">Update</button>
-              <button type="button" onClick={() => setShowEdit(false)} className="px-4 py-2 bg-gray-200 rounded-lg text-sm">Cancel</button>
-            </div>
-          </form>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={users}
+        loading={loading}
+        emptyIcon={Users}
+        emptyTitle="No users found"
+        emptyDescription="Registered users will appear here"
+        searchPlaceholder="Search by name or email..."
+        onSearch={(v) => { setSearch(v); setPage(1); }}
+        pagination={{ page, totalPages, total, onPageChange: setPage }}
+      />
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left">
-            <tr><th className="px-5 py-3 font-medium">Name</th><th className="px-5 py-3 font-medium">Email</th><th className="px-5 py-3 font-medium">Phone</th><th className="px-5 py-3 font-medium">Role</th><th className="px-5 py-3 font-medium">Status</th><th className="px-5 py-3 font-medium">Actions</th></tr>
-          </thead>
-          <tbody className="divide-y">
-            {loading ? <tr><td colSpan={6} className="text-center py-8 text-gray-400">Loading...</td></tr> :
-              users.length === 0 ? <tr><td colSpan={6} className="text-center py-8 text-gray-400">No users found</td></tr> :
-                users.map(u => (
-                  <tr key={u._id || u.id} className="hover:bg-gray-50">
-                    <td className="px-5 py-3 font-medium">{u.name}</td>
-                    <td className="px-5 py-3 text-gray-500">{u.email}</td>
-                    <td className="px-5 py-3 text-gray-500">{u.phone || '—'}</td>
-                    <td className="px-5 py-3"><span className="px-2 py-1 text-xs rounded-full bg-primary-50 text-primary-700">{u.role || 'user'}</span></td>
-                    <td className="px-5 py-3"><span className={`px-2 py-1 text-xs rounded-full ${u.isActive !== false ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{u.isActive !== false ? 'Active' : 'Inactive'}</span></td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => openEdit(u)} className="text-blue-500 hover:text-blue-700"><Edit2 size={16} /></button>
-                        <button onClick={() => handleToggleActive(u)} className={u.isActive !== false ? 'text-orange-500 hover:text-orange-700' : 'text-green-500 hover:text-green-700'}>{u.isActive !== false ? <Ban size={16} /> : <CheckCircle size={16} />}</button>
-                        <button onClick={() => handleDelete(u._id || u.id)} className="text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-          </tbody>
-        </table>
-      </div>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete User"
+        message={`Are you sure you want to delete "${deleteTarget?.name || deleteTarget?.email}"? This action cannot be undone.`}
+        confirmText="Delete"
+      />
     </div>
   );
 }

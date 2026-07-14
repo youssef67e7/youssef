@@ -1,188 +1,220 @@
-import { useEffect, useState } from 'react';
-import { medicinesAPI, categoriesAPI, brandsAPI } from '../services/api';
-import { Plus, Trash2, Search, Edit2, X, Package } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Plus, Pencil, Trash2, Pill } from 'lucide-react';
 import toast from 'react-hot-toast';
+import DataTable from '../components/DataTable';
+import Modal from '../components/Modal';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { medicinesAPI, categoriesAPI, brandsAPI } from '../services/api';
 
-const DOSAGE_FORMS = ['TABLET','CAPSULE','LIQUID','SYRUP','SUSPENSION','INJECTION','DROPS','CREAM','OINTMENT','GEL','SUPPOSITORY','INHALER','PATCH','POWDER','SPRAY','SOLUTION','EYE_DROPS','EAR_DROPS','NASAL_SPRAY','TOPICAL'];
-const emptyForm = { name: '', nameAr: '', price: '', stockQuantity: '', category: '', sku: '', dosageForm: 'TABLET', strength: '', description: '', brand: '', isActive: true };
+const emptyForm = {
+  name: '', nameAr: '', category: '', brand: '', price: '', stock: '',
+  SKU: '', dosageForm: '', manufacturer: '', description: '',
+};
 
 export default function MedicinesPage() {
   const [medicines, setMedicines] = useState([]);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(emptyForm);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const perPage = 10;
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const load = async (p = page) => {
+  const fetchMedicines = useCallback(async () => {
     setLoading(true);
     try {
-      const [medRes, catRes, brandRes] = await Promise.allSettled([
-        medicinesAPI.list({ search: search || undefined, limit: perPage, page: p }),
-        categoriesAPI.list(),
-        brandsAPI.list(),
-      ]);
-      if (medRes.status === 'fulfilled') {
-        const d = medRes.value.data;
-        setMedicines(d?.data || d?.medicines || []);
-        setTotalPages(d?.totalPages || Math.ceil((d?.total || 0) / perPage) || 1);
-      }
-      if (catRes.status === 'fulfilled') {
-        const d = catRes.value.data?.data || catRes.value.data || [];
-        setCategories(Array.isArray(d) ? d : []);
-      }
-      if (brandRes.status === 'fulfilled') {
-        const d = brandRes.value.data?.data || brandRes.value.data || [];
-        setBrands(Array.isArray(d) ? d : []);
-      }
-    } catch { toast.error('Failed to load data'); }
-    setLoading(false);
-  };
+      const params = { page, limit: 15 };
+      if (search) params.search = search;
+      const { data } = await medicinesAPI.list(params);
+      const d = data.data || data;
+      setMedicines(d.medicines || d.items || d || []);
+      setTotalPages(d.totalPages || d.totalPages || 1);
+      setTotal(d.total || d.totalItems || 0);
+    } catch {
+      toast.error('Failed to load medicines');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, search]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { fetchMedicines(); }, [fetchMedicines]);
 
-  const openAdd = () => {
-    setEditingId(null);
-    setForm(emptyForm);
-    setShowForm(true);
-  };
+  useEffect(() => {
+    categoriesAPI.list().then(({ data }) => setCategories(data.data || data || [])).catch(() => {});
+    brandsAPI.list().then(({ data }) => setBrands(data.data || data || [])).catch(() => {});
+  }, []);
 
+  const openCreate = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };
   const openEdit = (m) => {
-    setEditingId(m._id || m.id);
+    setEditing(m);
     setForm({
-      name: m.name || '',
-      nameAr: m.nameAr || '',
-      price: m.price?.toString() || '',
-      stockQuantity: m.stockQuantity?.toString() || m.stock?.toString() || '',
-      category: m.category?._id || m.category || '',
-      sku: m.sku || '',
-      dosageForm: m.dosageForm || 'TABLET',
-      strength: m.strength || '',
+      name: m.name || '', nameAr: m.nameAr || '', category: m.category?._id || m.category || '',
+      brand: m.brand?._id || m.brand || '', price: m.price ?? '', stock: m.stock ?? '',
+      SKU: m.SKU || m.sku || '', dosageForm: m.dosageForm || '', manufacturer: m.manufacturer || '',
       description: m.description || '',
-      brand: m.brand?._id || m.brand || '',
-      isActive: m.isActive !== false,
     });
-    setShowForm(true);
+    setModalOpen(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSave = async () => {
+    if (!form.name.trim()) return toast.error('Name is required');
+    if (!form.price || Number(form.price) <= 0) return toast.error('Price must be greater than 0');
+    if (form.stock === '' || Number(form.stock) < 0) return toast.error('Stock cannot be negative');
+    setSaving(true);
     try {
-      const data = {
-        name: form.name, nameAr: form.nameAr || undefined,
-        price: Number(form.price), stockQuantity: Number(form.stockQuantity),
-        category: form.category, sku: form.sku,
-        dosageForm: form.dosageForm, strength: form.strength,
-        description: form.description, brand: form.brand || undefined,
-        isActive: form.isActive,
-      };
-      if (editingId) {
-        await medicinesAPI.update(editingId, data);
+      const payload = { ...form, price: Number(form.price), stock: Number(form.stock) };
+      if (editing) {
+        await medicinesAPI.update(editing._id || editing.id, payload);
         toast.success('Medicine updated');
       } else {
-        await medicinesAPI.create(data);
-        toast.success('Medicine added');
+        await medicinesAPI.create(payload);
+        toast.success('Medicine created');
       }
-      setShowForm(false); setEditingId(null); setForm(emptyForm); load();
-    } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
+      setModalOpen(false);
+      fetchMedicines();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Operation failed');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this medicine?')) return;
-    try { await medicinesAPI.delete(id); toast.success('Deleted'); load(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await medicinesAPI.delete(deleteTarget._id || deleteTarget.id);
+      toast.success('Medicine deleted');
+      fetchMedicines();
+    } catch {
+      toast.error('Failed to delete medicine');
+    }
   };
+
+  const columns = [
+    { key: 'name', label: 'Name', sortable: true, render: (_, row) => (
+      <div>
+        <p className="font-medium text-gray-900">{row.name}</p>
+        {row.nameAr && <p className="text-xs text-gray-400">{row.nameAr}</p>}
+      </div>
+    )},
+    { key: 'category', label: 'Category', render: (v) => v?.name || v || '—' },
+    { key: 'price', label: 'Price', sortable: true, render: (v) => `$${Number(v || 0).toFixed(2)}` },
+    { key: 'stock', label: 'Stock', sortable: true, render: (v) => (
+      <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${v <= 0 ? 'bg-red-50 text-red-600' : v <= 10 ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600'}`}>
+        {v}
+      </span>
+    )},
+    { key: 'isActive', label: 'Status', render: (v) => (
+      <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${v !== false ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+        {v !== false ? 'Active' : 'Inactive'}
+      </span>
+    )},
+    { key: 'actions', label: 'Actions', width: '100px', render: (_, row) => (
+      <div className="flex items-center gap-1">
+        <button onClick={() => openEdit(row)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Pencil size={16} /></button>
+        <button onClick={() => setDeleteTarget(row)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16} /></button>
+      </div>
+    )},
+  ];
+
+  const inputClass = 'w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 transition';
+  const labelClass = 'block text-sm font-medium text-gray-700 mb-1';
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Medicines</h1>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && (setPage(1), load(1))}
-              className="pl-9 pr-4 py-2 border rounded-lg text-sm w-64" placeholder="Search medicines..." />
-          </div>
-          <button onClick={openAdd} className="flex items-center gap-1 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm"><Plus size={16} /> Add</button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Medicines</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage your medicine catalog</p>
         </div>
+        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition">
+          <Plus size={18} /> Add Medicine
+        </button>
       </div>
 
-      {showForm && (
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold">{editingId ? 'Edit Medicine' : 'Add Medicine'}</h2>
-            <button onClick={() => { setShowForm(false); setEditingId(null); }}><X size={18} /></button>
+      <DataTable
+        columns={columns}
+        data={medicines}
+        loading={loading}
+        emptyIcon={Pill}
+        emptyTitle="No medicines found"
+        emptyDescription="Add your first medicine to get started"
+        searchPlaceholder="Search medicines..."
+        onSearch={(v) => { setSearch(v); setPage(1); }}
+        pagination={{ page, totalPages, total, onPageChange: setPage }}
+      />
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Medicine' : 'Add Medicine'} size="lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Name *</label>
+            <input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Medicine name" />
           </div>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required placeholder="Name (EN) *" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={form.nameAr} onChange={e => setForm({...form, nameAr: e.target.value})} placeholder="Name (AR)" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={form.price} onChange={e => setForm({...form, price: e.target.value})} required placeholder="Price *" type="number" step="0.01" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={form.stockQuantity} onChange={e => setForm({...form, stockQuantity: e.target.value})} required placeholder="Stock *" type="number" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} required placeholder="SKU *" className="px-3 py-2 border rounded-lg text-sm" />
-            <input value={form.strength} onChange={e => setForm({...form, strength: e.target.value})} required placeholder="Strength * (e.g. 500mg)" className="px-3 py-2 border rounded-lg text-sm" />
-            <select value={form.dosageForm} onChange={e => setForm({...form, dosageForm: e.target.value})} className="px-3 py-2 border rounded-lg text-sm">
-              {DOSAGE_FORMS.map(f => <option key={f} value={f}>{f}</option>)}
+          <div>
+            <label className={labelClass}>Name (Arabic)</label>
+            <input className={inputClass} value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} placeholder="الاسم بالعربية" />
+          </div>
+          <div>
+            <label className={labelClass}>Category</label>
+            <select className={inputClass} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+              <option value="">Select category</option>
+              {categories.map((c) => <option key={c._id || c.id} value={c._id || c.id}>{c.name}</option>)}
             </select>
-            <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} required className="px-3 py-2 border rounded-lg text-sm">
-              <option value="">Select Category *</option>
-              {categories.map(c => <option key={c._id || c.id} value={c._id || c.id}>{c.name}</option>)}
+          </div>
+          <div>
+            <label className={labelClass}>Brand</label>
+            <select className={inputClass} value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })}>
+              <option value="">Select brand</option>
+              {brands.map((b) => <option key={b._id || b.id} value={b._id || b.id}>{b.name}</option>)}
             </select>
-            <select value={form.brand} onChange={e => setForm({...form, brand: e.target.value})} className="px-3 py-2 border rounded-lg text-sm">
-              <option value="">Select Brand</option>
-              {brands.map(b => <option key={b._id || b.id} value={b._id || b.id}>{b.name}</option>)}
-            </select>
-            <input value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder="Description" className="px-3 py-2 border rounded-lg text-sm col-span-2" />
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive} onChange={e => setForm({...form, isActive: e.target.checked})} className="rounded" /> Active</label>
-            <div className="col-span-2 md:col-span-4 flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">{editingId ? 'Update' : 'Save'}</button>
-              <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} className="px-4 py-2 bg-gray-200 rounded-lg text-sm">Cancel</button>
-            </div>
-          </form>
+          </div>
+          <div>
+            <label className={labelClass}>Price *</label>
+            <input type="number" step="0.01" min="0" className={inputClass} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="0.00" />
+          </div>
+          <div>
+            <label className={labelClass}>Stock *</label>
+            <input type="number" min="0" className={inputClass} value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} placeholder="0" />
+          </div>
+          <div>
+            <label className={labelClass}>SKU</label>
+            <input className={inputClass} value={form.SKU} onChange={(e) => setForm({ ...form, SKU: e.target.value })} placeholder="SKU code" />
+          </div>
+          <div>
+            <label className={labelClass}>Dosage Form</label>
+            <input className={inputClass} value={form.dosageForm} onChange={(e) => setForm({ ...form, dosageForm: e.target.value })} placeholder="e.g. Tablet, Syrup" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Manufacturer</label>
+            <input className={inputClass} value={form.manufacturer} onChange={(e) => setForm({ ...form, manufacturer: e.target.value })} placeholder="Manufacturer name" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Description</label>
+            <textarea rows={3} className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Medicine description..." />
+          </div>
         </div>
-      )}
-
-      <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left">
-            <tr><th className="px-4 py-3 font-medium">Name</th><th className="px-4 py-3 font-medium">Price</th><th className="px-4 py-3 font-medium">Stock</th><th className="px-4 py-3 font-medium">SKU</th><th className="px-4 py-3 font-medium">Form</th><th className="px-4 py-3 font-medium">Category</th><th className="px-4 py-3 font-medium">Actions</th></tr>
-          </thead>
-          <tbody className="divide-y">
-            {loading ? <tr><td colSpan={7} className="text-center py-8 text-gray-400">Loading...</td></tr> :
-              medicines.length === 0 ? <tr><td colSpan={7} className="text-center py-8 text-gray-400">No medicines</td></tr> :
-                medicines.map(m => (
-                  <tr key={m._id || m.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{m.name} {m.nameAr && <span className="text-gray-400 text-xs">({m.nameAr})</span>}</td>
-                    <td className="px-4 py-3">${m.price}</td>
-                    <td className="px-4 py-3"><span className={m.stockQuantity <= 5 ? 'text-red-600 font-medium' : ''}>{m.stockQuantity ?? m.stock ?? 0}</span></td>
-                    <td className="px-4 py-3 text-gray-500">{m.sku || '—'}</td>
-                    <td className="px-4 py-3 text-gray-500">{m.dosageForm || '—'}</td>
-                    <td className="px-4 py-3">{m.category?.name || m.category || '—'}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => openEdit(m)} className="text-blue-500 hover:text-blue-700"><Edit2 size={16} /></button>
-                        <button onClick={() => handleDelete(m._id || m.id)} className="text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-          </tbody>
-        </table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); load(np); }} className="px-3 py-1.5 border rounded text-sm disabled:opacity-40">Prev</button>
-          {Array.from({length: totalPages}, (_, i) => i + 1).map(p => (
-            <button key={p} onClick={() => { setPage(p); load(p); }} className={`px-3 py-1.5 border rounded text-sm ${p === page ? 'bg-primary-600 text-white' : ''}`}>{p}</button>
-          ))}
-          <button disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); load(np); }} className="px-3 py-1.5 border rounded text-sm disabled:opacity-40">Next</button>
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+          <button onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Cancel</button>
+          <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition disabled:opacity-50">
+            {saving ? 'Saving...' : editing ? 'Update' : 'Create'}
+          </button>
         </div>
-      )}
+      </Modal>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Medicine"
+        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+      />
     </div>
   );
 }
