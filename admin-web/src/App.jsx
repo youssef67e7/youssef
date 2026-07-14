@@ -12,8 +12,6 @@ import CouponsPage from './pages/CouponsPage';
 import DeliveryPage from './pages/DeliveryPage';
 import NotificationsPage from './pages/NotificationsPage';
 import InventoryPage from './pages/InventoryPage';
-import PromotionsPage from './pages/PromotionsPage';
-import StaffPage from './pages/StaffPage';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -34,9 +32,7 @@ export default function App() {
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="brands" element={<BrandsPage />} />
         <Route path="coupons" element={<CouponsPage />} />
-        <Route path="promotions" element={<PromotionsPage />} />
         <Route path="delivery" element={<DeliveryPage />} />
-        <Route path="staff" element={<StaffPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />

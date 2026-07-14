@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { authAPI } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -14,6 +15,7 @@ export function AuthProvider({ children }) {
         setUser(res.data?.data || res.data);
       }).catch(() => {
         localStorage.removeItem('admin_token');
+        toast.error('Session expired, please login again');
       }).finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -31,7 +33,12 @@ export function AuthProvider({ children }) {
     throw new Error('Login failed');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch {
+      // ignore logout errors
+    }
     localStorage.removeItem('admin_token');
     setUser(null);
   };

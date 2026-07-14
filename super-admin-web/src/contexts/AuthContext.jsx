@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
 
@@ -14,6 +15,7 @@ export function AuthProvider({ children }) {
         setUser(res.data?.data || res.data);
       }).catch(() => {
         localStorage.removeItem('super_admin_token');
+        toast.error('Session expired. Please login again.');
       }).finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -29,13 +31,14 @@ export function AuthProvider({ children }) {
       return { requiresMfa: false };
     }
     if (data?.requiresMfa) {
-      return { requiresMfa: true, sessionToken: data.sessionToken };
+      const token = data.mfaToken || data.sessionToken;
+      return { requiresMfa: true, mfaToken: token, sessionToken: token };
     }
     throw new Error('Login failed');
   };
 
-  const verifyMfa = async (code, sessionToken) => {
-    const res = await authAPI.verifyMfa(code, sessionToken);
+  const verifyMfa = async (code, mfaToken) => {
+    const res = await authAPI.verifyMfa(code, mfaToken);
     const data = res.data?.data || res.data;
     if (data?.accessToken) {
       localStorage.setItem('super_admin_token', data.accessToken);
@@ -45,7 +48,12 @@ export function AuthProvider({ children }) {
     throw new Error('MFA verification failed');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch {
+      // logout endpoint may fail but we still clear locally
+    }
     localStorage.removeItem('super_admin_token');
     setUser(null);
   };

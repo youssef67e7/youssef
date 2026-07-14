@@ -3,7 +3,7 @@ import { Plus, History, Package, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
-import { inventoryAPI } from '../services/api';
+import { medicinesAPI } from '../services/api';
 
 export default function InventoryPage() {
   const [items, setItems] = useState([]);
@@ -14,21 +14,17 @@ export default function InventoryPage() {
   const [search, setSearch] = useState('');
   const [lowStockOnly, setLowStockOnly] = useState(false);
   const [movementModal, setMovementModal] = useState(null);
-  const [movementForm, setMovementForm] = useState({ type: 'restock', quantity: '', reason: '' });
+  const [movementForm, setMovementForm] = useState({ quantity: '', reason: '' });
   const [saving, setSaving] = useState(false);
-  const [historyModal, setHistoryModal] = useState(null);
-  const [movements, setMovements] = useState([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
 
   const fetchInventory = useCallback(async () => {
     setLoading(true);
     try {
       const params = { page, limit: 15 };
       if (search) params.search = search;
-      const apiCall = lowStockOnly ? inventoryAPI.lowStock : inventoryAPI.list;
-      const { data } = await apiCall(params);
+      const { data } = lowStockOnly ? await medicinesAPI.lowStock() : await medicinesAPI.list(params);
       const d = data.data || data;
-      setItems(d.items || d.inventory || d || []);
+      setItems(d.medicines || d.items || d || []);
       setTotalPages(d.totalPages || 1);
       setTotal(d.total || 0);
     } catch {
@@ -40,19 +36,18 @@ export default function InventoryPage() {
 
   useEffect(() => { fetchInventory(); }, [fetchInventory]);
 
-  const handleAddMovement = async () => {
+  const handleUpdateStock = async () => {
     if (!movementForm.quantity || Number(movementForm.quantity) <= 0) return toast.error('Enter a valid quantity');
     setSaving(true);
     try {
-      await inventoryAPI.addMovement({
-        inventoryId: movementModal._id || movementModal.id,
-        type: movementForm.type,
+      await medicinesAPI.updateStock(movementModal._id || movementModal.id, {
         quantity: Number(movementForm.quantity),
+        type: 'restock',
         reason: movementForm.reason,
       });
       toast.success('Stock updated');
       setMovementModal(null);
-      setMovementForm({ type: 'restock', quantity: '', reason: '' });
+      setMovementForm({ quantity: '', reason: '' });
       fetchInventory();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update stock');
@@ -61,27 +56,16 @@ export default function InventoryPage() {
     }
   };
 
-  const viewHistory = async (item) => {
-    setHistoryModal(item);
-    setHistoryLoading(true);
-    try {
-      const { data } = await inventoryAPI.stockMovements(item._id || item.id);
-      setMovements(data.data || data || []);
-    } catch {
-      toast.error('Failed to load history');
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
-
   const columns = [
-    { key: 'medicine', label: 'Medicine', render: (v) => <span className="font-medium text-gray-900">{v?.name || v || '—'}</span> },
-    { key: 'currentStock', label: 'Current Stock', sortable: true },
-    { key: 'minimumStock', label: 'Min Stock', render: (v) => v ?? '—' },
+    { key: 'name', label: 'Medicine', render: (v) => <span className="font-medium text-gray-900">{v || '—'}</span> },
+    { key: 'stock', label: 'Current Stock', sortable: true, render: (v) => {
+      const stock = v ?? 0;
+      return <span className={stock <= 5 ? 'text-red-600 font-semibold' : ''}>{stock}</span>;
+    }},
+    { key: 'category', label: 'Category', render: (v) => v?.name || v || '—' },
     { key: 'status', label: 'Status', render: (_, row) => {
-      const stock = row.currentStock ?? row.quantity ?? 0;
-      const min = row.minimumStock ?? row.minStock ?? 0;
-      const isLow = stock <= min;
+      const stock = row.stock ?? 0;
+      const isLow = stock <= 5;
       return (
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full ${isLow ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
           {isLow && <AlertTriangle size={12} />}
@@ -89,15 +73,10 @@ export default function InventoryPage() {
         </span>
       );
     }},
-    { key: 'actions', label: 'Actions', width: '120px', render: (_, row) => (
-      <div className="flex items-center gap-1">
-        <button onClick={() => { setMovementModal(row); setMovementForm({ type: 'restock', quantity: '', reason: '' }); }} className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="Add stock">
-          <Plus size={16} />
-        </button>
-        <button onClick={() => viewHistory(row)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="History">
-          <History size={16} />
-        </button>
-      </div>
+    { key: 'actions', label: 'Actions', width: '80px', render: (_, row) => (
+      <button onClick={() => { setMovementModal(row); setMovementForm({ quantity: '', reason: '' }); }} className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="Update stock">
+        <Plus size={16} />
+      </button>
     )},
   ];
 
@@ -112,7 +91,7 @@ export default function InventoryPage() {
           <p className="text-sm text-gray-500 mt-1">Track and manage stock levels</p>
         </div>
         <button
-          onClick={() => setLowStockOnly(!lowStockOnly)}
+          onClick={() => { setLowStockOnly(!lowStockOnly); setPage(1); }}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition ${lowStockOnly ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-white border text-gray-600 hover:bg-gray-50'}`}
         >
           <AlertTriangle size={16} /> Low Stock Only
@@ -134,61 +113,26 @@ export default function InventoryPage() {
       <Modal open={!!movementModal} onClose={() => setMovementModal(null)} title="Update Stock" size="sm">
         <div className="space-y-4">
           <p className="text-sm text-gray-500">
-            Medicine: <span className="font-medium text-gray-900">{movementModal?.medicine?.name || movementModal?.name || '—'}</span>
+            Medicine: <span className="font-medium text-gray-900">{movementModal?.name || '—'}</span>
+          </p>
+          <p className="text-sm text-gray-500">
+            Current Stock: <span className="font-medium text-gray-900">{movementModal?.stock ?? 0}</span>
           </p>
           <div>
-            <label className={labelClass}>Type</label>
-            <select className={inputClass} value={movementForm.type} onChange={(e) => setMovementForm({ ...movementForm, type: e.target.value })}>
-              <option value="restock">Restock</option>
-              <option value="sale">Sale</option>
-              <option value="adjustment">Adjustment</option>
-              <option value="return">Return</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Quantity *</label>
-            <input type="number" min="1" className={inputClass} value={movementForm.quantity} onChange={(e) => setMovementForm({ ...movementForm, quantity: e.target.value })} placeholder="Enter quantity" />
+            <label className={labelClass}>Add Quantity *</label>
+            <input type="number" min="1" className={inputClass} value={movementForm.quantity} onChange={(e) => setMovementForm({ ...movementForm, quantity: e.target.value })} placeholder="Enter quantity to add" />
           </div>
           <div>
             <label className={labelClass}>Reason</label>
-            <input className={inputClass} value={movementForm.reason} onChange={(e) => setMovementForm({ ...movementForm, reason: e.target.value })} placeholder="Reason for adjustment" />
+            <input className={inputClass} value={movementForm.reason} onChange={(e) => setMovementForm({ ...movementForm, reason: e.target.value })} placeholder="Reason for restock" />
           </div>
         </div>
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
           <button onClick={() => setMovementModal(null)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Cancel</button>
-          <button onClick={handleAddMovement} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition disabled:opacity-50">
+          <button onClick={handleUpdateStock} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition disabled:opacity-50">
             {saving ? 'Saving...' : 'Update Stock'}
           </button>
         </div>
-      </Modal>
-
-      <Modal open={!!historyModal} onClose={() => { setHistoryModal(null); setMovements([]); }} title="Stock Movement History" size="lg">
-        {historyLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="h-6 w-6 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : movements.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-8">No movement history found</p>
-        ) : (
-          <div className="border rounded-lg divide-y max-h-96 overflow-y-auto">
-            {movements.map((m, i) => (
-              <div key={m._id || i} className="flex items-center justify-between px-4 py-3">
-                <div>
-                  <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full mr-2 ${m.type === 'restock' || m.type === 'return' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                    {m.type}
-                  </span>
-                  <span className="text-sm text-gray-700">{m.reason || 'No reason'}</span>
-                </div>
-                <div className="text-right">
-                  <p className={`text-sm font-medium ${m.type === 'restock' || m.type === 'return' ? 'text-green-600' : 'text-red-600'}`}>
-                    {m.type === 'restock' || m.type === 'return' ? '+' : '-'}{m.quantity}
-                  </p>
-                  <p className="text-xs text-gray-400">{m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '—'}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </Modal>
     </div>
   );

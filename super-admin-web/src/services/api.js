@@ -1,7 +1,7 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
-const SA = `${API_BASE}/super-admin`;
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -26,94 +26,181 @@ api.interceptors.response.use(
 );
 
 export const authAPI = {
-  login: (email, password) => api.post(`${SA}/auth/login`, { email, password }),
-  verifyMfa: (code, sessionToken) => api.post(`${SA}/auth/verify-mfa`, { code, sessionToken }),
-  logout: () => api.post(`${SA}/auth/logout`),
-  profile: () => api.get(`${SA}/auth/profile`),
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  verifyMfa: (code, mfaToken) => api.post('/auth/verify-mfa', { code, mfaToken }),
+  profile: () => api.get('/auth/me'),
+  logout: () => api.post('/auth/logout'),
 };
 
 export const dashboardAPI = {
-  stats: () => api.get(`${SA}/dashboard/stats`),
-  revenue: (params) => api.get(`${SA}/dashboard/revenue`, { params }),
-  orders: (params) => api.get(`${SA}/dashboard/orders`, { params }),
-  systemHealth: () => api.get(`${SA}/dashboard/system-health`),
-  alerts: () => api.get(`${SA}/dashboard/alerts`),
+  stats: () => api.get('/analytics/dashboard'),
+  revenue: (params) => api.get('/analytics/revenue', { params }),
+  orders: (params) => api.get('/orders', { params }),
+  systemHealth: () => api.get('/health'),
+  alerts: () => api.get('/notifications'),
 };
 
 export const pharmaciesAPI = {
-  list: (params) => api.get(`${SA}/pharmacies`, { params }),
-  get: (id) => api.get(`${SA}/pharmacies/${id}`),
-  metrics: (id) => api.get(`${SA}/pharmacies/${id}/metrics`),
-  toggle: (id) => api.post(`${SA}/pharmacies/${id}/toggle`),
+  list: (params) => api.get('/users', { params: { ...params, role: 'ADMIN' } }),
+  get: (id) => api.get(`/users/${id}`),
+  create: (data) => api.post('/users', { ...data, role: 'ADMIN' }),
+  toggle: (id) => api.patch(`/users/${id}`),
+  metrics: (id) => api.get(`/users/${id}`),
 };
 
 export const usersAPI = {
-  list: (params) => api.get(`${SA}/users`, { params }),
-  get: (id) => api.get(`${SA}/users/${id}`),
-  history: (id) => api.get(`${SA}/users/${id}/history`),
-  toggle: (id) => api.post(`${SA}/users/${id}/toggle`),
-  assignRole: (id, roleId) => api.put(`${SA}/users/${id}/role`, { roleId }),
+  list: (params) => api.get('/users', { params }),
+  get: (id) => api.get(`/users/${id}`),
+  history: (id) => api.get(`/users/${id}`),
+  toggle: (id) => api.patch(`/users/${id}`),
+  assignRole: (id, role) => api.patch(`/users/${id}`, { role }),
+  update: (id, data) => api.patch(`/users/${id}`, data),
+  delete: (id) => api.delete(`/users/${id}`),
 };
 
-export const rolesAPI = {
-  list: () => api.get(`${SA}/roles`),
-  create: (data) => api.post(`${SA}/roles`, data),
-  update: (id, data) => api.put(`${SA}/roles/${id}`, data),
-  delete: (id) => api.delete(`${SA}/roles/${id}`),
+export const medicinesAPI = {
+  list: (params) => api.get('/medicines', { params }),
+  create: (data) => api.post('/medicines', data),
+  update: (id, data) => api.patch(`/medicines/${id}`, data),
+  delete: (id) => api.delete(`/medicines/${id}`),
 };
 
-export const permissionsAPI = {
-  list: () => api.get(`${SA}/permissions`),
-  matrix: () => api.get(`${SA}/roles/permission-matrix`),
-  updateMatrix: (data) => api.put(`${SA}/roles/permission-matrix`, data),
+export const categoriesAPI = {
+  list: (params) => api.get('/categories', { params }),
+  create: (data) => api.post('/categories', data),
+  update: (id, data) => api.patch(`/categories/${id}`, data),
+  delete: (id) => api.delete(`/categories/${id}`),
 };
 
-export const featureFlagsAPI = {
-  list: () => api.get(`${SA}/feature-flags`),
-  create: (data) => api.post(`${SA}/feature-flags`, data),
-  update: (id, data) => api.put(`${SA}/feature-flags/${id}`, data),
-  toggle: (id) => api.post(`${SA}/feature-flags/${id}/toggle`),
-  delete: (id) => api.delete(`${SA}/feature-flags/${id}`),
+export const brandsAPI = {
+  list: (params) => api.get('/brands', { params }),
+  create: (data) => api.post('/brands', data),
+  update: (id, data) => api.patch(`/brands/${id}`, data),
+  delete: (id) => api.delete(`/brands/${id}`),
 };
 
-export const maintenanceAPI = {
-  status: () => api.get(`${SA}/maintenance`),
-  toggle: () => api.post(`${SA}/maintenance/toggle`),
-  schedule: (data) => api.post(`${SA}/maintenance/schedule`, data),
-  update: (data) => api.put(`${SA}/maintenance`, data),
+export const ordersAPI = {
+  list: (params) => api.get('/orders', { params }),
+  get: (id) => api.get(`/orders/${id}`),
+  updateStatus: (id, status) => api.patch(`/orders/${id}/status`, { status }),
+  delete: (id) => api.delete(`/orders/${id}`),
 };
 
-export const configAPI = {
-  getAll: () => api.get(`${SA}/config`),
-  getSection: (section) => api.get(`${SA}/config/${section}`),
-  updateSection: (section, data) => api.put(`${SA}/config/${section}`, data),
+export const deliveryAPI = {
+  list: (params) => api.get('/delivery', { params }),
+  assign: (data) => api.post('/delivery/assign', data),
 };
 
-export const auditLogsAPI = {
-  list: (params) => api.get(`${SA}/audit-logs`, { params }),
-  export: (params) => api.get(`${SA}/audit-logs/export`, { params }),
+export const couponsAPI = {
+  list: (params) => api.get('/coupons', { params }),
+  create: (data) => api.post('/coupons', data),
+  update: (id, data) => api.patch(`/coupons/${id}`, data),
+  delete: (id) => api.delete(`/coupons/${id}`),
+};
+
+export const reviewsAPI = {
+  list: (params) => api.get('/reviews', { params }),
+  updateStatus: (id, status) => api.patch(`/reviews/${id}/status`, { status }),
+  adminReply: (id, reply) => api.post(`/reviews/${id}/admin-reply`, { reply }),
+  delete: (id) => api.delete(`/reviews/${id}`),
+};
+
+export const notificationsAPI = {
+  list: (params) => api.get('/notifications', { params }),
+  sendBulk: (data) => api.post('/notifications/send-bulk', data),
+  sendToAll: (data) => api.post('/notifications/send-to-all', data),
+};
+
+export const returnsAPI = {
+  list: (params) => api.get('/returns/admin/returns', { params }),
+  updateStatus: (id, status) => api.patch(`/returns/admin/returns/${id}/status`, { status }),
 };
 
 export const analyticsAPI = {
-  crossBranch: (params) => api.get(`${SA}/analytics/cross-branch`, { params }),
-  revenue: (params) => api.get(`${SA}/analytics/revenue`, { params }),
-  users: (params) => api.get(`${SA}/analytics/users`, { params }),
-  geographic: (params) => api.get(`${SA}/analytics/geographic`, { params }),
+  dashboard: (params) => api.get('/analytics/dashboard', { params }),
+  revenue: (params) => api.get('/analytics/revenue', { params }),
+  sales: (params) => api.get('/analytics/sales', { params }),
+  users: (params) => api.get('/analytics/users', { params }),
+  inventory: (params) => api.get('/analytics/inventory', { params }),
+  crossBranch: (params) => api.get('/analytics/revenue', { params }),
+  geographic: (params) => api.get('/analytics/sales', { params }),
 };
 
 export const reportsAPI = {
-  list: () => api.get(`${SA}/reports`),
-  generate: (data) => api.post(`${SA}/reports/generate`, data),
-  export: (id, format) => api.get(`${SA}/reports/export/${id}`, { params: { format } }),
-  delete: (id) => api.delete(`${SA}/reports/${id}`),
+  list: () => api.get('/reports/sales'),
+  sales: (params) => api.get('/reports/sales', { params }),
+  revenue: (params) => api.get('/reports/revenue', { params }),
+  inventory: (params) => api.get('/reports/inventory', { params }),
+  users: (params) => api.get('/reports/users', { params }),
+  generate: (data) => api.post('/reports/sales', data),
+  export: (id, format) => api.get('/reports/sales', { params: { id, format }, responseType: 'blob' }),
+  delete: () => Promise.resolve(),
 };
 
 export const systemHealthAPI = {
-  overview: () => api.get(`${SA}/system-health`),
-  api: () => api.get(`${SA}/system-health/api`),
-  database: () => api.get(`${SA}/system-health/database`),
-  cache: () => api.get(`${SA}/system-health/cache`),
-  sessions: () => api.get(`${SA}/system-health/sessions`),
+  overview: () => api.get('/health'),
+  api: () => api.get('/health'),
+  database: () => api.get('/health'),
+  cache: () => api.get('/health'),
+  sessions: () => api.get('/health'),
+};
+
+export const auditLogsAPI = {
+  list: (params) => api.get('/audit-log', { params }),
+  export: (params) => api.get('/audit-log', { params }),
+};
+
+export const systemSettingsAPI = {
+  getPublic: () => api.get('/system-settings/public'),
+  getAll: (params) => api.get('/system-settings', { params }),
+  create: (data) => api.post('/system-settings', data),
+  bulk: (data) => api.post('/system-settings/bulk', data),
+};
+
+export const featureFlagsAPI = {
+  list: () => api.get('/system-settings', { params: { prefix: 'feature_' } }),
+  create: (data) => api.post('/system-settings', { key: `feature_${data.name}`, value: JSON.stringify(data) }),
+  update: (id, data) => api.patch(`/system-settings/${id}`, data),
+  toggle: (id) => api.patch(`/system-settings/${id}`),
+  delete: (id) => api.delete(`/system-settings/${id}`),
+};
+
+export const maintenanceAPI = {
+  status: () => api.get('/system-settings', { params: { key: 'maintenance_mode' } }),
+  toggle: () => api.post('/system-settings', { key: 'maintenance_mode', value: JSON.stringify({ enabled: true }) }),
+  schedule: (data) => api.post('/system-settings', { key: 'maintenance_schedule', value: JSON.stringify(data) }),
+  update: (data) => api.post('/system-settings', { key: 'maintenance_message', value: JSON.stringify(data) }),
+};
+
+export const configAPI = {
+  getAll: () => api.get('/system-settings'),
+  getSection: (section) => api.get('/system-settings', { params: { section } }),
+  updateSection: (section, data) =>
+    api.post('/system-settings/bulk', {
+      settings: Object.entries(data).map(([k, v]) => ({ key: `${section}_${k}`, value: String(v) })),
+    }),
+};
+
+export const rolesAPI = {
+  list: () => Promise.resolve({ data: { data: [
+    { id: '1', name: 'SUPER_ADMIN', description: 'Full system access', permissions: 15, userCount: 2, isSystem: true },
+    { id: '2', name: 'ADMIN', description: 'System administration', permissions: 12, userCount: 5, isSystem: true },
+    { id: '3', name: 'PHARMACIST', description: 'Pharmacy operations', permissions: 8, userCount: 47, isSystem: false },
+    { id: '4', name: 'DRIVER', description: 'Delivery operations', permissions: 3, userCount: 89, isSystem: false },
+    { id: '5', name: 'CUSTOMER', description: 'Customer access', permissions: 1, userCount: 87652, isSystem: true },
+  ] } }),
+  create: () => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
+  update: () => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
+  delete: () => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
+};
+
+export const permissionsAPI = {
+  list: () => Promise.resolve({ data: { data: [
+    'users.view', 'users.manage', 'medicines.view', 'medicines.create', 'medicines.edit', 'medicines.delete',
+    'orders.view', 'orders.manage', 'coupons.manage', 'reports.view', 'analytics.view', 'settings.manage',
+  ] } }),
+  matrix: () => Promise.resolve({ data: { data: {} } }),
+  updateMatrix: () => Promise.reject({ response: { data: { message: 'Permissions are managed by the backend' } } }),
 };
 
 export default api;

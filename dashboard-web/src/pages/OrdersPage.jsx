@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { ordersAPI, driversAPI } from '../services/api';
+import { ordersAPI, deliveryAPI } from '../services/api';
 import { Eye, Truck, FileText, ShoppingCart, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '../components/PageHeader';
@@ -39,7 +39,7 @@ export default function OrdersPage() {
 
       const [ordersRes, driversRes] = await Promise.allSettled([
         ordersAPI.list(params),
-        driversAPI.list({ limit: 100 }),
+        deliveryAPI.availableDrivers(),
       ]);
 
       if (ordersRes.status === 'fulfilled') {

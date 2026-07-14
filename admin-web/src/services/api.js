@@ -27,6 +27,7 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   me: () => api.get('/auth/me'),
+  logout: () => api.post('/auth/logout'),
 };
 
 export const dashboardAPI = {
@@ -46,23 +47,26 @@ export const medicinesAPI = {
   create: (data) => api.post('/medicines', data),
   update: (id, data) => api.patch(`/medicines/${id}`, data),
   delete: (id) => api.delete(`/medicines/${id}`),
+  updateStock: (id, data) => api.patch(`/medicines/${id}/stock`, data),
+  lowStock: (params) => api.get('/medicines/low-stock', { params }),
 };
 
 export const ordersAPI = {
   list: (params) => api.get('/orders', { params }),
   get: (id) => api.get(`/orders/${id}`),
   updateStatus: (id, status) => api.patch(`/orders/${id}/status`, { status }),
+  delete: (id) => api.delete(`/orders/${id}`),
 };
 
 export const categoriesAPI = {
-  list: () => api.get('/categories'),
+  list: (params) => api.get('/categories', { params }),
   create: (data) => api.post('/categories', data),
   update: (id, data) => api.patch(`/categories/${id}`, data),
   delete: (id) => api.delete(`/categories/${id}`),
 };
 
 export const brandsAPI = {
-  list: () => api.get('/brands'),
+  list: (params) => api.get('/brands', { params }),
   get: (id) => api.get(`/brands/${id}`),
   create: (data) => api.post('/brands', data),
   update: (id, data) => api.patch(`/brands/${id}`, data),
@@ -78,135 +82,55 @@ export const couponsAPI = {
 
 export const deliveryAPI = {
   list: (params) => api.get('/delivery', { params }),
+  assign: (data) => api.post('/delivery/assign', data),
   updateStatus: (id, status) => api.patch(`/delivery/${id}/status`, { status }),
 };
 
 export const notificationsAPI = {
+  list: (params) => api.get('/notifications', { params }),
   sendBulk: (data) => api.post('/notifications/send-bulk', data),
   sendToAll: (data) => api.post('/notifications/send-to-all', data),
+  delete: (id) => api.delete(`/notifications/${id}`),
 };
 
 export const healthAPI = {
   check: () => api.get('/health'),
 };
 
-export const suppliersAPI = {
-  list: (params) => api.get('/suppliers', { params }),
-  get: (id) => api.get(`/suppliers/${id}`),
-  create: (data) => api.post('/suppliers', data),
-  update: (id, data) => api.patch(`/suppliers/${id}`, data),
-  delete: (id) => api.delete(`/suppliers/${id}`),
+export const returnsAPI = {
+  list: (params) => api.get('/returns/admin/returns', { params }),
+  updateStatus: (id, status, reason) => api.patch(`/returns/admin/returns/${id}/status`, { status, ...(reason && { reason }) }),
+  refund: (data) => api.post('/returns/refund', data),
 };
 
-export const inventoryAPI = {
-  list: (params) => api.get('/inventory', { params }),
-  get: (id) => api.get(`/inventory/${id}`),
-  create: (data) => api.post('/inventory', data),
-  update: (id, data) => api.patch(`/inventory/${id}`, data),
-  delete: (id) => api.delete(`/inventory/${id}`),
-  lowStock: (params) => api.get('/inventory/low-stock', { params }),
-  stockMovements: (id) => api.get(`/inventory/${id}/movements`),
-};
-
-export const promotionsAPI = {
-  list: () => api.get('/promotions'),
-  get: (id) => api.get(`/promotions/${id}`),
-  create: (data) => api.post('/promotions', data),
-  update: (id, data) => api.patch(`/promotions/${id}`, data),
-  delete: (id) => api.delete(`/promotions/${id}`),
-};
-
-export const staffAPI = {
-  list: (params) => api.get('/staff', { params }),
-  get: (id) => api.get(`/staff/${id}`),
-  create: (data) => api.post('/staff', data),
-  update: (id, data) => api.patch(`/staff/${id}`, data),
-  delete: (id) => api.delete(`/staff/${id}`),
-};
-
-export const aiPrescriptionAPI = {
-  analyze: (data) => api.post('/ai/prescription/analyze', data),
-  history: (params) => api.get('/ai/prescription', { params }),
-  get: (id) => api.get(`/ai/prescription/${id}`),
-};
-
-export const telemedicineAPI = {
-  appointments: (params) => api.get('/telemedicine/appointments', { params }),
-  getAppointment: (id) => api.get(`/telemedicine/appointments/${id}`),
-  updateAppointment: (id, data) => api.patch(`/telemedicine/appointments/${id}`, data),
-  doctors: (params) => api.get('/telemedicine/doctors', { params }),
-  createDoctor: (data) => api.post('/telemedicine/doctors', data),
-  updateDoctor: (id, data) => api.patch(`/telemedicine/doctors/${id}`, data),
-  deleteDoctor: (id) => api.delete(`/telemedicine/doctors/${id}`),
+export const reviewsAPI = {
+  list: (params) => api.get('/reviews', { params }),
+  updateStatus: (id, status) => api.patch(`/reviews/${id}/status`, { status }),
+  adminReply: (id, reply) => api.post(`/reviews/${id}/admin-reply`, { reply }),
+  delete: (id) => api.delete(`/reviews/${id}`),
 };
 
 export const analyticsAPI = {
   dashboard: () => api.get('/analytics/dashboard'),
   revenue: (params) => api.get('/analytics/revenue', { params }),
-  orders: (params) => api.get('/analytics/orders', { params }),
-  customers: (params) => api.get('/analytics/customers', { params }),
-  export: (type, format) => api.get(`/analytics/export/${type}`, { params: { format } }),
-};
-
-export const reportsAPI = {
-  list: () => api.get('/reports'),
-  generate: (data) => api.post('/reports/generate', data),
-  get: (id) => api.get(`/reports/${id}`),
-  download: (id, format) => api.get(`/reports/${id}/download`, { params: { format }, responseType: 'blob' }),
-  delete: (id) => api.delete(`/reports/${id}`),
-};
-
-export const settingsAPI = {
-  get: () => api.get('/system-settings'),
-  update: (data) => api.patch('/system-settings', data),
-  getByName: (name) => api.get(`/system-settings/${name}`),
+  sales: (params) => api.get('/analytics/sales', { params }),
+  users: (params) => api.get('/analytics/users', { params }),
+  inventory: (params) => api.get('/analytics/inventory', { params }),
 };
 
 export const uploadAPI = {
   upload: (file) => {
     const fd = new FormData();
     fd.append('file', file);
-    return api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return api.post('/upload/image', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
-  delete: (url) => api.delete('/upload', { data: { url } }),
+  delete: (url) => api.delete('/upload/image', { data: { url } }),
 };
 
-export const reviewsAPI = {
-  list: (params) => api.get('/reviews', { params }),
-  approve: (id) => api.patch(`/reviews/${id}/approve`),
-  reject: (id) => api.patch(`/reviews/${id}/reject`),
-  delete: (id) => api.delete(`/reviews/${id}`),
-};
-
-export const driversAPI = {
-  list: (params) => api.get('/drivers', { params }),
-  get: (id) => api.get(`/drivers/${id}`),
-  create: (data) => api.post('/drivers', data),
-  update: (id, data) => api.patch(`/drivers/${id}`, data),
-  delete: (id) => api.delete(`/drivers/${id}`),
-};
-
-export const returnsAPI = {
-  list: (params) => api.get('/returns', { params }),
-  get: (id) => api.get(`/returns/${id}`),
-  approve: (id) => api.patch(`/returns/${id}/approve`),
-  reject: (id, reason) => api.patch(`/returns/${id}/reject`, { reason }),
-  processRefund: (id) => api.post(`/returns/${id}/refund`),
-};
-
-export const offersAPI = {
-  list: () => api.get('/offers'),
-  create: (data) => api.post('/offers', data),
-  update: (id, data) => api.patch(`/offers/${id}`, data),
-  delete: (id) => api.delete(`/offers/${id}`),
-};
-
-export const bannersAPI = {
-  list: () => api.get('/banners'),
-  create: (data) => api.post('/banners', data),
-  update: (id, data) => api.patch(`/banners/${id}`, data),
-  delete: (id) => api.delete(`/banners/${id}`),
-  reorder: (ids) => api.post('/banners/reorder', { ids }),
+export const settingsAPI = {
+  get: () => api.get('/system-settings'),
+  update: (data) => api.post('/system-settings', data),
+  getByName: (name) => api.get(`/system-settings/${name}`),
 };
 
 export default api;
