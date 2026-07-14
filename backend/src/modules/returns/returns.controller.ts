@@ -37,7 +37,7 @@ export class ReturnsController {
 
   @Get('admin/returns')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiOperation({ summary: 'Get all return requests (admin)' })
   async getAllReturns(@Query() query: PaginationDto) {
     return this.returnsService.getAllReturns(query);
@@ -45,7 +45,7 @@ export class ReturnsController {
 
   @Patch('admin/returns/:id/status')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiOperation({ summary: 'Update return status (admin)' })
   @ApiParam({ name: 'id' })
   async updateReturnStatus(
@@ -79,7 +79,7 @@ export class ReturnsController {
 
   @Patch('admin/exchanges/:id/status')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiOperation({ summary: 'Update exchange status (admin)' })
   @ApiParam({ name: 'id' })
   async updateExchangeStatus(
@@ -92,7 +92,7 @@ export class ReturnsController {
 
   @Post('refund')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiOperation({ summary: 'Process refund (admin)' })
   async processRefund(
     @CurrentUser('sub') adminId: string,
@@ -107,7 +107,7 @@ export class ReturnsController {
 
   @Get('admin/refunds')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiOperation({ summary: 'Get all refunds (admin)' })
   async getAllRefunds(@Query() query: PaginationDto) {
     return this.returnsService.getAllRefunds(query);
@@ -115,7 +115,7 @@ export class ReturnsController {
 
   @Patch('admin/refunds/:id/status')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiOperation({ summary: 'Update refund status (admin)' })
   @ApiParam({ name: 'id' })
   async updateRefundStatus(

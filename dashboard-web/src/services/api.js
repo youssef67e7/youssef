@@ -17,12 +17,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const isLoginRequest = err.config?.url?.includes('/auth/login');
+    if (err.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem('dashboard_token');
       window.location.href = '/dashboard/login';
     }
-    const message = err.response?.data?.message || err.message || 'An error occurred';
-    if (err.config?.silentError) return Promise.reject(err);
     return Promise.reject(err);
   }
 );
