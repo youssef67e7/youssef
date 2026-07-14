@@ -116,9 +116,10 @@ export const reviewsAPI = {
 };
 
 export const notificationsAPI = {
-  list: (params) => api.get('/notifications', { params }),
+  list: (params) => api.get('/notifications/all', { params }),
   sendBulk: (data) => api.post('/notifications/send-bulk', data),
   sendToAll: (data) => api.post('/notifications/send-to-all', data),
+  delete: (id) => api.delete(`/notifications/${id}`),
 };
 
 export const returnsAPI = {

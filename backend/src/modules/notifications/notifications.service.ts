@@ -14,6 +14,34 @@ export class NotificationsService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
+  async findAllAdmin(query: PaginationDto) {
+    const filter: any = {};
+
+    if ((query as any).search) {
+      filter.$or = [
+        { title: { $regex: (query as any).search, $options: 'i' } },
+        { body: { $regex: (query as any).search, $options: 'i' } },
+      ];
+    }
+
+    const page = query.page || 1;
+    const limit = query.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.notificationModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('user', 'name email').exec(),
+      this.notificationModel.countDocuments(filter).exec(),
+    ]);
+
+    const unreadCount = await this.notificationModel.countDocuments({ ...filter, isRead: false }).exec();
+
+    return {
+      message: 'Notifications retrieved',
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page < Math.ceil(total / limit), hasPrevPage: page > 1, unreadCount },
+    };
+  }
+
   async findAll(userId: string, query: PaginationDto) {
     const filter: any = { user: userId };
 
@@ -72,14 +100,8 @@ export class NotificationsService {
     return { message: 'All notifications marked as read' };
   }
 
-  async remove(id: string, userId: string) {
-    const notification = await this.notificationModel.findOne({ _id: id, user: userId });
-    if (!notification) {
-      throw new NotFoundException('Notification not found');
-    }
-
+  async remove(id: string) {
     await this.notificationModel.findByIdAndDelete(id);
-
     return { message: 'Notification deleted' };
   }
 
@@ -149,6 +171,27 @@ export class NotificationsService {
     }
 
     return this.sendBulkNotifications(userIds, data);
+  }
+
+  async sendToTarget(target: string, data: {
+    title: string;
+    body: string;
+    type: string;
+  }) {
+    let filter: any = { isActive: true };
+    if (target === 'customers') {
+      filter.role = 'CUSTOMER';
+    } else if (target === 'pharmacists') {
+      filter.role = 'PHARMACIST';
+    } else {
+      filter.role = { $in: ['CUSTOMER', 'PHARMACIST', 'ADMIN'] };
+    }
+    const users = await this.userModel.find(filter).select('_id');
+    const userIds = users.map((u) => u._id.toString());
+    if (userIds.length === 0) {
+      return { message: 'No active users found for target' };
+    }
+    return this.sendBulkNotifications(userIds, { ...data, body: data.body });
   }
 
   async getUnreadCount(userId: string) {

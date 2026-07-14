@@ -24,6 +24,14 @@ export class NotificationsController {
     return this.notificationsService.findAll(userId, query);
   }
 
+  @Get('all')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get all notifications (admin)' })
+  async findAllAdmin(@Query() query: PaginationDto) {
+    return this.notificationsService.findAllAdmin(query);
+  }
+
   @Get('unread-count')
   @ApiOperation({ summary: 'Get unread notification count' })
   async getUnreadCount(@CurrentUser('sub') userId: string) {
@@ -53,7 +61,16 @@ export class NotificationsController {
     @Param('id') id: string,
     @CurrentUser('sub') userId: string,
   ) {
-    return this.notificationsService.remove(id, userId);
+    return this.notificationsService.remove(id);
+  }
+
+  @Delete('admin/:id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete any notification (admin)' })
+  @ApiParam({ name: 'id' })
+  async removeAdmin(@Param('id') id: string) {
+    return this.notificationsService.remove(id);
   }
 
   @Post('send-bulk')
@@ -64,9 +81,15 @@ export class NotificationsController {
     @Body('userIds') userIds: string[],
     @Body('title') title: string,
     @Body('body') body: string,
+    @Body('message') message: string,
     @Body('type') type: string,
+    @Body('target') target: string,
   ) {
-    return this.notificationsService.sendBulkNotifications(userIds, { title, body, type });
+    const notifBody = body || message;
+    if (target && !userIds) {
+      return this.notificationsService.sendToTarget(target, { title, body: notifBody, type });
+    }
+    return this.notificationsService.sendBulkNotifications(userIds, { title, body: notifBody, type });
   }
 
   @Post('send-to-all')
@@ -76,8 +99,9 @@ export class NotificationsController {
   async sendToAll(
     @Body('title') title: string,
     @Body('body') body: string,
+    @Body('message') message: string,
     @Body('type') type: string,
   ) {
-    return this.notificationsService.sendToAllCustomers({ title, body, type });
+    return this.notificationsService.sendToAllCustomers({ title, body: body || message, type });
   }
 }

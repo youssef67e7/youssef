@@ -12,19 +12,42 @@ import PageHeader from '../components/PageHeader';
 import toast from 'react-hot-toast';
 
 const typeIcons = {
-  info: Info,
-  warning: AlertTriangle,
-  success: CheckCircle2,
-  promotion: Megaphone,
-  order: Bell,
+  SYSTEM: Info,
+  PROMOTION: Megaphone,
+  ORDER_UPDATE: Bell,
+  PAYMENT_UPDATE: CheckCircle2,
+  DELIVERY_UPDATE: AlertTriangle,
+  WALLET: Info,
+  LOYALTY: CheckCircle2,
+  REVIEW: Info,
+  SUPPORT: AlertTriangle,
+  REFERRAL: Megaphone,
 };
 const typeColors = {
-  info: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',
-  warning: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',
-  success: 'text-green-500 bg-green-50 dark:bg-green-900/20',
-  promotion: 'text-purple-500 bg-purple-50 dark:bg-purple-900/20',
-  order: 'text-primary-500 bg-primary-50 dark:bg-primary-900/20',
+  SYSTEM: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',
+  PROMOTION: 'text-purple-500 bg-purple-50 dark:bg-purple-900/20',
+  ORDER_UPDATE: 'text-primary-500 bg-primary-50 dark:bg-primary-900/20',
+  PAYMENT_UPDATE: 'text-green-500 bg-green-50 dark:bg-green-900/20',
+  DELIVERY_UPDATE: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',
+  WALLET: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',
+  LOYALTY: 'text-green-500 bg-green-50 dark:bg-green-900/20',
+  REVIEW: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',
+  SUPPORT: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',
+  REFERRAL: 'text-purple-500 bg-purple-50 dark:bg-purple-900/20',
 };
+
+const TYPE_OPTIONS = [
+  { value: 'SYSTEM', label: 'System' },
+  { value: 'PROMOTION', label: 'Promotion' },
+  { value: 'ORDER_UPDATE', label: 'Order Update' },
+  { value: 'PAYMENT_UPDATE', label: 'Payment Update' },
+  { value: 'DELIVERY_UPDATE', label: 'Delivery Update' },
+  { value: 'WALLET', label: 'Wallet' },
+  { value: 'LOYALTY', label: 'Loyalty' },
+  { value: 'REVIEW', label: 'Review' },
+  { value: 'SUPPORT', label: 'Support' },
+  { value: 'REFERRAL', label: 'Referral' },
+];
 
 function timeAgo(date) {
   if (!date) return '—';
@@ -43,7 +66,7 @@ export default function NotificationsPage() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
   const [showSend, setShowSend] = useState(false);
-  const [sendForm, setSendForm] = useState({ title: '', message: '', type: 'info', target: 'all' });
+  const [sendForm, setSendForm] = useState({ title: '', body: '', type: 'SYSTEM', target: 'all' });
   const [sendLoading, setSendLoading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -53,15 +76,16 @@ export default function NotificationsPage() {
       const params = { page: p, limit: 10 };
       if (s) params.search = s;
       const res = await notificationsAPI.list(params);
-      const data = res.data?.data;
+      const payload = res.data;
+      const data = payload?.data || payload;
       if (Array.isArray(data)) {
         setNotifications(data);
-        setTotalPages(Math.ceil(data.length / 10) || 1);
-        setTotal(data.length);
+        setTotalPages(payload?.meta?.totalPages || Math.ceil(data.length / 10) || 1);
+        setTotal(payload?.meta?.total || data.length);
       } else {
         setNotifications(Array.isArray(data?.notifications) ? data.notifications : []);
-        setTotalPages(data?.totalPages || 1);
-        setTotal(data?.total || 0);
+        setTotalPages(data?.totalPages || payload?.meta?.totalPages || 1);
+        setTotal(data?.total || payload?.meta?.total || 0);
       }
     } catch {
       toast.error('Failed to load notifications');
@@ -76,17 +100,17 @@ export default function NotificationsPage() {
   const handleSearch = (val) => { setSearch(val); setPage(1); load(1, val); };
 
   const handleSend = async () => {
-    if (!sendForm.title.trim() || !sendForm.message.trim()) { toast.error('Title and message are required'); return; }
+    if (!sendForm.title.trim() || !sendForm.body.trim()) { toast.error('Title and message are required'); return; }
     setSendLoading(true);
     try {
       if (sendForm.target === 'all') {
-        await notificationsAPI.sendToAll({ title: sendForm.title, message: sendForm.message, type: sendForm.type });
+        await notificationsAPI.sendToAll({ title: sendForm.title, body: sendForm.body, type: sendForm.type });
       } else {
-        await notificationsAPI.sendBulk({ title: sendForm.title, message: sendForm.message, type: sendForm.type, target: sendForm.target });
+        await notificationsAPI.sendBulk({ title: sendForm.title, body: sendForm.body, type: sendForm.type, target: sendForm.target });
       }
       toast.success('Notification sent');
       setShowSend(false);
-      setSendForm({ title: '', message: '', type: 'info', target: 'all' });
+      setSendForm({ title: '', body: '', type: 'SYSTEM', target: 'all' });
       load();
     } catch {
       toast.error('Failed to send notification');
@@ -120,7 +144,7 @@ export default function NotificationsPage() {
             </div>
             <div>
               <p className="font-medium dark:text-white">{row.title}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 max-w-xs">{row.message || '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 max-w-xs">{row.body || row.message || '—'}</p>
             </div>
           </div>
         );
@@ -131,6 +155,14 @@ export default function NotificationsPage() {
       render: (val) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 capitalize">
           {val || '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'user', label: 'Recipient',
+      render: (val) => (
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {typeof val === 'object' ? (val?.name || val?.email || '—') : (val || 'All')}
         </span>
       ),
     },
@@ -186,13 +218,13 @@ export default function NotificationsPage() {
           </div>
           <div>
             <label className="block text-sm font-medium dark:text-gray-300 mb-1">Message *</label>
-            <textarea value={sendForm.message} onChange={(e) => setSendForm({ ...sendForm, message: e.target.value })} rows={3} placeholder="Notification message" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none" />
+            <textarea value={sendForm.body} onChange={(e) => setSendForm({ ...sendForm, body: e.target.value })} rows={3} placeholder="Notification message" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium dark:text-gray-300 mb-1">Type</label>
               <select value={sendForm.type} onChange={(e) => setSendForm({ ...sendForm, type: e.target.value })} className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition appearance-none">
-                {['info', 'warning', 'success', 'promotion', 'order'].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+                {TYPE_OPTIONS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </div>
             <div>
