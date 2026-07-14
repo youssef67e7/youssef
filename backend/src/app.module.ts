@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { MedicinesModule } from './modules/medicines/medicines.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { CartModule } from './modules/cart/cart.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
@@ -31,6 +32,11 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { HealthModule } from './modules/health/health.module';
+import { StaffModule } from './modules/staff/staff.module';
+import { DriversModule } from './modules/drivers/drivers.module';
+import { PromotionsModule } from './modules/promotions/promotions.module';
+import { TelemedicineModule } from './modules/telemedicine/telemedicine.module';
+import { AiPrescriptionsModule } from './modules/ai-prescriptions/ai-prescriptions.module';
 
 @Module({
   imports: [
@@ -68,6 +74,7 @@ import { HealthModule } from './modules/health/health.module';
     MedicinesModule,
     CategoriesModule,
     BrandsModule,
+    SuppliersModule,
     CartModule,
     OrdersModule,
     PaymentsModule,
@@ -90,6 +97,11 @@ import { HealthModule } from './modules/health/health.module';
     SystemSettingsModule,
     UploadModule,
     HealthModule,
+    StaffModule,
+    DriversModule,
+    PromotionsModule,
+    TelemedicineModule,
+    AiPrescriptionsModule,
   ],
 })
 export class AppModule implements NestModule {

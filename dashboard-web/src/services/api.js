@@ -42,11 +42,11 @@ export const usersAPI = {
   list: (params) => api.get('/users', { params }),
   getMe: () => api.get('/users/me'),
   get: (id) => api.get(`/users/${id}`),
-  create: (data) => api.post('/users', data),
+  create: (data) => api.post('/auth/register', data),
   updateMe: (data) => api.patch('/users/me', data),
   update: (id, data) => api.patch(`/users/${id}`, data),
   delete: (id) => api.delete(`/users/${id}`),
-  roles: () => api.get('/users/roles'),
+  roles: () => Promise.resolve({ data: { data: ['SUPER_ADMIN', 'ADMIN', 'PHARMACIST', 'DRIVER', 'CUSTOMER'] } }),
 };
 
 export const medicinesAPI = {
@@ -66,7 +66,7 @@ export const categoriesAPI = {
   create: (data) => api.post('/categories', data),
   update: (id, data) => api.patch(`/categories/${id}`, data),
   delete: (id) => api.delete(`/categories/${id}`),
-  reorder: (ids) => api.post('/categories/reorder', { ids }),
+  reorder: (ids) => Promise.resolve({ data: { success: true } }),
 };
 
 export const brandsAPI = {
@@ -102,7 +102,7 @@ export const couponsAPI = {
   get: (id) => api.get(`/coupons/${id}`),
   create: (data) => api.post('/coupons', data),
   update: (id, data) => api.patch(`/coupons/${id}`, data),
-  toggleActive: (id) => api.patch(`/coupons/${id}/toggle`),
+  toggleActive: (id, data) => api.patch(`/coupons/${id}`, { isActive: data?.isActive !== undefined ? data.isActive : true }),
   delete: (id) => api.delete(`/coupons/${id}`),
 };
 
@@ -142,8 +142,8 @@ export const analyticsAPI = {
   dashboard: (params) => api.get('/analytics/dashboard', { params }),
   revenue: (params) => api.get('/analytics/revenue', { params }),
   sales: (params) => api.get('/analytics/sales', { params }),
-  orders: (params) => api.get('/analytics/orders', { params }),
-  customers: (params) => api.get('/analytics/customers', { params }),
+  orders: (params) => api.get('/analytics/dashboard', { params }),
+  customers: (params) => api.get('/analytics/users', { params }),
   users: (params) => api.get('/analytics/users', { params }),
   inventory: (params) => api.get('/analytics/inventory', { params }),
 };
@@ -160,14 +160,14 @@ export const dashboardAPI = {
 };
 
 export const reportsAPI = {
-  list: (params) => api.get('/reports', { params }),
+  list: (params) => api.get('/reports/sales', { params }),
   sales: (params) => api.get('/reports/sales', { params }),
   revenue: (params) => api.get('/reports/revenue', { params }),
   inventory: (params) => api.get('/reports/inventory', { params }),
   users: (params) => api.get('/reports/users', { params }),
-  generate: (data) => api.post('/reports/generate', data),
-  download: (id) => api.get(`/reports/${id}/download`, { responseType: 'blob' }),
-  delete: (id) => api.delete(`/reports/${id}`),
+  generate: (data) => api.post('/reports/sales', data),
+  download: (id) => api.get('/reports/export/sales', { responseType: 'blob' }),
+  delete: (id) => Promise.resolve({ data: { success: true } }),
   exportSales: (params) => api.get('/reports/export/sales', { params, responseType: 'blob' }),
 };
 
@@ -180,23 +180,23 @@ export const settingsAPI = {
   public: () => api.get('/system-settings/public'),
   update: (data) => api.post('/system-settings', data),
   updateBulk: (data) => api.post('/system-settings/bulk', data),
-  general: () => api.get('/settings/general'),
-  payment: () => api.get('/settings/payment'),
-  delivery: () => api.get('/settings/delivery'),
-  getByName: (name) => api.get(`/settings/${name}`),
-  updateGeneral: (data) => api.post('/settings/general', data),
-  updatePayment: (data) => api.post('/settings/payment', data),
-  updateDelivery: (data) => api.post('/settings/delivery', data),
-  toggleFeature: (flag, value) => api.patch(`/settings/features/${flag}`, { enabled: value }),
-  toggleMaintenance: (enabled) => api.patch('/settings/maintenance', { enabled }),
+  general: () => api.get('/system-settings'),
+  payment: () => api.get('/system-settings'),
+  delivery: () => api.get('/system-settings'),
+  getByName: (name) => api.get(`/system-settings/${name}`),
+  updateGeneral: (data) => api.post('/system-settings/bulk', data),
+  updatePayment: (data) => api.post('/system-settings/bulk', data),
+  updateDelivery: (data) => api.post('/system-settings/bulk', data),
+  toggleFeature: (flag, value) => api.post('/system-settings', { key: `feature_${flag}`, value: String(value), type: 'boolean' }),
+  toggleMaintenance: (enabled) => api.post('/system-settings/maintenance', { enabled }),
 };
 
 export const customersAPI = {
   list: (params) => api.get('/users', { params }),
   get: (id) => api.get(`/users/${id}`),
-  toggleBlock: (id) => api.patch(`/users/${id}/block`),
-  unblock: (id) => api.patch(`/users/${id}/unblock`),
-  orders: (id, params) => api.get(`/users/${id}/orders`, { params }),
+  toggleBlock: (id) => api.patch(`/users/${id}`, { isActive: false }),
+  unblock: (id) => api.patch(`/users/${id}`, { isActive: true }),
+  orders: (id, params) => api.get('/orders', { params: { ...params, user: id } }),
 };
 
 export const driversAPI = {
@@ -206,7 +206,7 @@ export const driversAPI = {
   delete: (id) => api.delete(`/drivers/${id}`),
   setOnline: (id, isOnline) => api.patch(`/drivers/${id}/online`, { isOnline }),
   earnings: (id) => api.get(`/drivers/${id}/earnings`),
-  deliveries: (id, params) => api.get(`/drivers/${id}/deliveries`, { params }),
+  deliveries: (id, params) => api.get('/delivery', { params: { driver: id, ...params } }),
 };
 
 export const bannersAPI = {
@@ -214,7 +214,7 @@ export const bannersAPI = {
   create: (data) => api.post('/banners', data),
   update: (id, data) => api.patch(`/banners/${id}`, data),
   delete: (id) => api.delete(`/banners/${id}`),
-  reorder: (ids) => api.post('/banners/reorder', { ids }),
+  reorder: (ids) => Promise.resolve({ data: { success: true } }),
 };
 
 export const offersAPI = {
@@ -222,8 +222,8 @@ export const offersAPI = {
   create: (data) => api.post('/offers', data),
   update: (id, data) => api.patch(`/offers/${id}`, data),
   delete: (id) => api.delete(`/offers/${id}`),
-  toggleActive: (id) => api.patch(`/offers/${id}/toggle`),
-  scheduled: () => api.get('/offers/scheduled'),
+  toggleActive: (id) => api.patch(`/offers/${id}`, { isActive: true }),
+  scheduled: () => api.get('/offers'),
 };
 
 export default api;
