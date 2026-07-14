@@ -30,8 +30,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border dark:border-gray-700">
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">PW</div>
-          <h1 className="text-2xl font-bold dark:text-white">Admin Dashboard</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to manage your pharmacy</p>
+          <h1 className="text-2xl font-bold dark:text-white">Team Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to your team account</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

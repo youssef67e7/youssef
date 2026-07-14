@@ -1,41 +1,21 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LayoutDashboard, Pill, Tags, Award, ShoppingCart, Users, Truck, Ticket, Percent, Image, Star, Bell, RotateCcw, BarChart3, FileText, History, Settings, LogOut, Menu, X, Moon, Sun, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, Pill, ShoppingCart, Star, Bell, RotateCcw, LogOut, Menu, X, Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 
 const navSections = [
   { label: 'Overview', items: [{ to: '/', icon: LayoutDashboard, label: 'Dashboard' }] },
-  { label: 'Catalog', items: [
-    { to: '/medicines', icon: Pill, label: 'Medicines' },
-    { to: '/categories', icon: Tags, label: 'Categories' },
-    { to: '/brands', icon: Award, label: 'Brands' },
-  ]},
   { label: 'Operations', items: [
     { to: '/orders', icon: ShoppingCart, label: 'Orders' },
     { to: '/returns', icon: RotateCcw, label: 'Returns' },
-    { to: '/drivers', icon: Truck, label: 'Drivers' },
   ]},
-  { label: 'People', items: [
-    { to: '/customers', icon: Users, label: 'Customers' },
-  ]},
-  { label: 'Marketing', items: [
-    { to: '/coupons', icon: Ticket, label: 'Coupons' },
-    { to: '/offers', icon: Percent, label: 'Offers' },
-    { to: '/banners', icon: Image, label: 'Banners' },
+  { label: 'Catalog', items: [
+    { to: '/medicines', icon: Pill, label: 'Medicines' },
   ]},
   { label: 'Content', items: [
     { to: '/reviews', icon: Star, label: 'Reviews' },
     { to: '/notifications', icon: Bell, label: 'Notifications' },
-  ]},
-  { label: 'Analytics & Reports', items: [
-    { to: '/analytics', icon: BarChart3, label: 'Analytics' },
-    { to: '/reports', icon: FileText, label: 'Reports' },
-  ]},
-  { label: 'System', items: [
-    { to: '/settings', icon: Settings, label: 'Settings' },
-    { to: '/audit-log', icon: History, label: 'Audit Log' },
-    { to: '/users', icon: Users, label: 'Users' },
   ]},
 ];
 
@@ -86,11 +66,11 @@ export default function Layout() {
             </button>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                {user?.name?.charAt(0) || 'A'}
+                {user?.name?.charAt(0) || 'E'}
               </div>
               <div className="hidden sm:block">
-                <p className="text-sm font-medium dark:text-white">{user?.name || 'Admin'}</p>
-                <p className="text-xs text-gray-500">{user?.email || 'admin@pharmaworld.com'}</p>
+                <p className="text-sm font-medium dark:text-white">{user?.name || 'Employee'}</p>
+                <p className="text-xs text-gray-500">{user?.email || ''}</p>
               </div>
             </div>
             <button onClick={handleLogout} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-red-600">

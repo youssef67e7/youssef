@@ -1,25 +1,33 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LayoutDashboard, Users, Pill, ShoppingCart, Tags, Award, Ticket, Truck, Bell, Activity, LogOut, Menu, X, Package, Percent, UsersRound, Bot, Stethoscope, Warehouse, ChevronDown, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, Pill, ShoppingCart, Tags, Award, Ticket, Truck, Bell, LogOut, Menu, X, Warehouse, Percent, UsersRound } from 'lucide-react';
 import { useState } from 'react';
 
-const nav = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/services', icon: Activity, label: 'Services' },
-  { to: '/users', icon: Users, label: 'Users' },
-  { to: '/medicines', icon: Pill, label: 'Medicines' },
-  { to: '/inventory', icon: Warehouse, label: 'Inventory' },
-  { to: '/suppliers', icon: Package, label: 'Suppliers' },
-  { to: '/orders', icon: ShoppingCart, label: 'Orders' },
-  { to: '/categories', icon: Tags, label: 'Categories' },
-  { to: '/brands', icon: Award, label: 'Brands' },
-  { to: '/coupons', icon: Ticket, label: 'Coupons' },
-  { to: '/promotions', icon: Percent, label: 'Promotions' },
-  { to: '/delivery', icon: Truck, label: 'Delivery' },
-  { to: '/staff', icon: UsersRound, label: 'Staff' },
-  { to: '/telemedicine', icon: Stethoscope, label: 'Telemedicine' },
-  { to: '/ai-prescription', icon: Bot, label: 'AI Prescription' },
-  { to: '/notifications', icon: Bell, label: 'Notifications' },
+const navSections = [
+  { label: 'Overview', items: [
+    { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  ]},
+  { label: 'Catalog', items: [
+    { to: '/medicines', icon: Pill, label: 'Medicines' },
+    { to: '/inventory', icon: Warehouse, label: 'Inventory' },
+    { to: '/categories', icon: Tags, label: 'Categories' },
+    { to: '/brands', icon: Award, label: 'Brands' },
+  ]},
+  { label: 'Operations', items: [
+    { to: '/orders', icon: ShoppingCart, label: 'Orders' },
+    { to: '/delivery', icon: Truck, label: 'Delivery' },
+  ]},
+  { label: 'Marketing', items: [
+    { to: '/coupons', icon: Ticket, label: 'Coupons' },
+    { to: '/promotions', icon: Percent, label: 'Promotions' },
+  ]},
+  { label: 'People', items: [
+    { to: '/staff', icon: UsersRound, label: 'Staff' },
+    { to: '/users', icon: Users, label: 'Customers' },
+  ]},
+  { label: 'Communication', items: [
+    { to: '/notifications', icon: Bell, label: 'Notifications' },
+  ]},
 ];
 
 export default function Layout() {
@@ -38,12 +46,17 @@ export default function Layout() {
           <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden"><X size={20} /></button>
         </div>
         <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-64px)]">
-          {nav.map(item => (
-            <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${isActive ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50'}`}>
-              <item.icon size={18} />
-              {item.label}
-            </NavLink>
+          {navSections.map(section => (
+            <div key={section.label}>
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">{section.label}</p>
+              {section.items.map(item => (
+                <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={() => setSidebarOpen(false)}
+                  className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${isActive ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+                  <item.icon size={18} />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
       </aside>
