@@ -36,7 +36,13 @@ export default function AuditPage() {
 
   const handleExport = () => {
     const headers = ['User', 'Action', 'Entity', 'Entity ID', 'Details', 'IP', 'Timestamp'];
-    const rows = logs.map(l => [l.user, l.action, l.entity, l.entityId, l.details, l.ip, new Date(l.timestamp).toLocaleString()]);
+    const rows = logs.map(l => [
+      typeof l.user === 'object' ? (l.user?.name || l.user?.email || 'Unknown') : (l.user || 'Unknown'),
+      l.action, l.entity, l.entityId,
+      l.details || JSON.stringify(l.newValues || l.oldValues || {}),
+      l.ipAddress || '—',
+      new Date(l.timestamp || l.createdAt).toLocaleString()
+    ]);
     exportToCSV(rows, headers, 'audit-logs');
     toast.success('Exported');
   };
@@ -90,14 +96,14 @@ export default function AuditPage() {
             {loading ? <tr><td colSpan={6} className="text-center py-8 text-gray-400">Loading...</td></tr> :
               logs.map(l => (
                 <tr key={l.id || l._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td className="px-5 py-3 font-medium dark:text-white">{l.user}</td>
+                  <td className="px-5 py-3 font-medium dark:text-white">{typeof l.user === 'object' ? (l.user?.name || l.user?.email || 'Unknown') : (l.user || 'Unknown')}</td>
                   <td className="px-5 py-3">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${actionColors[l.action] || 'bg-gray-100 text-gray-700'}`}>{l.action}</span>
                   </td>
                   <td className="px-5 py-3 text-gray-500">{l.entity}</td>
-                  <td className="px-5 py-3 text-gray-500 max-w-xs truncate">{l.details}</td>
-                  <td className="px-5 py-3 text-gray-400 font-mono text-xs">{l.ip}</td>
-                  <td className="px-5 py-3 text-gray-400 text-xs">{new Date(l.timestamp).toLocaleString()}</td>
+                  <td className="px-5 py-3 text-gray-500 max-w-xs truncate">{l.details || JSON.stringify(l.newValues || l.oldValues || {})}</td>
+                  <td className="px-5 py-3 text-gray-400 font-mono text-xs">{l.ipAddress || '—'}</td>
+                  <td className="px-5 py-3 text-gray-400 text-xs">{new Date(l.timestamp || l.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
           </tbody>
