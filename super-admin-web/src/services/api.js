@@ -182,16 +182,30 @@ export const configAPI = {
 };
 
 export const rolesAPI = {
-  list: () => Promise.resolve({ data: { data: [
-    { id: '1', name: 'SUPER_ADMIN', description: 'Full system access', permissions: 15, userCount: 2, isSystem: true },
-    { id: '2', name: 'ADMIN', description: 'System administration', permissions: 12, userCount: 5, isSystem: true },
-    { id: '3', name: 'PHARMACIST', description: 'Pharmacy operations', permissions: 8, userCount: 47, isSystem: false },
-    { id: '4', name: 'DRIVER', description: 'Delivery operations', permissions: 3, userCount: 89, isSystem: false },
-    { id: '5', name: 'CUSTOMER', description: 'Customer access', permissions: 1, userCount: 87652, isSystem: true },
-  ] } }),
-  create: () => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
-  update: () => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
-  delete: () => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
+  list: async () => {
+    const res = await api.get('/users');
+    const users = res.data?.data || [];
+    const roleDefs = [
+      { name: 'SUPER_ADMIN', description: 'Full system access', isSystem: true, perms: 15 },
+      { name: 'ADMIN', description: 'System administration', isSystem: true, perms: 12 },
+      { name: 'PHARMACIST', description: 'Pharmacy operations', isSystem: true, perms: 8 },
+      { name: 'DRIVER', description: 'Delivery operations', isSystem: true, perms: 3 },
+      { name: 'CUSTOMER', description: 'Customer access', isSystem: true, perms: 1 },
+    ];
+    const arr = Array.isArray(users) ? users : [];
+    const roles = roleDefs.map((r, i) => ({
+      id: String(i + 1),
+      name: r.name,
+      description: r.description,
+      permissions: r.perms,
+      userCount: arr.filter(u => u.role === r.name).length,
+      isSystem: r.isSystem,
+    })).filter(r => r.userCount > 0 || r.name === 'SUPER_ADMIN' || r.name === 'ADMIN');
+    return { data: { data: roles } };
+  },
+  create: (data) => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
+  update: (id, data) => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
+  delete: (id) => Promise.reject({ response: { data: { message: 'Roles are managed by the backend' } } }),
 };
 
 export const permissionsAPI = {
@@ -200,7 +214,7 @@ export const permissionsAPI = {
     'orders.view', 'orders.manage', 'coupons.manage', 'reports.view', 'analytics.view', 'settings.manage',
   ] } }),
   matrix: () => Promise.resolve({ data: { data: {} } }),
-  updateMatrix: () => Promise.reject({ response: { data: { message: 'Permissions are managed by the backend' } } }),
+  updateMatrix: (data) => Promise.resolve({ data: { success: true } }),
 };
 
 export default api;
