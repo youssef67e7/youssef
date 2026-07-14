@@ -107,6 +107,14 @@ export const healthAPI = {
   check: () => api.get('/health'),
 };
 
+export const reportsAPI = {
+  list: (params) => api.get('/reports', { params }),
+  sales: (params) => api.get('/reports/sales', { params }),
+  revenue: (params) => api.get('/reports/revenue', { params }),
+  inventory: (params) => api.get('/reports/inventory', { params }),
+  users: (params) => api.get('/reports/users', { params }),
+};
+
 export const returnsAPI = {
   list: (params) => api.get('/returns/admin/returns', { params }),
   updateStatus: (id, status, reason) => api.patch(`/returns/admin/returns/${id}/status`, { status, ...(reason && { reason }) }),

@@ -8,6 +8,9 @@ import OrdersPage from './pages/OrdersPage';
 import ReviewsPage from './pages/ReviewsPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ReturnsPage from './pages/ReturnsPage';
+import StaffPage from './pages/StaffPage';
+import SuppliersPage from './pages/SuppliersPage';
+import PromotionsPage from './pages/PromotionsPage';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -26,6 +29,9 @@ export default function App() {
         <Route path="reviews" element={<ReviewsPage />} />
         <Route path="returns" element={<ReturnsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="staff" element={<StaffPage />} />
+        <Route path="suppliers" element={<SuppliersPage />} />
+        <Route path="promotions" element={<PromotionsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

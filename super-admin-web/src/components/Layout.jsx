@@ -1,7 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LayoutDashboard, Building2, Users, Shield, Activity, Flag, Wrench, Settings, ClipboardList, BarChart3, FileText, HeartPulse, LogOut, Menu, X, Moon, Sun, Search, Bell } from 'lucide-react';
+import { LayoutDashboard, Building2, Users, Shield, Activity, Flag, Wrench, Settings, ClipboardList, BarChart3, FileText, HeartPulse, LogOut, Menu, X, Moon, Sun, Search, Bell, Pill, ShoppingCart, Star } from 'lucide-react';
 import { useState } from 'react';
 
 const navSections = [
@@ -12,6 +12,7 @@ const navSections = [
   ]},
   { label: 'Content Management', items: [
     { to: '/pharmacies', icon: Building2, label: 'Pharmacies' },
+    { to: '/medicines', icon: Pill, label: 'Medicines' },
   ]},
   { label: 'Operations', items: [
     { to: '/feature-flags', icon: Flag, label: 'Feature Flags' },
@@ -20,10 +21,13 @@ const navSections = [
   { label: 'Analytics', items: [
     { to: '/analytics', icon: BarChart3, label: 'Analytics' },
     { to: '/reports', icon: FileText, label: 'Reports' },
+    { to: '/orders', icon: ShoppingCart, label: 'Orders' },
   ]},
   { label: 'Security', items: [
     { to: '/audit', icon: ClipboardList, label: 'Audit Logs' },
     { to: '/system-health', icon: HeartPulse, label: 'System Health' },
+    { to: '/reviews', icon: Star, label: 'Reviews' },
+    { to: '/notifications', icon: Bell, label: 'Notifications' },
   ]},
   { label: 'Configuration', items: [
     { to: '/config', icon: Settings, label: 'Config' },

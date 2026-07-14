@@ -224,4 +224,26 @@ export const offersAPI = {
   scheduled: () => api.get('/offers'),
 };
 
+export const staffAPI = {
+  list: (params) => api.get('/staff', { params }),
+  create: (data) => api.post('/staff', data),
+  update: (id, data) => api.patch(`/staff/${id}`, data),
+  delete: (id) => api.delete(`/staff/${id}`),
+};
+
+export const suppliersAPI = {
+  list: (params) => api.get('/suppliers', { params }),
+  create: (data) => api.post('/suppliers', data),
+  update: (id, data) => api.patch(`/suppliers/${id}`, data),
+  delete: (id) => api.delete(`/suppliers/${id}`),
+};
+
+export const promotionsAPI = {
+  list: (params) => api.get('/promotions', { params }),
+  create: (data) => api.post('/promotions', data),
+  update: (id, data) => api.patch(`/promotions/${id}`, data),
+  delete: (id) => api.delete(`/promotions/${id}`),
+  toggleActive: (id) => api.patch(`/promotions/${id}/toggle`),
+};
+
 export default api;

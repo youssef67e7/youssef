@@ -13,6 +13,10 @@ import ConfigPage from './pages/ConfigPage';
 import AuditPage from './pages/AuditPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import ReportsPage from './pages/ReportsPage';
+import OrdersPage from './pages/OrdersPage';
+import MedicinesPage from './pages/MedicinesPage';
+import ReviewsPage from './pages/ReviewsPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -36,6 +40,10 @@ export default function App() {
         <Route path="audit" element={<AuditPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="reports" element={<ReportsPage />} />
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="medicines" element={<MedicinesPage />} />
+        <Route path="reviews" element={<ReviewsPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

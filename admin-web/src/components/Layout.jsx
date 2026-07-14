@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LayoutDashboard, Users, Pill, ShoppingCart, Tags, Award, Ticket, Truck, Bell, LogOut, Menu, X, Warehouse, Star } from 'lucide-react';
+import { LayoutDashboard, Users, Pill, ShoppingCart, Tags, Award, Ticket, Truck, Bell, LogOut, Menu, X, Warehouse, Star, BarChart3, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 
 const navSections = [
@@ -17,6 +17,8 @@ const navSections = [
     { to: '/orders', icon: ShoppingCart, label: 'Orders' },
     { to: '/delivery', icon: Truck, label: 'Delivery' },
     { to: '/drivers', icon: Truck, label: 'Drivers' },
+    { to: '/returns', icon: RotateCcw, label: 'Returns' },
+    { to: '/reports', icon: BarChart3, label: 'Reports' },
   ]},
   { label: 'Marketing', items: [
     { to: '/coupons', icon: Ticket, label: 'Coupons' },
