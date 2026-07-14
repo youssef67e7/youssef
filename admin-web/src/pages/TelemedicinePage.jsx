@@ -22,8 +22,14 @@ export default function TelemedicinePage() {
         telemedicineAPI.appointments({ search: search || undefined }),
         telemedicineAPI.doctors({ search: search || undefined }),
       ]);
-      if (appRes.status === 'fulfilled') { const d = appRes.value.data; setAppointments(d?.data || []); }
-      if (docRes.status === 'fulfilled') { const d = docRes.value.data; setDoctors(d?.data || []); }
+      if (appRes.status === 'fulfilled') {
+        const d = appRes.value.data?.data || appRes.value.data;
+        setAppointments(Array.isArray(d?.appointments || d) ? (d.appointments || d) : []);
+      }
+      if (docRes.status === 'fulfilled') {
+        const d = docRes.value.data?.data || docRes.value.data;
+        setDoctors(Array.isArray(d?.doctors || d) ? (d.doctors || d) : []);
+      }
     } catch { toast.error('Failed to load'); }
     setLoading(false);
   };

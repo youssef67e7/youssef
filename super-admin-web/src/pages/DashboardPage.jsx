@@ -72,9 +72,9 @@ export default function DashboardPage() {
     if (health?.services && typeof health.services === 'object') {
       return Object.entries(health.services).map(([name, info]) => ({
         name,
-        status: info.status === 'ok' ? 'healthy' : info.status,
-        latency: info.latency || null,
-        message: info.message || '',
+        status: info?.status === 'ok' ? 'healthy' : (info?.status || 'unknown'),
+        latency: info?.latency || null,
+        message: info?.message || '',
       }));
     }
     return [

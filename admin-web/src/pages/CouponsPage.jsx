@@ -26,7 +26,8 @@ export default function CouponsPage() {
     try {
       const { data } = await couponsAPI.list();
       const d = data.data || data;
-      const list = d.coupons || d.items || d || [];
+      const raw = d.coupons || d.items || d || [];
+      const list = Array.isArray(raw) ? raw : [];
       if (search) {
         const q = search.toLowerCase();
         setCoupons(list.filter((c) => (c.code || '').toLowerCase().includes(q) || (c.name || '').toLowerCase().includes(q)));

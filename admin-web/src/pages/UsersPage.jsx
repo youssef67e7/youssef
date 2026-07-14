@@ -21,7 +21,8 @@ export default function UsersPage() {
       if (search) params.search = search;
       const { data } = await usersAPI.list(params);
       const d = data.data || data;
-      setUsers(d.users || d.items || d || []);
+      const raw = d.users || d.items || d || [];
+      setUsers(Array.isArray(raw) ? raw : []);
       setTotalPages(d.totalPages || 1);
       setTotal(d.total || 0);
     } catch {

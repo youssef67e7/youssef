@@ -36,8 +36,8 @@ export default function ReportsPage() {
     setLoading(true);
     try {
       const res = await reportsAPI.list();
-      const items = res.data?.data || res.data || [];
-      const list = items?.data || items;
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.reports || raw?.data || []);
       setReports(Array.isArray(list) ? list : []);
     } catch {
       toast.error('Failed to load reports');
@@ -248,7 +248,7 @@ export default function ReportsPage() {
       </div>
 
       <ConfirmDialog
-        isOpen={!!deleteId}
+        open={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Delete Report"

@@ -24,8 +24,10 @@ export default function MedicinesPage() {
       if (s) params.search = s;
 
       const res = await medicinesAPI.list(params);
-      const d = res.data;
-      setMedicines(d?.data || d?.medicines || []);
+      const raw = res.data;
+      const d = raw?.data || raw;
+      const list = d?.medicines || (Array.isArray(d) ? d : []);
+      setMedicines(Array.isArray(list) ? list : []);
       setTotalPages(d?.totalPages || Math.ceil((d?.total || 0) / 15) || 1);
       setTotal(d?.total || 0);
     } catch {

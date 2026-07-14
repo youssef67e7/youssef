@@ -26,11 +26,11 @@ export default function NotificationsPage() {
     setLoading(true);
     try {
       const res = await notificationsAPI.history({ limit: 15, page: p });
-      const items = res.data?.data || res.data || [];
-      const list = items?.data || items;
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.notifications || raw?.data || []);
       setHistory(Array.isArray(list) ? list : []);
-      setTotalPages(items?.totalPages || Math.ceil((items?.total || 0) / 15) || 1);
-      setTotal(items?.total || 0);
+      setTotalPages(raw?.totalPages || Math.ceil((raw?.total || 0) / 15) || 1);
+      setTotal(raw?.total || 0);
     } catch {
       toast.error('Failed to load notification history');
     }

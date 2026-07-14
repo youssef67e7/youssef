@@ -24,7 +24,8 @@ export default function InventoryPage() {
       if (search) params.search = search;
       const { data } = lowStockOnly ? await medicinesAPI.lowStock() : await medicinesAPI.list(params);
       const d = data.data || data;
-      setItems(d.medicines || d.items || d || []);
+      const raw = d.medicines || d.items || d || [];
+      setItems(Array.isArray(raw) ? raw : []);
       setTotalPages(d.totalPages || 1);
       setTotal(d.total || 0);
     } catch {

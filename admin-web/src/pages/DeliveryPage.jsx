@@ -31,7 +31,8 @@ export default function DeliveryPage() {
       if (statusFilter !== 'all') params.status = statusFilter;
       const { data } = await deliveryAPI.list(params);
       const d = data.data || data;
-      setDeliveries(d.deliveries || d.items || d || []);
+      const raw = d.deliveries || d.items || d || [];
+      setDeliveries(Array.isArray(raw) ? raw : []);
       setTotalPages(d.totalPages || 1);
       setTotal(d.total || 0);
     } catch {

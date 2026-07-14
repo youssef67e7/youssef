@@ -31,11 +31,11 @@ export default function ReviewsPage() {
       if (statusFilter) params.status = statusFilter;
 
       const res = await reviewsAPI.list(params);
-      const items = res.data?.data || res.data || [];
-      const list = items?.data || items;
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.reviews || raw?.data || []);
       setReviews(Array.isArray(list) ? list : []);
-      setTotalPages(items?.totalPages || Math.ceil((items?.total || 0) / 15) || 1);
-      setTotal(items?.total || 0);
+      setTotalPages(raw?.totalPages || Math.ceil((raw?.total || 0) / 15) || 1);
+      setTotal(raw?.total || 0);
     } catch {
       toast.error('Failed to load reviews');
     }
@@ -76,7 +76,7 @@ export default function ReviewsPage() {
     if (!replyModal || !replyText.trim()) return;
     setSubmitting(true);
     try {
-      await reviewsAPI.reply(replyModal._id || replyModal.id, replyText);
+      await reviewsAPI.adminReply(replyModal._id || replyModal.id, replyText);
       toast.success('Reply sent');
       setReplyModal(null);
       setReplyText('');

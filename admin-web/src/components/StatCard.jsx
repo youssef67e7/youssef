@@ -11,7 +11,7 @@ const colorMap = {
 
 export default function StatCard({ title, value, change, icon: Icon, color = 'blue' }) {
   const c = colorMap[color] || colorMap.blue;
-  const isPositive = change >= 0;
+  const isPositive = (change ?? 0) >= 0;
 
   return (
     <div className="bg-white rounded-xl border p-5 flex flex-col gap-3">

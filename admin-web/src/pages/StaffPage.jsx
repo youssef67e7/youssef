@@ -97,7 +97,7 @@ export default function StaffPage() {
     { key: 'email', label: 'Email' },
     { key: 'role', label: 'Role', render: (v) => (
       <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-primary-50 text-primary-600">
-        {v?.charAt(0).toUpperCase() + v?.slice(1) || '—'}
+        {v ? v.charAt(0).toUpperCase() + v.slice(1) : '—'}
       </span>
     )},
     { key: 'salary', label: 'Salary', render: (v) => v != null ? `$${Number(v).toLocaleString()}` : '—' },

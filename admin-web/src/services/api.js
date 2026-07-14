@@ -133,4 +133,40 @@ export const settingsAPI = {
   getByName: (name) => api.get(`/system-settings/${name}`),
 };
 
+export const staffAPI = {
+  list: (params) => api.get('/staff', { params }),
+  get: (id) => api.get(`/staff/${id}`),
+  create: (data) => api.post('/staff', data),
+  update: (id, data) => api.patch(`/staff/${id}`, data),
+  delete: (id) => api.delete(`/staff/${id}`),
+};
+
+export const promotionsAPI = {
+  list: (params) => api.get('/promotions', { params }),
+  create: (data) => api.post('/promotions', data),
+  update: (id, data) => api.patch(`/promotions/${id}`, data),
+  delete: (id) => api.delete(`/promotions/${id}`),
+};
+
+export const suppliersAPI = {
+  list: (params) => api.get('/suppliers', { params }),
+  create: (data) => api.post('/suppliers', data),
+  update: (id, data) => api.patch(`/suppliers/${id}`, data),
+  delete: (id) => api.delete(`/suppliers/${id}`),
+};
+
+export const telemedicineAPI = {
+  appointments: (params) => api.get('/telemedicine/appointments', { params }),
+  doctors: (params) => api.get('/telemedicine/doctors', { params }),
+  createDoctor: (data) => api.post('/telemedicine/doctors', data),
+  updateDoctor: (id, data) => api.patch(`/telemedicine/doctors/${id}`, data),
+  deleteDoctor: (id) => api.delete(`/telemedicine/doctors/${id}`),
+  updateAppointment: (id, data) => api.patch(`/telemedicine/appointments/${id}`, data),
+};
+
+export const aiPrescriptionAPI = {
+  analyze: (data) => api.post('/ai-prescriptions/analyze', data),
+  history: (params) => api.get('/ai-prescriptions/history', { params }),
+};
+
 export default api;

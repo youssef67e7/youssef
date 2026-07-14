@@ -34,7 +34,8 @@ export default function OrdersPage() {
       if (statusFilter !== 'all') params.status = statusFilter;
       const { data } = await ordersAPI.list(params);
       const d = data.data || data;
-      setOrders(d.orders || d.items || d || []);
+      const raw = d.orders || d.items || d || [];
+      setOrders(Array.isArray(raw) ? raw : []);
       setTotalPages(d.totalPages || 1);
       setTotal(d.total || 0);
     } catch {

@@ -15,9 +15,21 @@ export default function MaintenancePage() {
 
   useEffect(() => {
     maintenanceAPI.status().then(res => {
-      const data = res.data?.data || defaultMaintenance;
-      setStatus(data);
-      setMessage(data.message || defaultMaintenance.message);
+      const rawData = res.data?.data;
+      if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
+        setStatus(rawData);
+        setMessage(rawData.message || defaultMaintenance.message);
+      } else if (Array.isArray(rawData) && rawData.length > 0) {
+        const setting = rawData.find(s => s.key === 'maintenance_mode');
+        if (setting) {
+          try {
+            const parsed = typeof setting.value === 'string' ? JSON.parse(setting.value) : setting.value;
+            const data = { ...defaultMaintenance, ...(parsed || {}) };
+            setStatus(data);
+            setMessage(data.message || defaultMaintenance.message);
+          } catch { setStatus(defaultMaintenance); }
+        } else { setStatus(defaultMaintenance); }
+      } else { setStatus(defaultMaintenance); }
     }).catch(() => setStatus(defaultMaintenance)).finally(() => setLoading(false));
   }, []);
 

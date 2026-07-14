@@ -27,8 +27,9 @@ export default function DriversPage() {
     setLoading(true);
     try {
       const res = await driversAPI.list();
-      const d = res.data?.data || res.data || [];
-      setDrivers(Array.isArray(d) ? d : d?.drivers || []);
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.drivers || raw?.data || []);
+      setDrivers(Array.isArray(list) ? list : []);
     } catch { toast.error('Failed to load drivers'); }
     setLoading(false);
   };
@@ -237,7 +238,7 @@ export default function DriversPage() {
         </div>
       )}
 
-      <ConfirmDialog isOpen={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
+      <ConfirmDialog open={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
         onConfirm={handleDelete} title="Delete Driver" message="Are you sure you want to delete this driver? This action cannot be undone." />
     </div>
   );

@@ -33,7 +33,8 @@ export default function MedicinesPage() {
       if (search) params.search = search;
       const { data } = await medicinesAPI.list(params);
       const d = data.data || data;
-      setMedicines(d.medicines || d.items || d || []);
+      const raw = d.medicines || d.items || d || [];
+      setMedicines(Array.isArray(raw) ? raw : []);
       setTotalPages(d.totalPages || d.totalPages || 1);
       setTotal(d.total || d.totalItems || 0);
     } catch {
@@ -46,8 +47,14 @@ export default function MedicinesPage() {
   useEffect(() => { fetchMedicines(); }, [fetchMedicines]);
 
   useEffect(() => {
-    categoriesAPI.list().then(({ data }) => setCategories(data.data || data || [])).catch(() => {});
-    brandsAPI.list().then(({ data }) => setBrands(data.data || data || [])).catch(() => {});
+    categoriesAPI.list().then(({ data }) => {
+      const d = data?.data || data;
+      setCategories(Array.isArray(d?.categories || d) ? (d.categories || d) : []);
+    }).catch(() => {});
+    brandsAPI.list().then(({ data }) => {
+      const d = data?.data || data;
+      setBrands(Array.isArray(d?.brands || d) ? (d.brands || d) : []);
+    }).catch(() => {});
   }, []);
 
   const openCreate = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };

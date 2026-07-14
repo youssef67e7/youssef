@@ -52,10 +52,10 @@ export default function UsersPage() {
       const data = res.data?.data;
       if (Array.isArray(data)) {
         setUsers(data);
-        setTotalPages(res.data?.totalPages || 1);
-        setTotal(res.data?.total || data.length);
+        setTotalPages(data.length > 0 ? Math.ceil(data.length / 10) : 1);
+        setTotal(data.length);
       } else {
-        setUsers(data?.users || []);
+        setUsers(Array.isArray(data?.users) ? data.users : []);
         setTotalPages(data?.totalPages || 1);
         setTotal(data?.total || 0);
       }

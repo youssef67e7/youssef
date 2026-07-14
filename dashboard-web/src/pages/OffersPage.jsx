@@ -23,7 +23,9 @@ export default function OffersPage() {
     setLoading(true);
     try {
       const res = await offersAPI.list();
-      setOffers(res.data?.data || []);
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.offers || raw?.data || []);
+      setOffers(Array.isArray(list) ? list : []);
     } catch { toast.error('Failed to load'); }
     setLoading(false);
   };
@@ -227,7 +229,7 @@ export default function OffersPage() {
         </div>
       )}
 
-      <ConfirmDialog isOpen={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
+      <ConfirmDialog open={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
         onConfirm={handleDelete} title="Delete Offer" message="Are you sure you want to delete this offer? This action cannot be undone." />
     </div>
   );

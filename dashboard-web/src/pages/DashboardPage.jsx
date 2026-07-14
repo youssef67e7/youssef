@@ -38,16 +38,19 @@ export default function DashboardPage() {
           setStats(d);
         }
         if (chartRes.status === 'fulfilled' && chartRes.value) {
-          const d = chartRes.value.data?.data || chartRes.value.data;
-          if (Array.isArray(d) && d.length > 0) setChartData(d);
+          const raw = chartRes.value.data?.data || chartRes.value.data;
+          const list = Array.isArray(raw) ? raw : (raw?.data || raw?.chart || []);
+          if (Array.isArray(list) && list.length > 0) setChartData(list);
         }
         if (recentRes.status === 'fulfilled' && recentRes.value) {
-          const d = recentRes.value.data?.data || recentRes.value.data;
-          setRecentOrders(Array.isArray(d) ? d : []);
+          const raw = recentRes.value.data?.data || recentRes.value.data;
+          const list = Array.isArray(raw) ? raw : (raw?.orders || raw?.data || []);
+          setRecentOrders(Array.isArray(list) ? list : []);
         }
         if (alertsRes.status === 'fulfilled' && alertsRes.value) {
-          const d = alertsRes.value.data?.data || alertsRes.value.data;
-          setInventoryAlerts(Array.isArray(d) ? d : []);
+          const raw = alertsRes.value.data?.data || alertsRes.value.data;
+          const list = Array.isArray(raw) ? raw : (raw?.medicines || raw?.data || []);
+          setInventoryAlerts(Array.isArray(list) ? list : []);
         }
       } catch {
         toast.error('Failed to load dashboard data');

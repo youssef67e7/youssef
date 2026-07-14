@@ -42,9 +42,11 @@ export const usersAPI = {
   list: (params) => api.get('/users', { params }),
   getMe: () => api.get('/users/me'),
   get: (id) => api.get(`/users/${id}`),
+  create: (data) => api.post('/users', data),
   updateMe: (data) => api.patch('/users/me', data),
   update: (id, data) => api.patch(`/users/${id}`, data),
   delete: (id) => api.delete(`/users/${id}`),
+  roles: () => api.get('/users/roles'),
 };
 
 export const medicinesAPI = {
@@ -64,6 +66,7 @@ export const categoriesAPI = {
   create: (data) => api.post('/categories', data),
   update: (id, data) => api.patch(`/categories/${id}`, data),
   delete: (id) => api.delete(`/categories/${id}`),
+  reorder: (ids) => api.post('/categories/reorder', { ids }),
 };
 
 export const brandsAPI = {
@@ -80,6 +83,8 @@ export const ordersAPI = {
   myOrders: (params) => api.get('/orders/my-orders', { params }),
   track: (orderNumber) => api.get(`/orders/track/${orderNumber}`),
   updateStatus: (id, status) => api.patch(`/orders/${id}/status`, { status }),
+  assignDriver: (orderId, driverId) => api.post(`/orders/${orderId}/assign-driver`, { driverId }),
+  getInvoice: (orderId) => api.get(`/orders/${orderId}/invoice`),
   cancel: (id) => api.patch(`/orders/${id}/cancel`),
   delete: (id) => api.delete(`/orders/${id}`),
 };
@@ -97,6 +102,7 @@ export const couponsAPI = {
   get: (id) => api.get(`/coupons/${id}`),
   create: (data) => api.post('/coupons', data),
   update: (id, data) => api.patch(`/coupons/${id}`, data),
+  toggleActive: (id) => api.patch(`/coupons/${id}/toggle`),
   delete: (id) => api.delete(`/coupons/${id}`),
 };
 
@@ -112,11 +118,14 @@ export const reviewsAPI = {
 
 export const notificationsAPI = {
   list: (params) => api.get('/notifications', { params }),
+  history: (params) => api.get('/notifications', { params }),
   unreadCount: () => api.get('/notifications/unread-count'),
   markRead: (id) => api.patch(`/notifications/${id}/read`),
   markAllRead: () => api.patch('/notifications/read-all'),
+  send: (data) => api.post('/notifications/send-bulk', data),
   sendBulk: (data) => api.post('/notifications/send-bulk', data),
   sendToAll: (data) => api.post('/notifications/send-to-all', data),
+  sendAll: (data) => api.post('/notifications/send-to-all', data),
   delete: (id) => api.delete(`/notifications/${id}`),
 };
 
@@ -133,6 +142,8 @@ export const analyticsAPI = {
   dashboard: (params) => api.get('/analytics/dashboard', { params }),
   revenue: (params) => api.get('/analytics/revenue', { params }),
   sales: (params) => api.get('/analytics/sales', { params }),
+  orders: (params) => api.get('/analytics/orders', { params }),
+  customers: (params) => api.get('/analytics/customers', { params }),
   users: (params) => api.get('/analytics/users', { params }),
   inventory: (params) => api.get('/analytics/inventory', { params }),
 };
@@ -149,10 +160,14 @@ export const dashboardAPI = {
 };
 
 export const reportsAPI = {
+  list: (params) => api.get('/reports', { params }),
   sales: (params) => api.get('/reports/sales', { params }),
   revenue: (params) => api.get('/reports/revenue', { params }),
   inventory: (params) => api.get('/reports/inventory', { params }),
   users: (params) => api.get('/reports/users', { params }),
+  generate: (data) => api.post('/reports/generate', data),
+  download: (id) => api.get(`/reports/${id}/download`, { responseType: 'blob' }),
+  delete: (id) => api.delete(`/reports/${id}`),
   exportSales: (params) => api.get('/reports/export/sales', { params, responseType: 'blob' }),
 };
 
@@ -165,6 +180,50 @@ export const settingsAPI = {
   public: () => api.get('/system-settings/public'),
   update: (data) => api.post('/system-settings', data),
   updateBulk: (data) => api.post('/system-settings/bulk', data),
+  general: () => api.get('/settings/general'),
+  payment: () => api.get('/settings/payment'),
+  delivery: () => api.get('/settings/delivery'),
+  getByName: (name) => api.get(`/settings/${name}`),
+  updateGeneral: (data) => api.post('/settings/general', data),
+  updatePayment: (data) => api.post('/settings/payment', data),
+  updateDelivery: (data) => api.post('/settings/delivery', data),
+  toggleFeature: (flag, value) => api.patch(`/settings/features/${flag}`, { enabled: value }),
+  toggleMaintenance: (enabled) => api.patch('/settings/maintenance', { enabled }),
+};
+
+export const customersAPI = {
+  list: (params) => api.get('/users', { params }),
+  get: (id) => api.get(`/users/${id}`),
+  toggleBlock: (id) => api.patch(`/users/${id}/block`),
+  unblock: (id) => api.patch(`/users/${id}/unblock`),
+  orders: (id, params) => api.get(`/users/${id}/orders`, { params }),
+};
+
+export const driversAPI = {
+  list: (params) => api.get('/drivers', { params }),
+  create: (data) => api.post('/drivers', data),
+  update: (id, data) => api.patch(`/drivers/${id}`, data),
+  delete: (id) => api.delete(`/drivers/${id}`),
+  setOnline: (id, isOnline) => api.patch(`/drivers/${id}/online`, { isOnline }),
+  earnings: (id) => api.get(`/drivers/${id}/earnings`),
+  deliveries: (id, params) => api.get(`/drivers/${id}/deliveries`, { params }),
+};
+
+export const bannersAPI = {
+  list: (params) => api.get('/banners', { params }),
+  create: (data) => api.post('/banners', data),
+  update: (id, data) => api.patch(`/banners/${id}`, data),
+  delete: (id) => api.delete(`/banners/${id}`),
+  reorder: (ids) => api.post('/banners/reorder', { ids }),
+};
+
+export const offersAPI = {
+  list: (params) => api.get('/offers', { params }),
+  create: (data) => api.post('/offers', data),
+  update: (id, data) => api.patch(`/offers/${id}`, data),
+  delete: (id) => api.delete(`/offers/${id}`),
+  toggleActive: (id) => api.patch(`/offers/${id}/toggle`),
+  scheduled: () => api.get('/offers/scheduled'),
 };
 
 export default api;

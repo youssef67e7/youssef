@@ -23,7 +23,8 @@ export default function CategoriesPage() {
     try {
       const { data } = await categoriesAPI.list();
       const d = data.data || data;
-      const list = d.categories || d.items || d || [];
+      const raw = d.categories || d.items || d || [];
+      const list = Array.isArray(raw) ? raw : [];
       if (search) {
         const q = search.toLowerCase();
         setCategories(list.filter((c) => (c.name || c.nameEn || '').toLowerCase().includes(q) || (c.nameAr || '').toLowerCase().includes(q)));

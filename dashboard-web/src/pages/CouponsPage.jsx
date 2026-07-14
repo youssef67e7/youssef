@@ -21,7 +21,9 @@ export default function CouponsPage() {
     setLoading(true);
     try {
       const res = await couponsAPI.list();
-      setCoupons(res.data?.data || []);
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.coupons || raw?.data || []);
+      setCoupons(Array.isArray(list) ? list : []);
     } catch { toast.error('Failed to load'); }
     setLoading(false);
   };
@@ -163,7 +165,7 @@ export default function CouponsPage() {
         </div>
       </div>
 
-      <ConfirmDialog isOpen={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
+      <ConfirmDialog open={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
         onConfirm={handleDelete} title="Delete Coupon" message="Are you sure you want to delete this coupon? This action cannot be undone." />
     </div>
   );

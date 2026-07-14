@@ -29,8 +29,8 @@ export default function UsersPage() {
       if (search) params.search = search;
       if (roleFilter) params.role = roleFilter;
       const res = await usersAPI.list(params);
-      const items = res.data?.data || res.data || [];
-      const list = items?.data || items?.users || items;
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.users || raw?.data || []);
       setUsers(Array.isArray(list) ? list : []);
     } catch {
       toast.error('Failed to load users');
@@ -41,7 +41,8 @@ export default function UsersPage() {
   const loadRoles = async () => {
     try {
       const res = await usersAPI.roles();
-      const data = res.data?.data || res.data || [];
+      const raw = res.data?.data || res.data;
+      const data = Array.isArray(raw) ? raw : (raw?.roles || raw?.data || []);
       if (Array.isArray(data) && data.length > 0) {
         setRoles(data.map(r => r.name || r));
       }
@@ -343,7 +344,7 @@ export default function UsersPage() {
       </div>
 
       <ConfirmDialog
-        isOpen={!!deleteId}
+        open={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Delete User"

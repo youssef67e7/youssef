@@ -43,10 +43,12 @@ export default function OrdersPage() {
       ]);
 
       if (ordersRes.status === 'fulfilled') {
-        const d = ordersRes.value.data;
-        setOrders(d?.data || d?.orders || []);
+        const raw = ordersRes.value.data;
+        const d = raw?.data || raw;
+        const list = d?.orders || (Array.isArray(d) ? d : []);
+        setOrders(Array.isArray(list) ? list : []);
         setTotalPages(d?.totalPages || Math.ceil((d?.total || 0) / 15) || 1);
-        setTotal(d?.total || d?.totalPages * 15 || 0);
+        setTotal(d?.total || 0);
       }
       if (driversRes.status === 'fulfilled') {
         const d = driversRes.value.data?.data || driversRes.value.data || [];

@@ -26,7 +26,8 @@ export default function PromotionsPage() {
     try {
       const { data } = await promotionsAPI.list();
       const d = data.data || data;
-      setPromotions(d.promotions || d.items || d || []);
+      const raw = d.promotions || d.items || d || [];
+      setPromotions(Array.isArray(raw) ? raw : []);
     } catch {
       toast.error('Failed to load promotions');
     } finally {

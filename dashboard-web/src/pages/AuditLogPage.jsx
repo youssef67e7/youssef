@@ -46,9 +46,10 @@ export default function AuditLogPage() {
       if (filters.dateFrom) params.dateFrom = filters.dateFrom;
       if (filters.dateTo) params.dateTo = filters.dateTo;
       const res = await auditLogAPI.list(params);
-      const data = res.data?.data || res.data || {};
-      setLogs(Array.isArray(data.data || data.logs || data) ? (data.data || data.logs || data) : []);
-      setTotalPages(data.totalPages || data.pages || 1);
+      const raw = res.data?.data || res.data || {};
+      const list = Array.isArray(raw) ? raw : (raw?.data || raw?.logs || []);
+      setLogs(Array.isArray(list) ? list : []);
+      setTotalPages(raw?.totalPages || raw?.pages || 1);
     } catch {
       toast.error('Failed to load audit logs');
     }

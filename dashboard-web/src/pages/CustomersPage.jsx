@@ -24,8 +24,10 @@ export default function CustomersPage() {
     setLoading(true);
     try {
       const res = await customersAPI.list({ search: s || undefined, limit: 20, page: p });
-      const d = res.data;
-      setCustomers(d?.data || d?.customers || []);
+      const raw = res.data;
+      const d = raw?.data || raw;
+      const list = d?.users || d?.customers || (Array.isArray(d) ? d : []);
+      setCustomers(Array.isArray(list) ? list : []);
       setTotalPages(d?.totalPages || Math.ceil((d?.total || 0) / 20) || 1);
     } catch { toast.error('Failed to load customers'); }
     setLoading(false);
@@ -58,8 +60,10 @@ export default function CustomersPage() {
     setLoadingOrders(true);
     try {
       const res = await customersAPI.orders(c._id || c.id, { limit: 50 });
-      const d = res.data;
-      setCustomerOrders(d?.data || d?.orders || []);
+      const raw = res.data;
+      const d = raw?.data || raw;
+      const list = d?.orders || (Array.isArray(d) ? d : []);
+      setCustomerOrders(Array.isArray(list) ? list : []);
     } catch { toast.error('Failed to load orders'); }
     setLoadingOrders(false);
   };
@@ -199,7 +203,7 @@ export default function CustomersPage() {
         </div>
       )}
 
-      <ConfirmDialog isOpen={showConfirm} onClose={() => setShowConfirm(false)}
+      <ConfirmDialog open={showConfirm} onClose={() => setShowConfirm(false)}
         onConfirm={() => { confirmAction?.(); setShowConfirm(false); }}
         title="Confirm Action" message="Are you sure you want to proceed?" />
     </div>

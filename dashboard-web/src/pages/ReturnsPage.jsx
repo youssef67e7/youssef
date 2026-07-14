@@ -36,11 +36,11 @@ export default function ReturnsPage() {
       if (statusFilter) params.status = statusFilter;
 
       const res = await returnsAPI.list(params);
-      const items = res.data?.data || res.data || [];
-      const list = items?.data || items;
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.returns || raw?.data || []);
       setReturns(Array.isArray(list) ? list : []);
-      setTotalPages(items?.totalPages || Math.ceil((items?.total || 0) / 15) || 1);
-      setTotal(items?.total || 0);
+      setTotalPages(raw?.totalPages || Math.ceil((raw?.total || 0) / 15) || 1);
+      setTotal(raw?.total || 0);
     } catch {
       toast.error('Failed to load returns');
     }
@@ -85,7 +85,8 @@ export default function ReturnsPage() {
     if (!selectedReturn) return;
     setSubmitting(true);
     try {
-      await returnsAPI.processRefund(selectedReturn._id || selectedReturn.id, {
+      await returnsAPI.processRefund({
+        returnId: selectedReturn._id || selectedReturn.id,
         amount: Number(refundAmount),
         method: refundMethod,
       });

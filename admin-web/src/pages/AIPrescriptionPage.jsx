@@ -12,7 +12,7 @@ export default function AIPrescriptionPage() {
 
   const loadHistory = async () => {
     setLoading(true);
-    try { const res = await aiPrescriptionAPI.history({ search: search || undefined }); setHistory(res.data?.data || []); }
+    try { const res = await aiPrescriptionAPI.history({ search: search || undefined }); const d = res.data?.data || res.data; setHistory(Array.isArray(d?.prescriptions || d) ? (d.prescriptions || d) : []); }
     catch { toast.error('Failed to load'); }
     setLoading(false);
   };

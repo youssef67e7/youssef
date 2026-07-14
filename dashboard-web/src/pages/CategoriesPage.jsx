@@ -148,7 +148,7 @@ export default function CategoriesPage() {
         )}
       </div>
 
-      <ConfirmDialog isOpen={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
+      <ConfirmDialog open={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
         onConfirm={handleDelete} title="Delete Category" message="Are you sure you want to delete this category? This action cannot be undone." />
     </div>
   );

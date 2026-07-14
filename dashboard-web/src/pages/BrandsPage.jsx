@@ -123,7 +123,7 @@ export default function BrandsPage() {
         </div>
       </div>
 
-      <ConfirmDialog isOpen={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
+      <ConfirmDialog open={showConfirm} onClose={() => { setShowConfirm(false); setDeleteId(null); }}
         onConfirm={handleDelete} title="Delete Brand" message="Are you sure you want to delete this brand? This action cannot be undone." />
     </div>
   );

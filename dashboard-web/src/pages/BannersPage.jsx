@@ -21,8 +21,8 @@ export default function BannersPage() {
     setLoading(true);
     try {
       const res = await bannersAPI.list();
-      const items = res.data?.data || res.data || [];
-      const list = items?.data || items;
+      const raw = res.data?.data || res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.banners || raw?.data || []);
       setBanners(Array.isArray(list) ? list : []);
     } catch {
       toast.error('Failed to load banners');
@@ -264,7 +264,7 @@ export default function BannersPage() {
       </div>
 
       <ConfirmDialog
-        isOpen={!!deleteId}
+        open={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Delete Banner"

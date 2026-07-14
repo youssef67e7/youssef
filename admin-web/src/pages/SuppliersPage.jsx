@@ -20,8 +20,9 @@ export default function SuppliersPage() {
     setLoading(true);
     try {
       const res = await suppliersAPI.list({ search: search || undefined, limit: perPage, page: p });
-      const d = res.data;
-      setSuppliers(d?.data || d?.suppliers || []);
+      const d = res.data?.data || res.data;
+      const list = Array.isArray(d?.suppliers || d) ? (d.suppliers || d) : [];
+      setSuppliers(list);
       setTotalPages(d?.totalPages || 1);
     } catch { toast.error('Failed to load'); }
     setLoading(false);

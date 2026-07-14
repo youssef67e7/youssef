@@ -41,10 +41,10 @@ export default function PharmaciesPage() {
       const data = res.data?.data;
       if (Array.isArray(data)) {
         setPharmacies(data);
-        setTotalPages(res.data?.totalPages || 1);
-        setTotal(res.data?.total || data.length);
+        setTotalPages(data.length > 0 ? Math.ceil(data.length / 10) : 1);
+        setTotal(data.length);
       } else {
-        setPharmacies(data?.pharmacies || []);
+        setPharmacies(Array.isArray(data?.pharmacies) ? data.pharmacies : []);
         setTotalPages(data?.totalPages || 1);
         setTotal(data?.total || 0);
       }

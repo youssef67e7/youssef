@@ -36,14 +36,14 @@ export default function DashboardPage() {
   }, []);
 
   const statCards = [
-    { title: 'Total Medicines', value: stats?.totalMedicines ?? '—', icon: Package, color: 'blue' },
-    { title: 'Pending Orders', value: stats?.pendingOrders ?? '—', icon: ShoppingCart, color: 'yellow' },
-    { title: 'Low Stock Items', value: stats?.lowStockItems ?? '—', icon: AlertTriangle, color: 'red' },
-    { title: 'Monthly Revenue', value: stats?.monthlyRevenue != null ? `$${Number(stats.monthlyRevenue).toLocaleString()}` : '—', icon: DollarSign, color: 'green' },
+    { title: 'Total Medicines', value: stats?.medicines?.total ?? stats?.totalMedicines ?? '—', icon: Package, color: 'blue' },
+    { title: 'Pending Orders', value: stats?.orders?.pending ?? stats?.pendingOrders ?? '—', icon: ShoppingCart, color: 'yellow' },
+    { title: 'Low Stock Items', value: stats?.medicines?.lowStock ?? stats?.lowStockItems ?? '—', icon: AlertTriangle, color: 'red' },
+    { title: 'Monthly Revenue', value: (stats?.revenue?.monthly ?? stats?.monthlyRevenue) != null ? `$${Number(stats?.revenue?.monthly ?? stats?.monthlyRevenue).toLocaleString()}` : '—', icon: DollarSign, color: 'green' },
   ];
 
-  const orderData = stats?.ordersByStatus
-    ? Object.entries(stats.ordersByStatus).map(([status, count]) => ({
+  const orderData = (stats?.orders?.byStatus || stats?.ordersByStatus)
+    ? Object.entries(stats?.orders?.byStatus || stats?.ordersByStatus || {}).map(([status, count]) => ({
         name: status.charAt(0).toUpperCase() + status.slice(1),
         count,
       }))

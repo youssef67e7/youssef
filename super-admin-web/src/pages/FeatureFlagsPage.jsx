@@ -127,7 +127,7 @@ export default function FeatureFlagsPage() {
         </div>
       )}
 
-      <ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
+      <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
         title="Delete Feature Flag" confirmText="Delete"
         message={`Are you sure you want to delete "${deleteTarget?.name}"?`} />
     </div>

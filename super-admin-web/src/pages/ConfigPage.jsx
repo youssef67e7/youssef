@@ -30,7 +30,7 @@ export default function ConfigPage() {
   useEffect(() => {
     configAPI.getAll().then(res => {
       const data = res.data?.data;
-      if (data && typeof data === 'object') setConfig(data);
+      if (data && typeof data === 'object' && !Array.isArray(data)) setConfig(data);
       else setConfig(fallbackConfig);
     }).catch(() => setConfig(fallbackConfig)).finally(() => setLoading(false));
   }, []);

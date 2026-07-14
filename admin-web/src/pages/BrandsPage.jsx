@@ -23,7 +23,8 @@ export default function BrandsPage() {
     try {
       const { data } = await brandsAPI.list();
       const d = data.data || data;
-      const list = d.brands || d.items || d || [];
+      const raw = d.brands || d.items || d || [];
+      const list = Array.isArray(raw) ? raw : [];
       if (search) {
         const q = search.toLowerCase();
         setBrands(list.filter((b) => (b.name || b.nameEn || '').toLowerCase().includes(q) || (b.nameAr || '').toLowerCase().includes(q)));

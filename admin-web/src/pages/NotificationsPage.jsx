@@ -20,9 +20,10 @@ export default function NotificationsPage() {
   const fetchHistory = useCallback(async () => {
     setHistoryLoading(true);
     try {
-      const { data } = await notificationsAPI.history({ page, limit: 15 });
+      const { data } = await notificationsAPI.list({ page, limit: 15 });
       const d = data.data || data;
-      setHistory(d.notifications || d.items || d || []);
+      const raw = d.notifications || d.items || d || [];
+      setHistory(Array.isArray(raw) ? raw : []);
       setTotalPages(d.totalPages || 1);
       setTotal(d.total || 0);
     } catch {
