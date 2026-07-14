@@ -17,7 +17,7 @@ export class DeliveryController {
 
   @Post('assign')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Assign driver to order' })
   async assignDriver(
@@ -29,7 +29,7 @@ export class DeliveryController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all deliveries' })
   async findAll(@Query() query: any) {
@@ -38,7 +38,7 @@ export class DeliveryController {
 
   @Get('available-drivers')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PHARMACIST)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get available drivers' })
   async getAvailableDrivers() {
